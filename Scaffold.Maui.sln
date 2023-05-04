@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scaffold.Maui", "ViewCarrier.Maui\Scaffold.Maui.csproj", "{F17B6E39-EFA5-46CE-A1E0-E4E6D9FF7552}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scaffold.Maui", "Scaffold.Maui\Scaffold.Maui.csproj", "{F17B6E39-EFA5-46CE-A1E0-E4E6D9FF7552}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{A800BAF0-A20B-4EED-AF44-C9A74159AF9E}"
 EndProject

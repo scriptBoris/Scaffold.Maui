@@ -57,7 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ViewCarrier.Maui\Scaffold.Maui.csproj" />
+	  <ProjectReference Include="..\Scaffold.Maui\Scaffold.Maui.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
