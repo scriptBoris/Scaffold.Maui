@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Sample.Views"
+             xmlns:scaffold="clr-namespace:Scaffold.Maui;assembly=Scaffold.Maui"
+             x:Class="Sample.Views.ConfirmEmailView"
+             x:DataType="local:ConfirmEmailView"
+             scaffold:ScaffoldView.Title="Confirm email">
+
+    <scaffold:ScaffoldView.MenuItems>
+        <scaffold:MenuItem Text="Retry"
+                           ImageSource="refresh.png"
+                           Command="{Binding CommandRetry}"/>
+    </scaffold:ScaffoldView.MenuItems>
+
+    <Border VerticalOptions="CenterAndExpand"
+            StrokeShape="RoundRectangle 8"
+            Padding="10"
+            WidthRequest="240"
+            Margin="0,0,0,90">
+        <StackLayout Spacing="10">
+            <Entry Placeholder="Confirm code"
+                   Keyboard="Numeric"
+                   HorizontalTextAlignment="Center"/>
+            <Button Text="Confirm"
+                    Clicked="Button_Clicked"/>
+        </StackLayout>
+    </Border>
+</StackLayout>

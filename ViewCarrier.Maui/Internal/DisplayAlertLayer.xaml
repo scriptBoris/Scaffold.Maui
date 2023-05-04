@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+      x:Class="Scaffold.Maui.Internal.DisplayAlertLayer"
+      BackgroundColor="#88000000">
+    <Border StrokeShape="RoundRectangle 10"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
+            WidthRequest="250"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Padding="10">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer/>
+        </Border.GestureRecognizers>
+        
+        <StackLayout Spacing="7">
+            <Label x:Name="labelTitle"
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            
+            <Label x:Name="labelDescription"
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            
+            <sam:Button x:Name="buttonOk"
+                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+                <Label x:Name="labelButtonOk"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       Margin="0,0,10,0"
+                       HorizontalTextAlignment="End"/>
+            </sam:Button>
+            
+            <sam:Button x:Name="buttonCancel"
+                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+                <Label x:Name="labelButtonCancel"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       Margin="0,0,10,0"
+                       HorizontalTextAlignment="End"/>
+            </sam:Button>
+        </StackLayout>
+    </Border>
+</Grid>
