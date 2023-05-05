@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:scaffold="clr-namespace:Scaffold.Maui;assembly=Scaffold.Maui"
              x:Class="Sample.Views.MasterView"
-             scaffold:ScaffoldView.Title="Master page"
+             scaffold:ScaffoldView.Title="Master view"
              Padding="10">
-        <Label Text="Master view"/>
+    <Label Text="Master view"/>
 </ContentView>

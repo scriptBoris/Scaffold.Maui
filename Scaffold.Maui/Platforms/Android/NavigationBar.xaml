@@ -8,49 +8,64 @@
       x:Class="Scaffold.Maui.Platforms.Android.NavigationBar"
       x:DataType="local:NavigationBar"
       BackgroundColor="{AppThemeBinding Dark=#171717, Light=#ee1d23}"
-      HeightRequest="54">
-    
-    <Grid.Resources>
-        <DataTemplate x:Key="titleTemplate">
-            <Label FontSize="22"
-                   Margin="13,0,0,0"
-                   VerticalTextAlignment="Center"
-                   HorizontalOptions="FillAndExpand"
-                   LineBreakMode="TailTruncation"
-                   TextColor="White"/>
-        </DataTemplate>
-
-        <DataTemplate x:Key="menuTemplate"
-                      x:DataType="scaffold:MenuItem">
-            <internal:ButtonMenu VerticalOptions="Center"
-                                 Text="{Binding Text}"
-                                 TapColor="#DDFFFfFF"
-                                 ImageColor="White"
-                                 ImageSource="{Binding ImageSource}"
-                                 TapCommand="{Binding Command}"/>
-        </DataTemplate>
-    </Grid.Resources>
+      HeightRequest="56">
     
     <StackLayout Orientation="Horizontal"
-                 Spacing="0">
+                 Spacing="0"
+                 Margin="7,0">
         <!--back button-->
         <sam:Button BackgroundColor="Transparent"
                     VerticalOptions="Center"
                     HorizontalOptions="Start"
-                    Margin="10,0,0,0"
+                    Margin="0,0,0,0"
                     CornerRadius="20"
                     Padding="8"
                     TapColor="{AppThemeBinding Light=#DFFF, Dark=#DFFF}"
                     x:Name="backButton">
             <internal:ImageTint Source="ic_arrow_left.png"
-                                TintColor="#FFF"/>
+                                TintColor="#FFF"
+                                HeightRequest="24"
+                                WidthRequest="24"/>
         </sam:Button>
 
-        <Grid x:Name="gridTitles"
-              HorizontalOptions="FillAndExpand">
-        </Grid>
+        <Label FontSize="22"
+               Margin="13,0,0,0"
+               VerticalTextAlignment="Center"
+               HorizontalOptions="FillAndExpand"
+               LineBreakMode="TailTruncation"
+               TextColor="White"
+               x:Name="labelTitle"/>
 
-        <Grid x:Name="gridMenu">
-        </Grid>
+        <!--menu items-->
+        <StackLayout Margin="0,0,0,0"
+                     Orientation="Horizontal"
+                     Spacing="5"
+                     x:Name="stackMenu">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="scaffold:MenuItem">
+                    <internal:ButtonMenu VerticalOptions="Center"
+                                         Text="{Binding Text}"
+                                         TapColor="#DDFFFFFF"
+                                         ImageColor="{Binding ImageColor}"
+                                         ImageSource="{Binding ImageSource}"
+                                         TapCommand="{Binding Command}"/>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+
+        <!--collapsed menu-->
+        <sam:Button BackgroundColor="Transparent"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start"
+                    Margin="5,0,0,0"
+                    CornerRadius="20"
+                    Padding="8"
+                    TapColor="{AppThemeBinding Light=#DFFF, Dark=#DFFF}"
+                    x:Name="buttonMenu">
+            <internal:ImageTint Source="ic_dots_horizontal.png"
+                                HeightRequest="24"
+                                WidthRequest="24"
+                                TintColor="#FFF"/>
+        </sam:Button>
     </StackLayout>
 </Grid>

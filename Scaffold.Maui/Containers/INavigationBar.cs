@@ -9,7 +9,9 @@ namespace Scaffold.Maui.Containers;
 
 public interface INavigationBar : IView, IDisposable
 {
-    Task SwitchContent(NavigationSwitchArgs args);
+    string? Title { get; set; }
+    Task UpdateVisual(NavigatingArgs args);
+    void UpdateMenu(View view);
 }
 
 

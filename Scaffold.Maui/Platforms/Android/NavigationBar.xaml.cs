@@ -6,163 +6,89 @@ namespace Scaffold.Maui.Platforms.Android;
 
 public partial class NavigationBar : INavigationBar
 {
-    private readonly ScaffoldView _carrier;
-    private bool currentHasBB;
-    private double bbWidth;
+    private readonly View _view;
+    private MenuItemObs? itemObs;
 
-    public NavigationBar(ScaffoldView carrier)
+    public NavigationBar(View view)
 	{
-        _carrier = carrier;
+        _view = view;
 		InitializeComponent();
-		BindingContext = this;
+        backButton.TapCommand = new Command(OnBackButton);
+        buttonMenu.TapCommand = new Command(OnMenuButton);
 
-        var m = backButton.Measure(200, 200);
-        bbWidth = m.Width + backButton.Margin.HorizontalThickness + backButton.Padding.HorizontalThickness;
-        //backButton.IsVisible = false;
 
-        gridTitles.TranslationX = -bbWidth;
-        backButton.Scale = 0;
-        backButton.TapCommand = new Command(() => carrier.SoftwareBackButtonInternal());
+        UpdateTitle(view);
+        UpdateMenu(view);
     }
 
-    private DataTemplate TitleTemplate => (DataTemplate)this.Resources["titleTemplate"];
-    private DataTemplate MenuTemplate => (DataTemplate)this.Resources["menuTemplate"];
-
-    public async Task SwitchContent(NavigationSwitchArgs args)
-    {
-        bool isEmpty = gridTitles.Children.Count == 0;
-        bool isAnimating = args.IsAnimating && !isEmpty;
-        bool hasNavigationBar = ScaffoldView.GetHasNavigationBar(args.NewContent);
-
-        UpdateNavigationBarVisible(hasNavigationBar, isAnimating);
-
-        if (hasNavigationBar)
+    public string? Title 
+    { 
+        get => labelTitle.Text;
+        set
         {
-            UpdateMenu(args.NewContent, isAnimating);
-            UpdateBackbutton(args.HasBackButton, isAnimating);
-            UpdateTitle(args.NewContent, isAnimating);
+            labelTitle.Text = value;
         }
+    }
 
-        await Task.Delay(ScaffoldView.AnimationTime);
+    private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        UpdateMenu(_view);
+    }
+
+    private void OnBackButton()
+    {
+        if (_view.GetContext() is ScaffoldView scaffold)
+            scaffold.SoftwareBackButtonInternal();
+    }
+
+    private void OnMenuButton()
+    {
+        if (_view.GetContext() is ScaffoldView scaffold)
+            scaffold.ShowCollapsedMenusInternal(_view);
+    }
+
+    public async Task UpdateVisual(NavigatingArgs e)
+    {
+        backButton.IsVisible = e.HasBackButton;
+
+        if (!e.IsAnimating)
+            return;
+
+        switch (e.NavigationType)
+        {
+            case NavigatingTypes.Push:
+                this.Opacity = 0;
+                await this.FadeTo(1, ScaffoldView.AnimationTime);
+                break;
+            case NavigatingTypes.Pop:
+                await this.FadeTo(0, ScaffoldView.AnimationTime);
+                break;
+            default:
+                break;
+        }
     }
 
     public void Dispose()
     {
+        if (itemObs != null)
+            itemObs.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
     }
 
-    private void UpdateNavigationBarVisible(bool isVisible, bool isAnimating)
+    private void UpdateTitle(View view)
     {
-        if (isAnimating)
-        {
-            if (isVisible)
-            {
-                var anim = new Animation((x) =>
-                {
-                    TranslationY = x;
-                }, TranslationY, 0);
-                anim.Commit(this, "trans", length: ScaffoldView.AnimationTime);
-            }
-            else
-            {
-                var anim = new Animation((x) =>
-                {
-                    TranslationY = x;
-                }, TranslationY, -this.Height);
-                anim.Commit(this, "trans", length: ScaffoldView.AnimationTime);
-            }
-        }
-        else
-        {
-            this.IsVisible = isVisible;
-        }
+        labelTitle.Text = ScaffoldView.GetTitle(view);
     }
 
-    private async void UpdateBackbutton(bool isVisible, bool isAnimating)
+    public void UpdateMenu(View view)
     {
-        if (currentHasBB == isVisible)
-            return;
+        if (itemObs != null)
+            itemObs.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
 
-        currentHasBB = isVisible;
+        itemObs = ScaffoldView.GetMenuItems(view);
+        itemObs.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
+        bool colapseVisible = itemObs.CollapsedItems.Count > 0;
 
-        if (isAnimating)
-        {
-            if (isVisible)
-            {
-                gridTitles.TranslationX = -bbWidth;
-                await Task.WhenAll(
-                    backButton.ScaleTo(1, ScaffoldView.AnimationTime),
-                    gridTitles.TranslateTo(0, 0, ScaffoldView.AnimationTime));
-            }
-            else
-            {
-                var to = -bbWidth;
-                await Task.WhenAll(
-                    backButton.ScaleTo(0, ScaffoldView.AnimationTime),
-                    gridTitles.TranslateTo(to, 0, ScaffoldView.AnimationTime));
-            }
-        }
-        else
-        {
-            backButton.Scale = isVisible ? 1 : 0;
-            gridTitles.TranslationX = isVisible ? 0 : -bbWidth;
-        }
-    }
-
-    private async void UpdateTitle(View view, bool isAnimating)
-    {
-        var title = (Label)TitleTemplate.CreateContent();
-        title.Text = ScaffoldView.GetTitle(view);
-
-        foreach (View item in gridTitles.Children)
-            ClearTitle(item, isAnimating);
-
-        gridTitles.Children.Add(title);
-
-        if (isAnimating)
-        {
-            title.Opacity = 0;
-            await title.FadeTo(1, ScaffoldView.AnimationTime);
-        }
-    }
-
-    private async void UpdateMenu(View view, bool isAnimating)
-    {
-        var menus = ScaffoldView.GetMenuItems(view);
-
-        foreach(View menu in gridMenu.Children)
-            ClearMenu(menu, isAnimating);
-
-        var stackMenus = new StackLayout
-        {
-            Orientation = StackOrientation.Horizontal,
-            Margin = new Thickness(0,0,7,0),
-            Opacity = menus.Count > 0 ? 0 : 1,
-        };
-
-        foreach (var item in menus)
-        {
-            var b = (View)MenuTemplate.CreateContent();
-            b.BindingContext = item;
-            stackMenus.Children.Add(b);
-        }
-
-        gridMenu.Children.Add(stackMenus);
-
-        if (menus.Count > 0)
-            await stackMenus.FadeTo(1, ScaffoldView.AnimationTime);
-    }
-
-    private async void ClearMenu(View view, bool isAnimating)
-    {
-        if (isAnimating)
-            await view.FadeTo(0, ScaffoldView.AnimationTime);
-        gridMenu.Children.Remove(view);
-    }
-
-    private async void ClearTitle(View title, bool isAnimating)
-    {
-        if (isAnimating)
-            await title.FadeTo(0, ScaffoldView.AnimationTime);
-        gridTitles.Children.Remove(title);
+        BindableLayout.SetItemsSource(stackMenu, itemObs.VisibleItems);
+        buttonMenu.IsVisible = colapseVisible;
     }
 }

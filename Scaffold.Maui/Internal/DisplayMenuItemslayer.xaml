@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+      xmlns:internal="clr-namespace:Scaffold.Maui.Internal"
+      BackgroundColor="Transparent"
+      x:Class="Scaffold.Maui.Internal.DisplayMenuItemslayer"
+      x:Name="root">
+    <Grid.GestureRecognizers>
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+    </Grid.GestureRecognizers>
+
+    <!--<Border WidthRequest="250"
+            HeightRequest="130"
+            TranslationX="-25"
+            TranslationY="35"
+            VerticalOptions="Start"
+            HorizontalOptions="End">
+        <Border.Shadow>
+            <Shadow Brush="black"
+                    Offset="-10,0"
+                    Radius="20"
+                    Opacity="0.4"/>
+        </Border.Shadow>
+    </Border>-->
+    
+    <Border StrokeShape="RoundRectangle 8"
+            StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
+            Margin="0,35,25,0"
+            VerticalOptions="Start"
+            HorizontalOptions="End"
+            Padding="0">
+
+        <Border.Shadow>
+            <Shadow Brush="black"
+                    Offset="0,0"
+                    Radius="{AppThemeBinding Light=40, Dark=20}"
+                    Opacity="0.4"/>
+        </Border.Shadow>
+        
+        <StackLayout x:Name="stackMenu"
+                     BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
+                     MinimumWidthRequest="130"
+                     Spacing="0">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="internal:ButtonMenu">
+                    <sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
+                                TapCommandParameter="{Binding .}"
+                                CornerRadius="0"
+                                BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="10">
+                            <internal:ImageTint Source="{Binding ImageSource}"
+                                                HeightRequest="24"
+                                                WidthRequest="24"
+                                                TintColor="{AppThemeBinding Light=#222, Dark=#FFF}"/>
+                            <Label Text="{Binding Text}"
+                                   Margin="0,0,10,0"
+                                   VerticalTextAlignment="Center"/>
+                        </HorizontalStackLayout>
+                    </sam:Button>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+    </Border>
+</Grid>

@@ -45,13 +45,14 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
             appear.OnAppear();
     }
 
-    public Task RemoveLayerAsync(int zIndex)
+    public async Task<bool> RemoveLayerAsync(int zIndex)
     {
-        var m = items.FirstOrDefault(x => x.Index == zIndex);
+        var m = items.LastOrDefault(x => x.Index == zIndex);
         if (m == null)
-            return Task.CompletedTask;
+            return false;
 
-        return RemoveLayerAsync(m);
+        await RemoveLayerAsync(m);
+        return true;
     }
 
     public Task Pop()
@@ -125,7 +126,7 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
 
         private void OnViewDeatached()
         {
-            Buffer.RemoveLayerAsync(Index);
+            Buffer.RemoveLayerAsync(Index).ConfigureAwait(false);
         }
 
         public void Dispose()

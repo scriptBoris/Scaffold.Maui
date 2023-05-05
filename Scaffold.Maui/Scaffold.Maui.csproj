@@ -20,10 +20,14 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\ic_arrow_left.svg" />
+	  <None Remove="Resources\Images\ic_dots_horizontal.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Update="Internal\DisplayAlertLayer.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Internal\DisplayMenuItemslayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Platforms\Android\NavigationBar.xaml">
@@ -32,11 +36,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="ButtonSam.Maui" Version="0.9.7-beta" />
+	  <PackageReference Include="ButtonSam.Maui" Version="0.9.8-beta" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiImage Include="Resources\Images\ic_arrow_left.svg" />
+	  <MauiImage Include="Resources\Images\ic_dots_horizontal.svg" />
 	</ItemGroup>
 
 </Project>

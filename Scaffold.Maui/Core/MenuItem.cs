@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Scaffold.Maui.Core;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,17 +11,14 @@ namespace Scaffold.Maui;
 
 public class MenuItem : BindableObject
 {
+    private MenuItemObs? parent;
+
     // text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
         nameof(Text),
         typeof(string),
         typeof(MenuItem),
-        null,
-        propertyChanged: (b, o, n) =>
-        {
-            if (b is MenuItem self)
-                self.Update();
-        }
+        null
     );
     public string? Text
     {
@@ -58,12 +57,7 @@ public class MenuItem : BindableObject
         nameof(Command),
         typeof(ICommand),
         typeof(MenuItem),
-        null,
-        propertyChanged: (b, o, n) =>
-        {
-            if (b is MenuItem self)
-                self.Update();
-        }
+        null
     );
     public ICommand? Command
     {
@@ -71,8 +65,63 @@ public class MenuItem : BindableObject
         set => SetValue(CommandProperty, value);
     }
 
+    // mode
+    public static readonly BindableProperty ModeProperty = BindableProperty.Create(
+        nameof(Mode),
+        typeof(MenuItemModes),
+        typeof(MenuItem),
+        MenuItemModes.Default,
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is MenuItem self)
+                self.Update();
+        }
+    );
+    public MenuItemModes Mode
+    {
+        get => (MenuItemModes)GetValue(ModeProperty);
+        set => SetValue(ModeProperty, value);
+    }
+
+    // is visible
+    public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create(
+        nameof(IsVisible),
+        typeof(bool),
+        typeof(MenuItem),
+        true,
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is MenuItem self)
+                self.Update();
+        }
+    );
+    public bool IsVisible
+    {
+        get => (bool)GetValue(IsVisibleProperty);
+        set => SetValue(IsVisibleProperty, value);
+    }
+
+    internal void SetupParent(MenuItemObs? parent)
+    {
+        this.parent = parent;
+    }
+
     private void Update()
     {
+        if (parent == null)
+            return;
 
+        parent.Update();
     }
+}
+
+public enum MenuItemModes
+{
+    Default,
+    Collapsed,
+}
+
+internal class MenuItemProxy : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler? PropertyChanged;
 }

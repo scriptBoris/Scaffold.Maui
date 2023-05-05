@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Core
 {
-    public class NavigationSwitchArgs
+    public class NavigatingArgs
     {
         public required View NewContent { get; set; }
+        public required View? OldContent { get; set; }
         public required bool HasBackButton { get; set; }
-        public required bool IsAnimating { get; set; } = true;
-        public IntentType ActionType { get; set; }
+        public required bool IsAnimating { get; set; }
+        public required NavigatingTypes NavigationType { get; set; }
     }
 
-    public enum IntentType
+    public enum NavigatingTypes
     {
         Push,
         Pop,
+        Replace,
     }
 }

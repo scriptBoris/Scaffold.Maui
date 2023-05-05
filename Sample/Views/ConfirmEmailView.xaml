@@ -8,8 +8,32 @@
              scaffold:ScaffoldView.Title="Confirm email">
 
     <scaffold:ScaffoldView.MenuItems>
-        <scaffold:MenuItem Text="Retry"
+        <scaffold:MenuItem Text="Retry 1"
                            ImageSource="refresh.png"
+                           ImageColor="White"
+                           Command="{Binding CommandRetry}"/>
+
+        <scaffold:MenuItem Text="Retry 2"
+                           ImageSource="refresh.png"
+                           ImageColor="White"
+                           Command="{Binding CommandRetry}"/>
+
+        <scaffold:MenuItem Text="Retry 3"
+                           ImageSource="refresh.png"
+                           ImageColor="White"
+                           Mode="Collapsed"
+                           Command="{Binding CommandRetry}"/>
+
+        <scaffold:MenuItem Text="Retry 4"
+                           ImageSource="refresh.png"
+                           ImageColor="White"
+                           Mode="Collapsed"
+                           Command="{Binding CommandRetry}"/>
+        
+        <scaffold:MenuItem Text="Retry 5"
+                           ImageColor="White"
+                           ImageSource="refresh.png"
+                           Mode="Collapsed"
                            Command="{Binding CommandRetry}"/>
     </scaffold:ScaffoldView.MenuItems>
 

@@ -27,7 +27,7 @@ namespace Scaffold.Maui.Platforms.Android
                     match = Find(c.Content) as ScaffoldView;
             }
 
-            match?.PopAsync(true);
+            match?.HardwareBackButtonInternal();
 
             return true;
         }

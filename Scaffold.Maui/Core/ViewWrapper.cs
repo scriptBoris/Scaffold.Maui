@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Core
 {
-    public class NavigationItem : Layout, ILayoutManager, IDisposable
+    public class ViewWrapper : Layout, ILayoutManager, IDisposable
     {
-        public NavigationItem(View view)
+        public ViewWrapper(View view)
         {
             this.View = view;
             this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#343434"));
@@ -48,6 +48,32 @@ namespace Scaffold.Maui.Core
             var menu = ScaffoldView.GetMenuItems(View);
             foreach (var item in menu)
                 item.BindingContext = View.BindingContext;
+        }
+
+        public async Task UpdateVisual(NavigatingArgs e)
+        {
+            if (!e.IsAnimating)
+                return;
+
+            switch (e.NavigationType)
+            {
+                case NavigatingTypes.Push:
+                    this.Opacity = 0;
+                    this.TranslationX = 100;
+                    await Task.WhenAll(
+                        this.FadeTo(1, ScaffoldView.AnimationTime),
+                        this.TranslateTo(0, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                    );
+                    break;
+                case NavigatingTypes.Pop:
+                    await Task.WhenAll(
+                        this.FadeTo(0, ScaffoldView.AnimationTime, Easing.CubicOut),
+                        this.TranslateTo(50, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                    );
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void Dispose()

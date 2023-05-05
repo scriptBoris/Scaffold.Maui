@@ -1,20 +1,25 @@
 ﻿using ButtonSam.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Layouts;
 using Microsoft.Maui.LifecycleEvents;
 using Scaffold.Maui.Containers;
 using Scaffold.Maui.Core;
 using Scaffold.Maui.Internal;
 using System.Collections.ObjectModel;
+using Frame = Scaffold.Maui.Internal.Frame;
 
 namespace Scaffold.Maui;
 
 public interface IScaffold
 {
+    public const int MenuIndexZ = 998;
     public const int AlertIndexZ = 999;
 
     Task PushAsync(View view, bool isAnimating = true);
-    Task PopAsync(bool isAnimated = true);
-    Task PopToRootAsync(bool isAnimated = true);
+    Task<bool> PopAsync(bool isAnimated = true);
+    Task<bool> PopToRootAsync(bool isAnimated = true);
+    Task<bool> RemoveView(View view, bool isAnimated = true);
+    Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true);
 
     Task DisplayAlert(string title, string message, string cancel);
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
@@ -23,18 +28,13 @@ public interface IScaffold
 public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
 {
     public const ushort AnimationTime = 180;
+    private readonly NavigationController _navigationController;
 
     public ScaffoldView()
     {
-        NavigationContainer = new();
+        _navigationController = new(this);
+
         ZBufer = new();
-
-#if ANDROID
-        NavigationBar = new Platforms.Android.NavigationBar(this);
-#endif
-
-        Children.Add(NavigationBar);
-        Children.Add(NavigationContainer);
         Children.Add(ZBufer);
     }
 
@@ -60,7 +60,17 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
         "ScaffoldTitle",
         typeof(string),
         typeof(ScaffoldView),
-        null
+        null,
+        propertyChanged:(b,o,n) =>
+        {
+            if (GetScaffoldContext(b) is ScaffoldView scaffold)
+            {
+                scaffold._navigationController
+                .Frames
+                .FirstOrDefault(x => x.View == b)?
+                .UpdateTitle(n as string);
+            }
+        }
     );
     public static void SetTitle(BindableObject b, string? value)
     {
@@ -76,7 +86,17 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
         "ScaffoldHasNavigationBar",
         typeof(bool),
         typeof(ScaffoldView),
-        true
+        true,
+        propertyChanged:(b,o,n) =>
+        {
+            if (GetScaffoldContext(b) is ScaffoldView scaffold)
+            {
+                scaffold._navigationController
+                .Frames
+                .FirstOrDefault(x => x.View == b)?
+                .UpdateNavigationBarVisible((bool)n);
+            }
+        }
     );
     public static void SetHasNavigationBar(BindableObject b, bool value)
     {
@@ -95,8 +115,18 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
         null,
         defaultValueCreator: b =>
         {
-            var obs = new MenuItemObs(b);
-            return obs;
+            return new MenuItemObs(b);
+        },
+        propertyChanged: (b,o,n) =>
+        {
+            if (GetScaffoldContext(b) is ScaffoldView context)
+            {
+                context._navigationController
+                .Frames
+                .FirstOrDefault(x => x.View == b)?
+                .NavigationBar?
+                .UpdateMenu((View)b);
+            }
         }
     );
     public static MenuItemObs GetMenuItems(BindableObject b)
@@ -105,18 +135,40 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
     }
     #endregion bindable props
 
-    public INavigationBar NavigationBar { get; private set; }
-    public NavigationContainer NavigationContainer { get; private set; }
     public ZBuffer ZBufer { get; private set; }
+
+    internal void HardwareBackButtonInternal()
+    {
+        this.Dispatcher.Dispatch(HardwareBackButton);
+    }
 
     internal void SoftwareBackButtonInternal()
     {
         this.Dispatcher.Dispatch(SoftwareBackButton);
     }
 
+    internal void ShowCollapsedMenusInternal(View view)
+    {
+        this.Dispatcher.Dispatch(() => ShowCollapsedMenus(view));
+    }
+
+    protected virtual async void HardwareBackButton()
+    {
+        if (!await ZBufer.RemoveLayerAsync(IScaffold.MenuIndexZ))
+        {
+            await PopAsync(true);
+        }
+    }
+
     protected virtual void SoftwareBackButton()
     {
-        PopAsync(true);
+        PopAsync(true).ConfigureAwait(false);
+    }
+
+    protected virtual void ShowCollapsedMenus(View view)
+    {
+        var overlay = new DisplayMenuItemslayer(view);
+        ZBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
     }
 
     protected override ILayoutManager CreateLayoutManager()
@@ -126,97 +178,79 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
 
     public Size ArrangeChildren(Rect bounds)
     {
-        double x = 0;
-        double y = 0;
-        double w = bounds.Width;
+        foreach (var item in _navigationController.Frames)
+            ((IView)item).Arrange(bounds);
 
-        var barRect = new Rect(x, y, w, NavigationBar.DesiredSize.Height);
-        ((IView)NavigationBar).Arrange(barRect);
-
-        var cRect = new Rect(x, NavigationBar.DesiredSize.Height, w, NavigationContainer.DesiredSize.Height);
-        ((IView)NavigationContainer).Arrange(cRect);
-
-        var zRect = new Rect(x, y, w, bounds.Height);
-        ((IView)ZBufer).Arrange(zRect);
+        ((IView)ZBufer).Arrange(bounds);
 
         return bounds.Size;
     }
 
     public Size Measure(double widthConstraint, double heightConstraint)
     {
-        double freeHeight = heightConstraint;
-        var bar = ((IView)NavigationBar).Measure(widthConstraint, heightConstraint);
-        freeHeight -= bar.Height;
+        foreach (var item in _navigationController.Frames)
+            ((IView)item).Measure(widthConstraint, heightConstraint);
 
-        ((IView)NavigationContainer).Measure(widthConstraint, freeHeight);
         ((IView)ZBufer).Measure(widthConstraint, heightConstraint);
 
         return new Size(widthConstraint, heightConstraint);
     }
 
-    public Task InsertView(View view, int index, bool isAnimated = true)
-    {
-        // TODO Доработать InsertView!
-        return NavigationContainer.InserAsync(view, index, isAnimated);
-    }
-
-    public Task PushAsync(View view, bool isAnimated = true)
+    public async Task PushAsync(View view, bool isAnimated = true)
     {
         ScaffoldView.SetScaffoldContext(view, this);
-
-        bool hasBackButton = NavigationContainer.NavigationStack.Count > 0;
-
-        return Task.WhenAll(
-            NavigationContainer.PushAsync(view, isAnimated),
-            NavigationBar.SwitchContent(new NavigationSwitchArgs
-            {
-                ActionType = IntentType.Push,
-                NewContent = view,
-                IsAnimating = isAnimated,
-                HasBackButton = hasBackButton,
-            })
-        );
+        await _navigationController.PushAsync(view, isAnimated);
     }
 
-    public Task PopAsync(bool isAnimated = true)
+    public Task<bool> PopAsync(bool isAnimated = true)
     {
-        int count = NavigationContainer.NavigationStack.Count;
-        bool hasBackButton = count > 2;
-        var prev = NavigationContainer.NavigationStack.ItemOrDefault(count - 2);
-
-        if (prev == null)
-            return Task.CompletedTask;
-
-        return Task.WhenAll(
-            NavigationContainer.PopAsync(isAnimated),
-            NavigationBar.SwitchContent(new NavigationSwitchArgs
-            {
-                ActionType = IntentType.Pop,
-                NewContent = prev,
-                IsAnimating = isAnimated,
-                HasBackButton = hasBackButton,
-            })
-        );
+        ZBufer.RemoveLayerAsync(IScaffold.MenuIndexZ).ConfigureAwait(true);
+        return _navigationController.PopAsync(isAnimated);
     }
 
-    public Task PopToRootAsync(bool isAnimated = true)
+    public async Task<bool> PopToRootAsync(bool isAnimated = true)
     {
-        int count = NavigationContainer.NavigationStack.Count;
-        var prev = NavigationContainer.NavigationStack.FirstOrDefault();
+        int count = _navigationController.NavigationStack.Count;
+        if (count <= 1)
+            return false;
 
-        if (prev == null || count == 1)
-            return Task.CompletedTask;
+        if (count == 2)
+            await PopAsync(isAnimated);
 
-        return Task.WhenAll(
-            NavigationContainer.PopToRoot(isAnimated),
-            NavigationBar.SwitchContent(new NavigationSwitchArgs
-            {
-                ActionType = IntentType.Pop,
-                NewContent = prev,
-                IsAnimating = isAnimated,
-                HasBackButton = false,
-            })
-        );
+        for (int i = count - 2; i > 0; i--)
+        {
+            _navigationController.RemoveView(i);
+        }
+
+        return await PopAsync(isAnimated);
+    }
+
+    public async Task<bool> RemoveView(View view, bool isAnimated)
+    {
+        int count = _navigationController.NavigationStack.Count;
+        if (count <= 1)
+            return false;
+
+        int index = _navigationController.NavigationStack.IndexOf(view);
+        if (index < 0)
+            return false;
+
+        if (index == _navigationController.NavigationStack.Count - 1)
+        {
+            return await PopAsync(isAnimated);
+        }
+        else
+        {
+            return _navigationController.RemoveView(index);
+        }
+    }
+
+    public async Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true)
+    {
+        if (_navigationController.NavigationStack.Count == 0)
+            return false;
+
+        return await _navigationController.ReplaceAsync(oldView, newView, isAnimated);
     }
 
     public async Task DisplayAlert(string title, string message, string cancel)
@@ -235,9 +269,11 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
 
     public void Dispose()
     {
-        NavigationBar.Dispose();
-        NavigationContainer.Dispose();
-        ZBufer.Dispose();
+        foreach (var item in Children)
+        {
+            if (item is IDisposable disposable)
+                disposable.Dispose();
+        }
     }
 }
 
