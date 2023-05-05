@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Internal
 {
-    public class ButtonMenu : ButtonSam.Maui.Button
+    internal class ButtonMenu : ButtonSam.Maui.Button
     {
         // image source
         public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(

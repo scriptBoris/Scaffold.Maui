@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Internal
 {
-    public partial class ImageTintHandler
+    internal partial class ImageTintHandler
     {
         private ImageTint Proxy => (ImageTint)VirtualView;
 

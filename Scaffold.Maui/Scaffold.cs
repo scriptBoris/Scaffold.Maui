@@ -157,7 +157,6 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     internal async void HardwareBackButtonInternal()
     {
-        //bool successAlert = await _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ);
         bool successAlert = await _zBufer.Pop();
         if (successAlert)
             return;

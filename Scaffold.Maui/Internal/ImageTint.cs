@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Internal
 {
-    public partial class ImageTintHandler : ImageHandler
+    internal partial class ImageTintHandler : ImageHandler
     {
     }
 
-    public class ImageTint : Image
+    internal class ImageTint : Image
     {
         // tint color
         public static readonly BindableProperty TintColorProperty = BindableProperty.Create(
