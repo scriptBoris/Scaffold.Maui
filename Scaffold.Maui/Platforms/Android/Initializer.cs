@@ -34,11 +34,12 @@ namespace Scaffold.Maui.Platforms.Android
                     int immersionLength = match.ImmestionLength();
                     if (immersionLength == 0)
                     {
+                        // close app
                         a.MoveTaskToBack(true);
                     }
                     else
                     {
-                        await match.HardwareBackButtonInternal();
+                        match.HardwareBackButtonInternal();
                     }
                 });
                 return true;

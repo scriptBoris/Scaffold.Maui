@@ -20,7 +20,7 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
 
     public int LayersCount => items.Count;
 
-    public async void AddLayer<T>(T layer, int zIndex) where T : View, IZBufferLayout
+    public async void AddLayer(IZBufferLayout layer, int zIndex)
     {
         IsVisible = true;
 
@@ -55,13 +55,14 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
         return true;
     }
 
-    public Task Pop()
+    public async Task<bool> Pop()
     {
         var last = items.LastOrDefault();
         if (last == null)
-            return Task.CompletedTask;
+            return false;
 
-        return RemoveLayerAsync(last);
+        await RemoveLayerAsync(last);
+        return true;
     }
 
     private async Task RemoveLayerAsync(LayerItem layerItem)
@@ -112,7 +113,7 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
 
     private class LayerItem : IDisposable
     {
-        public LayerItem(View view)
+        public LayerItem(IView view)
         {
             View = view;
 
@@ -120,7 +121,7 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
                 layout.DeatachLayer += OnViewDeatached;
         }
 
-        public View View { get; private set; }
+        public IView View { get; private set; }
         public required ZBuffer Buffer { get; set; }
         public required int Index { get; set; }
 

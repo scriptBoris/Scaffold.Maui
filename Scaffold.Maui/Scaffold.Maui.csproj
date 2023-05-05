@@ -25,10 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Internal\DisplayAlertLayer.xaml">
+	  <MauiXaml Update="Platforms\Android\DisplayAlertLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Internal\DisplayMenuItemslayer.xaml">
+	  <MauiXaml Update="Platforms\Android\DisplayMenuItemslayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Platforms\Android\NavigationBar.xaml">

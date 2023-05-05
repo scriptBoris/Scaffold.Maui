@@ -3,12 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
       xmlns:internal="clr-namespace:Scaffold.Maui.Internal"
-      BackgroundColor="Transparent"
-      x:Class="Scaffold.Maui.Internal.DisplayMenuItemslayer"
-      x:Name="root">
-    <Grid.GestureRecognizers>
-        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-    </Grid.GestureRecognizers>
+      x:Class="Scaffold.Maui.Platforms.Android.DisplayMenuItemslayer"
+      x:Name="root"
+      BackgroundColor="Transparent">
 
     <!--<Border WidthRequest="250"
             HeightRequest="130"

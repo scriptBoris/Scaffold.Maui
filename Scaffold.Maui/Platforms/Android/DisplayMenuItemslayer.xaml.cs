@@ -2,7 +2,7 @@ using Scaffold.Maui.Core;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Scaffold.Maui.Internal;
+namespace Scaffold.Maui.Platforms.Android;
 
 public partial class DisplayMenuItemslayer : IZBufferLayout
 {
@@ -13,8 +13,13 @@ public partial class DisplayMenuItemslayer : IZBufferLayout
     public DisplayMenuItemslayer(View view)
 	{
 		InitializeComponent();
+
         CommandSelectedMenu = new Command(ActionSelectedMenu);
         BindingContext = this;
+        GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() => Close().ConfigureAwait(false))
+        });
 
         var obs = ScaffoldView.GetMenuItems(view).CollapsedItems;
         BindableLayout.SetItemsSource(stackMenu, obs);
@@ -47,10 +52,5 @@ public partial class DisplayMenuItemslayer : IZBufferLayout
 
         await this.FadeTo(0, 180);
         DeatachLayer?.Invoke();
-    }
-
-    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
-    {
-        Close().ConfigureAwait(false);
     }
 }

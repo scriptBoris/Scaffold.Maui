@@ -14,12 +14,15 @@ namespace Scaffold.Maui.Internal
     [DebuggerDisplay($"View :: {{{nameof(ViewType)}}}")]
     internal class Frame : Layout, ILayoutManager, IFrame
     {
-        public Frame(View view)
+        private readonly ViewFactory _viewFactory;
+
+        public Frame(View view, ViewFactory viewFactory)
         {
+            _viewFactory = viewFactory;
             View = view;
             if (ScaffoldView.GetHasNavigationBar(view))
             {
-                NavigationBar = CreateNavigationBar(view);
+                NavigationBar = _viewFactory.CreateNavigationBar(view);
                 if (NavigationBar != null)
                     Children.Add(NavigationBar);
             }
@@ -124,15 +127,6 @@ namespace Scaffold.Maui.Internal
             }
         }
 
-        private INavigationBar? CreateNavigationBar(View view)
-        {
-#if ANDROID
-            return new Platforms.Android.NavigationBar(view);
-#else
-            return null;
-#endif
-        }
-
         internal void UpdateTitle(string? title)
         {
             if (NavigationBar != null)
@@ -145,7 +139,7 @@ namespace Scaffold.Maui.Internal
         {
             if (isVisible)
             {
-                NavigationBar = CreateNavigationBar(View);
+                NavigationBar = _viewFactory.CreateNavigationBar(View);
                 if (NavigationBar != null)
                     Children.Add(NavigationBar);
             }

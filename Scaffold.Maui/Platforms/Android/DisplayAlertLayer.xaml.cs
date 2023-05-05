@@ -1,8 +1,9 @@
+using Scaffold.Maui.Containers;
 using Scaffold.Maui.Core;
 
-namespace Scaffold.Maui.Internal;
+namespace Scaffold.Maui.Platforms.Android;
 
-public partial class DisplayAlertLayer : IZBufferLayout
+public partial class DisplayAlertLayer : IDisplayAlert
 {
     public event VoidDelegate? DeatachLayer;
 	private readonly TaskCompletionSource<bool> _taskCompletionSource = new();

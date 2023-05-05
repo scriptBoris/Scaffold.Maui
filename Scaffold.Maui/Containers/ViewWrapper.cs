@@ -1,17 +1,18 @@
 ﻿using Microsoft.Maui.Layouts;
+using Scaffold.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Core
+namespace Scaffold.Maui.Containers
 {
     public class ViewWrapper : Layout, ILayoutManager, IDisposable
     {
         public ViewWrapper(View view)
         {
-            this.View = view;
+            View = view;
             this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#343434"));
 
             view.BindingContextChanged += OnBindingContextChanged;
@@ -58,8 +59,8 @@ namespace Scaffold.Maui.Core
             switch (e.NavigationType)
             {
                 case NavigatingTypes.Push:
-                    this.Opacity = 0;
-                    this.TranslationX = 100;
+                    Opacity = 0;
+                    TranslationX = 100;
                     await Task.WhenAll(
                         this.FadeTo(1, ScaffoldView.AnimationTime),
                         this.TranslateTo(0, 0, ScaffoldView.AnimationTime, Easing.CubicOut)

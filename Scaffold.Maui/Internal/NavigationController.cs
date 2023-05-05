@@ -10,13 +10,13 @@ namespace Scaffold.Maui.Internal
 {
     internal class NavigationController
     {
-        private readonly Layout _layoutScaffold;
+        private readonly ScaffoldView _scaffold;
         private readonly List<Frame> _frames = new();
         private readonly ObservableCollection<View> _navigationStack = new();
 
-        public NavigationController(Layout layout)
+        public NavigationController(ScaffoldView layout)
         {
-            _layoutScaffold = layout;
+            _scaffold = layout;
             NavigationStack = new(_navigationStack);
             Frames = new ReadOnlyCollection<Frame>(_frames);
         }
@@ -25,43 +25,15 @@ namespace Scaffold.Maui.Internal
         public ReadOnlyObservableCollection<View> NavigationStack { get; private set; }
         public Frame? CurrentFrame => Frames.LastOrDefault();
 
-        //internal async Task<Frame> PushAsync(View view, bool isAnimated)
-        //{
-        //    var oldFrame = CurrentFrame;
-        //    if (oldFrame == null)
-        //        isAnimated = false;
-
-        //    var frame = new Frame(view);
-        //    _frames.Add(frame);
-        //    _layoutScaffold.Children.Insert(_layoutScaffold.Children.Count-1, frame);
-        //    _navigationStack.Add(view);
-
-        //    await frame.UpdateVisual(new NavigatingArgs
-        //    {
-        //        ActionType = IntentType.Push,
-        //        NewContent = view,
-        //        OldContent = oldFrame?.View,
-        //        IsAnimating = isAnimated,
-        //        HasBackButton = NavigationStack.Count > 1,
-        //    });
-
-        //    if (oldFrame != null)
-        //    {
-        //        oldFrame.IsVisible = false;
-        //    }
-
-        //    return frame;
-        //}
-
         internal async Task<Frame> PushAsync(View view, bool isAnimated, Frame? currentFrame = null, NavigatingTypes? intentType = null)
         {
             var oldFrame = currentFrame ?? CurrentFrame;
             if (oldFrame == null)
                 isAnimated = false;
 
-            var frame = new Frame(view);
+            var frame = new Frame(view, _scaffold.ViewFactory);
             _frames.Add(frame);
-            _layoutScaffold.Children.Insert(_layoutScaffold.Children.Count - 1, frame);
+            _scaffold.Children.Insert(_scaffold.Children.Count - 1, frame);
             _navigationStack.Add(view);
 
             await frame.UpdateVisual(new NavigatingArgs
@@ -106,7 +78,7 @@ namespace Scaffold.Maui.Internal
             });
 
             _frames.Remove(currentFrame);
-            _layoutScaffold.Children.Remove(currentFrame);
+            _scaffold.Children.Remove(currentFrame);
 
             return true;
         }
@@ -121,7 +93,7 @@ namespace Scaffold.Maui.Internal
             _frames.RemoveAt(oldIndex);
             _navigationStack.RemoveAt(oldIndex);
             await PushAsync(newView, isAnimated, frame, NavigatingTypes.Replace);
-            _layoutScaffold.Children.Remove(frame);
+            _scaffold.Children.Remove(frame);
             return true;
         }
 
@@ -133,7 +105,7 @@ namespace Scaffold.Maui.Internal
             var frame = Frames[index];
             _frames.RemoveAt(index);
             _navigationStack.RemoveAt(index);
-            _layoutScaffold.Children.Remove(frame);
+            _scaffold.Children.Remove(frame);
             return true;
         }
     }

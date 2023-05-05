@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace Scaffold.Maui.Core
 {
     public delegate void VoidDelegate();
-    public interface IZBufferLayout
+
+    public interface IZBufferLayout : IView
     {
         public event VoidDelegate? DeatachLayer;
         Task Show();

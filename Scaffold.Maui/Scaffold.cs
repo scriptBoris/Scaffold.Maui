@@ -138,6 +138,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
     public IScaffold? ProvideScaffold => _navigationController.CurrentFrame?.View as IScaffold;
+    public ViewFactory ViewFactory { get; set; } = new();
     private IBackButtonListener BackButtonListener => _navigationController.CurrentFrame?.View as IBackButtonListener ?? this;
 
     internal int ImmestionLength()
@@ -154,21 +155,17 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         return count;
     }
 
-    internal async Task<bool> HardwareBackButtonInternal()
+    internal async void HardwareBackButtonInternal()
     {
-        bool successAlert = await _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ);
+        //bool successAlert = await _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ);
+        bool successAlert = await _zBufer.Pop();
         if (successAlert)
-            return false;
+            return;
 
         bool canPop = await BackButtonListener.OnBackButton();
         if (canPop)
         {
             await PopAsync().ConfigureAwait(false);
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -183,18 +180,15 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     internal void ShowCollapsedMenusInternal(View view)
     {
-        this.Dispatcher.Dispatch(() => OnShowCollapsedMenus(view));
+        this.Dispatcher.Dispatch(() => {
+            var overlay = ViewFactory.CreateDisplayMenuItemslayer(view);
+            _zBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
+        });
     }
 
     public virtual Task<bool> OnBackButton()
     {
         return Task.FromResult(true);
-    }
-
-    protected virtual void OnShowCollapsedMenus(View view)
-    {
-        var overlay = new DisplayMenuItemslayer(view);
-        _zBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
     }
 
     protected override ILayoutManager CreateLayoutManager()
@@ -281,14 +275,14 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public async Task DisplayAlert(string title, string message, string cancel)
     {
-        var alert = new DisplayAlertLayer(title, message, cancel);
+        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         await alert.GetResult();
     }
 
     public async Task<bool> DisplayAlert(string title, string message, string ok, string cancel)
     {
-        var alert = new DisplayAlertLayer(title, message, ok, cancel);
+        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return await alert.GetResult();
     }
