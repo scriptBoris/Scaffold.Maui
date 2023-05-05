@@ -62,7 +62,7 @@
                     Padding="8"
                     TapColor="{AppThemeBinding Light=#DFFF, Dark=#DFFF}"
                     x:Name="buttonMenu">
-            <internal:ImageTint Source="ic_dots_horizontal.png"
+            <internal:ImageTint Source="ic_dots_vertical.png"
                                 HeightRequest="24"
                                 WidthRequest="24"
                                 TintColor="#FFF"/>

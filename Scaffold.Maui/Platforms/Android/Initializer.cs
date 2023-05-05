@@ -27,9 +27,24 @@ namespace Scaffold.Maui.Platforms.Android
                     match = Find(c.Content) as ScaffoldView;
             }
 
-            match?.HardwareBackButtonInternal();
+            if (match != null)
+            {
+                match.Dispatcher.Dispatch(async () =>
+                {
+                    int immersionLength = match.ImmestionLength();
+                    if (immersionLength == 0)
+                    {
+                        a.MoveTaskToBack(true);
+                    }
+                    else
+                    {
+                        await match.HardwareBackButtonInternal();
+                    }
+                });
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
         private static View? Find(View view)

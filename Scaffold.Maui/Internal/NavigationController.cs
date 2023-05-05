@@ -23,7 +23,7 @@ namespace Scaffold.Maui.Internal
 
         public ReadOnlyCollection<Frame> Frames { get; private set; }
         public ReadOnlyObservableCollection<View> NavigationStack { get; private set; }
-        private Frame? CurrentFrame => Frames.LastOrDefault();
+        public Frame? CurrentFrame => Frames.LastOrDefault();
 
         //internal async Task<Frame> PushAsync(View view, bool isAnimated)
         //{

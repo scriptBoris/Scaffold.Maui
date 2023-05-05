@@ -6,7 +6,6 @@ using Scaffold.Maui.Containers;
 using Scaffold.Maui.Core;
 using Scaffold.Maui.Internal;
 using System.Collections.ObjectModel;
-using Frame = Scaffold.Maui.Internal.Frame;
 
 namespace Scaffold.Maui;
 
@@ -14,6 +13,8 @@ public interface IScaffold
 {
     public const int MenuIndexZ = 998;
     public const int AlertIndexZ = 999;
+
+    ReadOnlyObservableCollection<View> NavigationStack { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
     Task<bool> PopAsync(bool isAnimated = true);
@@ -25,21 +26,21 @@ public interface IScaffold
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
 }
 
-public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
+public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IScaffoldProvider
 {
     public const ushort AnimationTime = 180;
     private readonly NavigationController _navigationController;
+    private readonly ZBuffer _zBufer;
 
     public ScaffoldView()
     {
         _navigationController = new(this);
-
-        ZBufer = new();
-        Children.Add(ZBufer);
+        _zBufer = new();
+        Children.Add(_zBufer);
     }
 
     #region bindable props
-    // vc context
+    // scaffold context
     public static readonly BindableProperty ScaffoldContextProperty = BindableProperty.CreateAttached(
         "ScaffoldContext",
         typeof(IScaffold),
@@ -135,40 +136,65 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
     }
     #endregion bindable props
 
-    public ZBuffer ZBufer { get; private set; }
+    public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
+    public IScaffold? ProvideScaffold => _navigationController.CurrentFrame?.View as IScaffold;
+    private IBackButtonListener BackButtonListener => _navigationController.CurrentFrame?.View as IBackButtonListener ?? this;
 
-    internal void HardwareBackButtonInternal()
+    internal int ImmestionLength()
     {
-        this.Dispatcher.Dispatch(HardwareBackButton);
+        int count = 0;
+        var scaffold = this as IScaffold;
+
+        while (scaffold != null)
+        {
+            count += Math.Max(scaffold.NavigationStack.Count - 1, 0);
+            scaffold = scaffold is IScaffoldProvider provider ? provider.ProvideScaffold : null;
+        }
+
+        return count;
+    }
+
+    internal async Task<bool> HardwareBackButtonInternal()
+    {
+        bool successAlert = await _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ);
+        if (successAlert)
+            return false;
+
+        bool canPop = await BackButtonListener.OnBackButton();
+        if (canPop)
+        {
+            await PopAsync().ConfigureAwait(false);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     internal void SoftwareBackButtonInternal()
     {
-        this.Dispatcher.Dispatch(SoftwareBackButton);
+        this.Dispatcher.Dispatch(async () => {
+            bool canPop = await BackButtonListener.OnBackButton();
+            if (canPop)
+                await PopAsync().ConfigureAwait(false);
+        });
     }
 
     internal void ShowCollapsedMenusInternal(View view)
     {
-        this.Dispatcher.Dispatch(() => ShowCollapsedMenus(view));
+        this.Dispatcher.Dispatch(() => OnShowCollapsedMenus(view));
     }
 
-    protected virtual async void HardwareBackButton()
+    public virtual Task<bool> OnBackButton()
     {
-        if (!await ZBufer.RemoveLayerAsync(IScaffold.MenuIndexZ))
-        {
-            await PopAsync(true);
-        }
+        return Task.FromResult(true);
     }
 
-    protected virtual void SoftwareBackButton()
-    {
-        PopAsync(true).ConfigureAwait(false);
-    }
-
-    protected virtual void ShowCollapsedMenus(View view)
+    protected virtual void OnShowCollapsedMenus(View view)
     {
         var overlay = new DisplayMenuItemslayer(view);
-        ZBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
+        _zBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
     }
 
     protected override ILayoutManager CreateLayoutManager()
@@ -181,7 +207,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
         foreach (var item in _navigationController.Frames)
             ((IView)item).Arrange(bounds);
 
-        ((IView)ZBufer).Arrange(bounds);
+        ((IView)_zBufer).Arrange(bounds);
 
         return bounds.Size;
     }
@@ -191,7 +217,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
         foreach (var item in _navigationController.Frames)
             ((IView)item).Measure(widthConstraint, heightConstraint);
 
-        ((IView)ZBufer).Measure(widthConstraint, heightConstraint);
+        ((IView)_zBufer).Measure(widthConstraint, heightConstraint);
 
         return new Size(widthConstraint, heightConstraint);
     }
@@ -204,7 +230,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
 
     public Task<bool> PopAsync(bool isAnimated = true)
     {
-        ZBufer.RemoveLayerAsync(IScaffold.MenuIndexZ).ConfigureAwait(true);
+        _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ).ConfigureAwait(true);
         return _navigationController.PopAsync(isAnimated);
     }
 
@@ -256,14 +282,14 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable
     public async Task DisplayAlert(string title, string message, string cancel)
     {
         var alert = new DisplayAlertLayer(title, message, cancel);
-        ZBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         await alert.GetResult();
     }
 
     public async Task<bool> DisplayAlert(string title, string message, string ok, string cancel)
     {
         var alert = new DisplayAlertLayer(title, message, ok, cancel);
-        ZBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return await alert.GetResult();
     }
 
