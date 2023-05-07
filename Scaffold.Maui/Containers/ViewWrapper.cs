@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Containers
 {
-    public class ViewWrapper : Layout, ILayoutManager, IDisposable
+    public class ViewWrapper : Layout, ILayoutManager, IDisposable, IViewWrapper
     {
+        private View? _overlay;
+
         public ViewWrapper(View view)
         {
             View = view;
@@ -23,6 +25,24 @@ namespace Scaffold.Maui.Containers
         }
 
         public View View { get; private set; }
+        public View? Overlay 
+        {
+            get => _overlay;
+            set 
+            {
+                if (_overlay != null)
+                {
+                    Children.Remove(_overlay);
+                }
+
+                _overlay = value;
+
+                if (_overlay != null)
+                {
+                    Children.Add(value);
+                }
+            } 
+        }
 
         protected override ILayoutManager CreateLayoutManager()
         {
@@ -31,12 +51,22 @@ namespace Scaffold.Maui.Containers
 
         public virtual Size ArrangeChildren(Rect bounds)
         {
-            return ((IView)View).Arrange(bounds);
+            ((IView)View).Arrange(bounds);
+
+            if (Overlay is IView overlay)
+                overlay.Arrange(bounds);
+
+            return bounds.Size;
         }
 
         public virtual Size Measure(double widthConstraint, double heightConstraint)
         {
-            return ((IView)View).Measure(widthConstraint, heightConstraint);
+            ((IView)View).Measure(widthConstraint, heightConstraint);
+
+            if (Overlay is IView overlay)
+                overlay.Measure(widthConstraint, heightConstraint);
+
+            return new Size(widthConstraint, heightConstraint);
         }
 
         private void OnBindingContextChanged(object? sender, EventArgs e)

@@ -50,6 +50,7 @@ namespace Scaffold.Maui.Toolkit
 
         public FlyoutView()
         {
+            ScaffoldView.SetHasNavigationBar(this, false);
             ColumnSpacing = 0;
             ColumnDefinitions = new ColumnDefinitionCollection
             {

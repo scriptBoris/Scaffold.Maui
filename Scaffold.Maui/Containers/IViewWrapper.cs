@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Containers
 {
-    public interface IFrame
+    public interface IViewWrapper
     {
-        INavigationBar? NavigationBar { get; }
-        IViewWrapper ViewWrapper { get; }
         View? Overlay { get; set; }
-
-        void DrawLayout();
+        View View { get; }
         Task UpdateVisual(NavigatingArgs args);
     }
 }

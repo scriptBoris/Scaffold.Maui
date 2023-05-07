@@ -21,19 +21,19 @@
         <scaffold:MenuItem Text="Retry 3"
                            ImageSource="refresh.png"
                            ImageColor="White"
-                           Mode="Collapsed"
+                           IsCollapsed="True"
                            Command="{Binding CommandRetry}"/>
 
         <scaffold:MenuItem Text="Retry 4"
                            ImageSource="refresh.png"
                            ImageColor="White"
-                           Mode="Collapsed"
+                           IsCollapsed="True"
                            Command="{Binding CommandRetry}"/>
         
         <scaffold:MenuItem Text="Retry 5"
                            ImageColor="White"
                            ImageSource="refresh.png"
-                           Mode="Collapsed"
+                           IsCollapsed="True"
                            Command="{Binding CommandRetry}"/>
     </scaffold:ScaffoldView.MenuItems>
 

@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Containers;
 
-public interface INavigationBar : IView, IDisposable
+public interface INavigationBar
 {
     string? Title { get; set; }
     Task UpdateVisual(NavigatingArgs args);
     void UpdateMenuItems(View view);
+    void UpdateNavigationBarVisible(bool visible);
     void UpdateBackButtonBehavior(IBackButtonBehavior? behavior);
 }
 

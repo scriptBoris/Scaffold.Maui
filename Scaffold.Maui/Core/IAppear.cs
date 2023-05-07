@@ -8,7 +8,11 @@ namespace Scaffold.Maui.Core
 {
     public interface IAppear
     {
-        void OnAppear();
-        void OnDisappear();
+        void OnAppear(bool isComplete);
+    }
+
+    public interface IDisappear
+    {
+        void OnDisappear(bool isComplete);
     }
 }

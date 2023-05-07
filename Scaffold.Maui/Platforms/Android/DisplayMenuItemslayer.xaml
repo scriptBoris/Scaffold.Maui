@@ -45,6 +45,7 @@
                     <sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
                                 TapCommandParameter="{Binding .}"
                                 CornerRadius="0"
+                                Padding="10"
                                 BackgroundColor="Transparent">
                         <HorizontalStackLayout Spacing="10">
                             <internal:ImageTint Source="{Binding ImageSource}"

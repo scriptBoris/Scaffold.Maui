@@ -7,7 +7,7 @@
       xmlns:scaffold="clr-namespace:Scaffold.Maui"
       x:Class="Scaffold.Maui.Platforms.Android.NavigationBar"
       x:DataType="local:NavigationBar"
-      BackgroundColor="{AppThemeBinding Dark=#171717, Light=#ee1d23}">
+      BackgroundColor="{AppThemeBinding Light=#ee1d23, Dark=#171717}">
     
     <StackLayout Orientation="Horizontal"
                  Spacing="0"
@@ -47,7 +47,7 @@
                     <internal:ButtonMenu VerticalOptions="Center"
                                          Text="{Binding Text}"
                                          TapColor="#DDFFFFFF"
-                                         ImageColor="{Binding ImageColor}"
+                                         ImageColor="#FFF"
                                          ImageSource="{Binding ImageSource}"
                                          TapCommand="{Binding Command}"/>
                 </DataTemplate>

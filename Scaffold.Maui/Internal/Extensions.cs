@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Scaffold.Maui.Containers;
+using Scaffold.Maui.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,40 @@ namespace Scaffold.Maui.Internal
 {
     internal static class Extensions
     {
+        public static void TryAppearing(this object obj, bool isComplete = false)
+        {
+            if (obj is IAppear ap)
+                ap.OnAppear(isComplete);
+            else if (obj is View view && view.BindingContext is IAppear ap2)
+                ap2.OnAppear(isComplete);
+        }
+
+        public static void TryDisappearing(this object obj, bool isComplete = false)
+        {
+            if (obj is IDisappear ap)
+                ap.OnDisappear(isComplete);
+            else if (obj is View view && view.BindingContext is IDisappear ap2)
+                ap2.OnDisappear(isComplete);
+        }
+
+        public static void TryAppearing(this IFrame frame, bool isComplete = false)
+        {
+            var view = frame.ViewWrapper.View;
+            if (view is IAppear ap)
+                ap.OnAppear(isComplete);
+            else if (view.BindingContext is IAppear ap2)
+                ap2.OnAppear(isComplete);
+        }
+
+        public static void TryDisappearing(this IFrame frame, bool isComplete = false)
+        {
+            var view = frame.ViewWrapper.View;
+            if (view is IDisappear ap)
+                ap.OnDisappear(isComplete);
+            else if (view.BindingContext is IDisappear ap2)
+                ap2.OnDisappear(isComplete);
+        }
+
         public static T? ItemOrDefault<T>(this IList<T> self, int index)
         {
             if (self.Count == 0)

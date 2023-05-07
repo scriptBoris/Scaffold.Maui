@@ -11,30 +11,55 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Internal
 {
-    [DebuggerDisplay($"View :: {{{nameof(ViewType)}}}")]
+    [DebuggerDisplay($"Frame :: {{{nameof(ViewType)}}}")]
     internal class Frame : Layout, ILayoutManager, IFrame
     {
         private readonly ViewFactory _viewFactory;
+        private readonly View _view;
+        private View? _overlay;
 
         public Frame(View view, ViewFactory viewFactory)
         {
             _viewFactory = viewFactory;
-            View = view;
-            if (ScaffoldView.GetHasNavigationBar(view))
-            {
-                NavigationBar = _viewFactory.CreateNavigationBar(view);
-                if (NavigationBar != null)
-                    Children.Add(NavigationBar);
-            }
+            _view = view;
 
-            ViewContainer = new(view);
-            Children.Add(ViewContainer);
+            DrawLayout();
+
+            ViewWrapper = viewFactory.CreateViewWrapper(view);
+            Children.Add((View)ViewWrapper);
         }
 
+        internal string ViewType => _view.GetType().Name;
         public INavigationBar? NavigationBar { get; private set; }
-        public ViewWrapper ViewContainer { get; private set; }
-        internal View View { get; private set; }
-        internal string ViewType => View.GetType().Name;
+        public IViewWrapper ViewWrapper { get; private set; }
+        public View? Overlay 
+        {
+            get => _overlay;
+            set
+            {
+                if (_overlay != null)
+                {
+                    _overlay.HandlerChanged -= Value_HandlerChanged;
+                    Children.Remove(_overlay);
+                }
+
+                _overlay = value;
+
+                if (_overlay != null)
+                {
+                    _overlay.HandlerChanged += Value_HandlerChanged;
+                    Children.Add(value);
+                }
+            }
+        }
+
+        private void Value_HandlerChanged(object? sender, EventArgs e)
+        {
+#if ANDROID
+            if (_overlay?.Handler?.PlatformView is Android.Views.View aview)
+                aview.Elevation = 5;
+#endif
+        }
 
         public Size ArrangeChildren(Rect bounds)
         {
@@ -45,10 +70,15 @@ namespace Scaffold.Maui.Internal
                 bar.Arrange(new Rect(0, 0, bounds.Width, bar.DesiredSize.Height));
             }
 
-            if (ViewContainer is IView view)
+            if (ViewWrapper is IView view)
             {
                 double h = bounds.Height - offsetY;
                 view.Arrange(new Rect(0, offsetY, bounds.Width, h));
+            }
+
+            if (Overlay is IView overlay)
+            {
+                overlay.Arrange(bounds);
             }
 
             return bounds.Size;
@@ -64,9 +94,14 @@ namespace Scaffold.Maui.Internal
                 freeH -= m.Height;
             }
 
-            if (ViewContainer is IView view) 
+            if (ViewWrapper is IView view) 
             {
                 view.Measure(widthConstraint, freeH);
+            }
+
+            if (Overlay is IView overlay)
+            {
+                overlay.Measure(widthConstraint, heightConstraint);
             }
 
             return new Size(widthConstraint, heightConstraint);
@@ -77,15 +112,34 @@ namespace Scaffold.Maui.Internal
             return this;
         }
 
-        internal async Task UpdateVisual(NavigatingArgs e)
+        public void DrawLayout()
         {
-            var tasks = new List<Task>();
-            tasks.Add(CommonAnimation(e));
+            bool oldIsVisible = NavigationBar != null;
+            bool isVisible = ScaffoldView.GetHasNavigationBar(_view);
+            if (oldIsVisible != isVisible)
+            {
+                if (isVisible)
+                {
+                    NavigationBar = _viewFactory.CreateNavigationBar(_view);
+                    if (NavigationBar != null)
+                        Children.Add((View)NavigationBar);
+                }
+                else
+                {
+                    Children.Remove(NavigationBar as View);
+                    NavigationBar = null;
+                }
+            }
+        }
+
+        public async Task UpdateVisual(NavigatingArgs e)
+        {
+            var tasks = new List<Task> { CommonAnimation(e) };
 
             if (NavigationBar != null)
                 tasks.Add(NavigationBar.UpdateVisual(e));
 
-            tasks.Add(ViewContainer.UpdateVisual(e));
+            tasks.Add(ViewWrapper.UpdateVisual(e));
             await Task.WhenAll(tasks);
         }
 
@@ -124,29 +178,6 @@ namespace Scaffold.Maui.Internal
                     default:
                         break;
                 }
-            }
-        }
-
-        internal void UpdateTitle(string? title)
-        {
-            if (NavigationBar != null)
-            {
-                NavigationBar.Title = title;
-            }
-        }
-
-        internal void UpdateNavigationBarVisible(bool isVisible)
-        {
-            if (isVisible)
-            {
-                NavigationBar = _viewFactory.CreateNavigationBar(View);
-                if (NavigationBar != null)
-                    Children.Add(NavigationBar);
-            }
-            else
-            {
-                Children.Remove(NavigationBar);
-                NavigationBar = null;
             }
         }
     }

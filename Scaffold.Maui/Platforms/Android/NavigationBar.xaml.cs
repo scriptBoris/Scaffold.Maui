@@ -34,6 +34,14 @@ public partial class NavigationBar : INavigationBar
         }
     }
 
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        if (this.Handler?.PlatformView is global::Android.Views.View aview)
+            aview.Elevation = 4;
+    }
+
     private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         UpdateMenuItems(_view);
@@ -98,6 +106,11 @@ public partial class NavigationBar : INavigationBar
 
         BindableLayout.SetItemsSource(stackMenu, itemObs.VisibleItems);
         buttonMenu.IsVisible = colapseVisible;
+    }
+
+    public void UpdateNavigationBarVisible(bool visible)
+    {
+        IsVisible = visible;
     }
 
     private void UpdateBackButtonVisual(bool defaultVisible)

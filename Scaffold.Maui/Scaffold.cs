@@ -2,14 +2,13 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Layouts;
 using Microsoft.Maui.LifecycleEvents;
-using Scaffold.Maui.Containers;
 using Scaffold.Maui.Core;
 using Scaffold.Maui.Internal;
 using System.Collections.ObjectModel;
 
 namespace Scaffold.Maui;
 
-public interface IScaffold
+public interface IScaffold : IScaffoldProvider
 {
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
@@ -22,12 +21,13 @@ public interface IScaffold
     Task<bool> PopToRootAsync(bool isAnimated = true);
     Task<bool> RemoveView(View view, bool isAnimated = true);
     Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true);
+    Task<bool> InsertView(View view, int index, bool isAnimated = true);
 
     Task DisplayAlert(string title, string message, string cancel);
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
 }
 
-public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IScaffoldProvider
+public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener
 {
     public const ushort AnimationTime = 180;
     private readonly NavigationController _navigationController;
@@ -71,10 +71,15 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         {
             if (GetScaffoldContext(b) is ScaffoldView scaffold)
             {
-                scaffold._navigationController
-                .Frames
-                .FirstOrDefault(x => x.View == b)?
-                .UpdateTitle(n as string);
+                var navBar = scaffold
+                    ._navigationController
+                    .Frames
+                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .NavigationBar;
+
+                if (navBar != null)
+                    navBar.Title = n as string;
+                //.UpdateTitle(n as string);
             }
         }
     );
@@ -97,10 +102,13 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         {
             if (GetScaffoldContext(b) is ScaffoldView scaffold)
             {
-                scaffold._navigationController
-                .Frames
-                .FirstOrDefault(x => x.View == b)?
-                .UpdateNavigationBarVisible((bool)n);
+                scaffold
+                    ._navigationController
+                    .Frames
+                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .DrawLayout();
+                    //.NavigationBar?
+                    //.UpdateNavigationBarVisible((bool)n);
             }
         }
     );
@@ -127,11 +135,12 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         {
             if (GetScaffoldContext(b) is ScaffoldView context)
             {
-                context._navigationController
-                .Frames
-                .FirstOrDefault(x => x.View == b)?
-                .NavigationBar?
-                .UpdateMenuItems((View)b);
+                context
+                    ._navigationController
+                    .Frames
+                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .NavigationBar?
+                    .UpdateMenuItems((View)b);
             }
         }
     );
@@ -139,20 +148,33 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     {
         return (MenuItemObs)b.GetValue(MenuItemsProperty);
     }
+
+    public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
+        nameof(ViewFactory),
+        typeof(ViewFactory),
+        typeof(ScaffoldView),
+        new ViewFactory()
+    );
+    public ViewFactory ViewFactory
+    {
+        get => (ViewFactory)GetValue(ViewFactoryProperty);  
+        set => SetValue(ViewFactoryProperty, value);
+    }
+    //public ViewFactory ViewFactory { get; set; } = new();
+
     #endregion bindable props
 
     #region props
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
-    public ViewFactory ViewFactory { get; set; } = new();
     public Thickness SafeArea { get; private set; }
     public IScaffold? ProvideScaffold
     {
         get 
         {
-            if (_navigationController.CurrentFrame?.View is IScaffold sc)
+            if (_navigationController.CurrentFrame?.ViewWrapper.View is IScaffold sc)
                 return sc;
 
-            if (_navigationController.CurrentFrame?.View is IScaffoldProvider provider)
+            if (_navigationController.CurrentFrame?.ViewWrapper.View is IScaffoldProvider provider)
                 return provider.ProvideScaffold;
 
             return null;
@@ -174,7 +196,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     {
         get 
         {
-            return _navigationController.CurrentFrame?.View as IBackButtonListener ?? this; 
+            return _navigationController.CurrentFrame?.ViewWrapper.View as IBackButtonListener ?? this; 
         }
     }
     #endregion props
@@ -239,18 +261,38 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public Size ArrangeChildren(Rect bounds)
     {
-        foreach (var item in _navigationController.Frames)
-            ((IView)item).Arrange(bounds);
+        //var rect = new Rect(0, 0, cacheW, cacheH);
+
+        //foreach (var item in _navigationController.Frames)
+        //    ((IView)item).Arrange(bounds);
+
+        //((IView)_zBufer).Arrange(bounds);
+
+        if (_navigationController.CurrentFrame is IView frame)
+            frame.Arrange(bounds);
 
         ((IView)_zBufer).Arrange(bounds);
 
         return bounds.Size;
     }
 
+    //double cacheW = 0;
+    //double cacheH = 0;
+
     public Size Measure(double widthConstraint, double heightConstraint)
     {
-        foreach (var item in _navigationController.Frames)
-            ((IView)item).Measure(widthConstraint, heightConstraint);
+        //if (cacheW == widthConstraint && cacheH == heightConstraint)
+        //    return new Size(widthConstraint, heightConstraint);
+
+        //cacheW = widthConstraint;
+        //cacheH = heightConstraint;
+
+        //foreach (var item in _navigationController.Frames)
+        //    ((IView)item).Measure(widthConstraint, heightConstraint);
+
+        // new
+        if (_navigationController.CurrentFrame is IView frame)
+            frame.Measure(widthConstraint, heightConstraint);
 
         ((IView)_zBufer).Measure(widthConstraint, heightConstraint);
 
@@ -312,6 +354,11 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
             return false;
 
         return await _navigationController.ReplaceAsync(oldView, newView, isAnimated);
+    }
+
+    public Task<bool> InsertView(View view, int index, bool isAnimated = true)
+    {
+        return _navigationController.InsertView(view, index, isAnimated);
     }
 
     public async Task DisplayAlert(string title, string message, string cancel)

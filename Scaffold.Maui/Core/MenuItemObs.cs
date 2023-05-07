@@ -60,7 +60,7 @@ public class MenuItemObs : ObservableCollection<MenuItem>
             if (!item.IsVisible)
                 continue;
 
-            if (item.Mode == MenuItemModes.Default && VisibleItems.Count < 3)
+            if (!item.IsCollapsed && VisibleItems.Count < 3)
             {
                 VisibleItems.Add(item);
             }

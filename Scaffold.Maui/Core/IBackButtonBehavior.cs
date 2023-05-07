@@ -9,10 +9,6 @@ namespace Scaffold.Maui.Core
 {
     public interface IBackButtonBehavior
     {
-        //Action? OverrideBackButtonAction { get; }
-        //Func<bool>? BackButtonVisibility { get; }
-        //Func<ImageSource>? BackButtonIcon { get; }
-
         bool? OverrideBackButtonAction(IScaffold context);
         bool? OverrideBackButtonVisibility(IScaffold context);
         ImageSource? OverrideBackButtonIcon(IScaffold context);

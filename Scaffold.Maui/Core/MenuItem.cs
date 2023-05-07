@@ -65,22 +65,22 @@ public class MenuItem : BindableObject
         set => SetValue(CommandProperty, value);
     }
 
-    // mode
-    public static readonly BindableProperty ModeProperty = BindableProperty.Create(
-        nameof(Mode),
-        typeof(MenuItemModes),
+    // is collapsed
+    public static readonly BindableProperty IsCollapsedProperty = BindableProperty.Create(
+        nameof(IsCollapsed),
+        typeof(bool),
         typeof(MenuItem),
-        MenuItemModes.Default,
+        false,
         propertyChanged: (b, o, n) =>
         {
             if (b is MenuItem self)
                 self.Update();
         }
     );
-    public MenuItemModes Mode
+    public bool IsCollapsed
     {
-        get => (MenuItemModes)GetValue(ModeProperty);
-        set => SetValue(ModeProperty, value);
+        get => (bool)GetValue(IsCollapsedProperty);
+        set => SetValue(IsCollapsedProperty, value);
     }
 
     // is visible
@@ -115,12 +115,7 @@ public class MenuItem : BindableObject
     }
 }
 
-public enum MenuItemModes
-{
-    Default,
-    Collapsed,
-}
-
+// todo delete?
 internal class MenuItemProxy : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;

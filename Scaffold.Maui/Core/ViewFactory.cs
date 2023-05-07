@@ -1,4 +1,6 @@
-﻿using Scaffold.Maui.Containers;
+﻿using Microsoft.Maui.Controls;
+using Scaffold.Maui.Containers;
+using Scaffold.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,25 @@ namespace Scaffold.Maui.Core
 {
     public class ViewFactory
     {
+        public virtual IFrame CreateFrame(View view)
+        {
+            return new Internal.Frame(view, this);
+        }
+
+        public virtual INavigationBar? CreateNavigationBar(View view)
+        {
+#if ANDROID
+            return new Platforms.Android.NavigationBar(view);
+#else
+            return null;
+#endif
+        }
+
+        public virtual IViewWrapper CreateViewWrapper(View view)
+        {
+            return new ViewWrapper(view);
+        }
+
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok)
         {
 #if ANDROID
@@ -33,15 +54,6 @@ namespace Scaffold.Maui.Core
             return new Scaffold.Maui.Platforms.Android.DisplayMenuItemslayer(view);
 #else
             throw new NotImplementedException();
-#endif
-        }
-
-        public virtual INavigationBar? CreateNavigationBar(View view)
-        {
-#if ANDROID
-            return new Platforms.Android.NavigationBar(view);
-#else
-            return null;
 #endif
         }
     }

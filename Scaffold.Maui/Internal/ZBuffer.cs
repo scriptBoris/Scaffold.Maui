@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scaffold.Maui.Core;
-using Scaffold.Maui.Internal;
 
-namespace Scaffold.Maui.Containers;
+namespace Scaffold.Maui.Internal;
 
-public class ZBuffer : Layout, ILayoutManager, IDisposable
+internal class ZBuffer : Layout, ILayoutManager, IDisposable
 {
     private readonly List<LayerItem> items = new();
 
@@ -39,10 +38,9 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
         });
         Children.Add(layer);
 
+        layer.TryAppearing();
         await layer.Show();
-
-        if (layer is IAppear appear)
-            appear.OnAppear();
+        layer.TryAppearing(true);
     }
 
     public async Task<bool> RemoveLayerAsync(int zIndex)
@@ -69,14 +67,15 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
     {
         items.Remove(layerItem);
 
+        layerItem.View.TryDisappearing();
+
         if (layerItem.View is IZBufferLayout layout)
             await layout.Close();
 
-        if (layerItem.View is IAppear av)
-            av.OnDisappear();
+        layerItem.View.TryDisappearing(true);
 
-        layerItem.Dispose();
         Children.Remove(layerItem.View);
+        layerItem.Dispose();
 
         if (items.Count == 0)
             IsVisible = false;
@@ -85,7 +84,7 @@ public class ZBuffer : Layout, ILayoutManager, IDisposable
     public Size ArrangeChildren(Rect bounds)
     {
         foreach (var item in items)
-            ((IView)item.View).Arrange(bounds);
+            item.View.Arrange(bounds);
 
         return bounds.Size;
     }
