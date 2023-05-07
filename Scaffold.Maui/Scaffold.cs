@@ -11,9 +11,10 @@ namespace Scaffold.Maui;
 
 public interface IScaffold
 {
-    public const int MenuIndexZ = 998;
+    public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
 
+    Thickness SafeArea { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
@@ -31,9 +32,13 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     public const ushort AnimationTime = 180;
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
+    private IBackButtonBehavior? _backButtonBehavior;
 
     public ScaffoldView()
     {
+#if ANDROID
+        SafeArea = Scaffold.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
+#endif
         _navigationController = new(this);
         _zBufer = new();
         Children.Add(_zBufer);
@@ -126,7 +131,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
                 .Frames
                 .FirstOrDefault(x => x.View == b)?
                 .NavigationBar?
-                .UpdateMenu((View)b);
+                .UpdateMenuItems((View)b);
             }
         }
     );
@@ -136,10 +141,43 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     }
     #endregion bindable props
 
+    #region props
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
-    public IScaffold? ProvideScaffold => _navigationController.CurrentFrame?.View as IScaffold;
     public ViewFactory ViewFactory { get; set; } = new();
-    private IBackButtonListener BackButtonListener => _navigationController.CurrentFrame?.View as IBackButtonListener ?? this;
+    public Thickness SafeArea { get; private set; }
+    public IScaffold? ProvideScaffold
+    {
+        get 
+        {
+            if (_navigationController.CurrentFrame?.View is IScaffold sc)
+                return sc;
+
+            if (_navigationController.CurrentFrame?.View is IScaffoldProvider provider)
+                return provider.ProvideScaffold;
+
+            return null;
+        }
+    }
+
+    public IBackButtonBehavior? BackButtonBehavior 
+    {
+        get => _backButtonBehavior;
+        set
+        {
+            _backButtonBehavior = value;
+            foreach (var item in _navigationController.Frames)
+                item.NavigationBar?.UpdateBackButtonBehavior(value);
+        } 
+    }
+
+    private IBackButtonListener BackButtonListener
+    {
+        get 
+        {
+            return _navigationController.CurrentFrame?.View as IBackButtonListener ?? this; 
+        }
+    }
+    #endregion props
 
     internal int ImmestionLength()
     {
@@ -157,14 +195,18 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     internal async void HardwareBackButtonInternal()
     {
-        bool successAlert = await _zBufer.Pop();
+        var iscaffold = ProvideScaffold ?? this;
+        if (iscaffold is not ScaffoldView scaffold)
+            return;
+
+        bool successAlert = await scaffold._zBufer.Pop();
         if (successAlert)
             return;
 
-        bool canPop = await BackButtonListener.OnBackButton();
+        bool canPop = await scaffold.BackButtonListener.OnBackButton();
         if (canPop)
         {
-            await PopAsync().ConfigureAwait(false);
+            await scaffold.PopAsync().ConfigureAwait(false);
         }
     }
 
@@ -181,7 +223,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     {
         this.Dispatcher.Dispatch(() => {
             var overlay = ViewFactory.CreateDisplayMenuItemslayer(view);
-            _zBufer.AddLayer(overlay, IScaffold.MenuIndexZ);
+            _zBufer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
         });
     }
 
@@ -223,7 +265,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public Task<bool> PopAsync(bool isAnimated = true)
     {
-        _zBufer.RemoveLayerAsync(IScaffold.MenuIndexZ).ConfigureAwait(true);
+        _zBufer.RemoveLayerAsync(IScaffold.MenuItemsIndexZ).ConfigureAwait(true);
         return _navigationController.PopAsync(isAnimated);
     }
 

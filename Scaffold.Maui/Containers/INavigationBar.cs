@@ -11,7 +11,8 @@ public interface INavigationBar : IView, IDisposable
 {
     string? Title { get; set; }
     Task UpdateVisual(NavigatingArgs args);
-    void UpdateMenu(View view);
+    void UpdateMenuItems(View view);
+    void UpdateBackButtonBehavior(IBackButtonBehavior? behavior);
 }
 
 

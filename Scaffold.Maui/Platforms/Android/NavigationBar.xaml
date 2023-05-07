@@ -7,12 +7,12 @@
       xmlns:scaffold="clr-namespace:Scaffold.Maui"
       x:Class="Scaffold.Maui.Platforms.Android.NavigationBar"
       x:DataType="local:NavigationBar"
-      BackgroundColor="{AppThemeBinding Dark=#171717, Light=#ee1d23}"
-      HeightRequest="56">
+      BackgroundColor="{AppThemeBinding Dark=#171717, Light=#ee1d23}">
     
     <StackLayout Orientation="Horizontal"
                  Spacing="0"
-                 Margin="7,0">
+                 Margin="7,0"
+                 HeightRequest="56">
         <!--back button-->
         <sam:Button BackgroundColor="Transparent"
                     VerticalOptions="Center"
@@ -25,7 +25,8 @@
             <internal:ImageTint Source="ic_arrow_left.png"
                                 TintColor="#FFF"
                                 HeightRequest="24"
-                                WidthRequest="24"/>
+                                WidthRequest="24"
+                                x:Name="imageBackButton"/>
         </sam:Button>
 
         <Label FontSize="22"

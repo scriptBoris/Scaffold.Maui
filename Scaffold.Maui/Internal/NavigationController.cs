@@ -32,6 +32,8 @@ namespace Scaffold.Maui.Internal
                 isAnimated = false;
 
             var frame = new Frame(view, _scaffold.ViewFactory);
+            frame.NavigationBar?.UpdateBackButtonBehavior(_scaffold.BackButtonBehavior);
+
             _frames.Add(frame);
             _scaffold.Children.Insert(_scaffold.Children.Count - 1, frame);
             _navigationStack.Add(view);
@@ -43,6 +45,7 @@ namespace Scaffold.Maui.Internal
                 OldContent = oldFrame?.View,
                 IsAnimating = isAnimated,
                 HasBackButton = NavigationStack.Count > 1,
+                SafeArea = _scaffold.SafeArea,
             });
 
             if (oldFrame != null)
@@ -75,6 +78,7 @@ namespace Scaffold.Maui.Internal
                 OldContent = currentFrame.View,
                 IsAnimating = isAnimated,
                 HasBackButton = hasBackButton,
+                SafeArea = _scaffold.SafeArea,
             });
 
             _frames.Remove(currentFrame);

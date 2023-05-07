@@ -13,7 +13,7 @@ namespace Scaffold.Maui
         public static MauiAppBuilder UseViewCarrier(this MauiAppBuilder builder)
         {
 #if ANDROID
-            Platforms.Android.Initializer.Init(builder);
+            Platforms.Android.ScaffoldAndroid.Init(builder);
 #endif
 
             builder.ConfigureMauiHandlers(h =>

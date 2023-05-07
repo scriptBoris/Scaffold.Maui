@@ -22,6 +22,7 @@
 	  <None Remove="Resources\Images\ic_arrow_left.svg" />
 	  <None Remove="Resources\Images\ic_dots_horizontal.svg" />
 	  <None Remove="Resources\Images\ic_dots_vertical.svg" />
+	  <None Remove="Resources\Images\ic_scaffold_menu.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,6 +45,7 @@
 	  <MauiImage Include="Resources\Images\ic_arrow_left.svg" />
 	  <MauiImage Include="Resources\Images\ic_dots_horizontal.svg" />
 	  <MauiImage Include="Resources\Images\ic_dots_vertical.svg" />
+	  <MauiImage Include="Resources\Images\ic_scaffold_menu.svg" />
 	</ItemGroup>
 
 </Project>

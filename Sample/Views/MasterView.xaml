@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:scaffold="clr-namespace:Scaffold.Maui;assembly=Scaffold.Maui"
-             x:Class="Sample.Views.MasterView"
-             scaffold:ScaffoldView.Title="Master view"
-             Padding="10">
-    <Label Text="Master view"/>
-</ContentView>
+<toolkit:FlyoutView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:scaffold="clr-namespace:Scaffold.Maui;assembly=Scaffold.Maui"
+    xmlns:toolkit="clr-namespace:Scaffold.Maui.Toolkit;assembly=Scaffold.Maui"
+    xmlns:local="clr-namespace:Sample.Views"
+    x:Class="Sample.Views.MasterView"
+    x:DataType="local:MasterView"
+    scaffold:ScaffoldView.Title="Master view"
+    scaffold:ScaffoldView.HasNavigationBar="False">
+    <StackLayout Padding="5">
+        <Button Text="Home"
+                Command="{Binding CommandSelectMenu}"
+                CommandParameter="0"/>
+    </StackLayout>
+</toolkit:FlyoutView>

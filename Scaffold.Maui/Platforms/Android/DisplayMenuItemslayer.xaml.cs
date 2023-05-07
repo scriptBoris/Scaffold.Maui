@@ -13,7 +13,7 @@ public partial class DisplayMenuItemslayer : IZBufferLayout
     public DisplayMenuItemslayer(View view)
 	{
 		InitializeComponent();
-
+        this.Padding = view.GetContext()?.SafeArea ?? new Thickness();
         CommandSelectedMenu = new Command(ActionSelectedMenu);
         BindingContext = this;
         GestureRecognizers.Add(new TapGestureRecognizer
