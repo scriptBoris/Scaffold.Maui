@@ -21,6 +21,7 @@
 		<Version>0.9.0-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
+		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
