@@ -199,7 +199,13 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     {
         get 
         {
-            return _navigationController.CurrentFrame?.ViewWrapper.View as IBackButtonListener ?? this; 
+            var last = _navigationController.CurrentFrame?.ViewWrapper.View;
+            if (last is IBackButtonListener v)
+                return v;
+            else if (last?.BindingContext is IBackButtonListener vm)
+                return vm;
+
+            return this; 
         }
     }
     #endregion props
@@ -209,7 +215,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Remove:
-                var view = e.OldItems[0] as View;
+                var view = e.OldItems![0] as View;
 
                 if (view is IRemovedFromNavigation v)
                     v.OnRemovedFromNavigation();
