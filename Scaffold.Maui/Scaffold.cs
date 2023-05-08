@@ -5,6 +5,7 @@ using Microsoft.Maui.LifecycleEvents;
 using Scaffold.Maui.Core;
 using Scaffold.Maui.Internal;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Scaffold.Maui;
 
@@ -40,6 +41,8 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         SafeArea = Scaffold.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
 #endif
         _navigationController = new(this);
+
+        ((INotifyCollectionChanged)_navigationController.NavigationStack).CollectionChanged += NavigationStackChanged;
         _zBufer = new();
         Children.Add(_zBufer);
     }
@@ -200,6 +203,23 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         }
     }
     #endregion props
+
+    private void NavigationStackChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Remove:
+                var view = e.OldItems[0] as View;
+
+                if (view is IRemovedFromNavigation v)
+                    v.OnRemovedFromNavigation();
+                else if (view?.BindingContext is IRemovedFromNavigation vm)
+                    vm.OnRemovedFromNavigation();
+                break;
+            default:
+                break;
+        }
+    }
 
     internal int ImmestionLength()
     {
