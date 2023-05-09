@@ -6,20 +6,6 @@
       x:Class="Scaffold.Maui.Platforms.Android.DisplayMenuItemslayer"
       x:Name="root"
       BackgroundColor="Transparent">
-
-    <!--<Border WidthRequest="250"
-            HeightRequest="130"
-            TranslationX="-25"
-            TranslationY="35"
-            VerticalOptions="Start"
-            HorizontalOptions="End">
-        <Border.Shadow>
-            <Shadow Brush="black"
-                    Offset="-10,0"
-                    Radius="20"
-                    Opacity="0.4"/>
-        </Border.Shadow>
-    </Border>-->
     
     <Border StrokeShape="RoundRectangle 8"
             StrokeThickness="0"
