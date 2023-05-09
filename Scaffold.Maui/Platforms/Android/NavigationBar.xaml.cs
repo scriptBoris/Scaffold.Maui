@@ -49,7 +49,7 @@ public partial class NavigationBar : INavigationBar
 
     private void OnBackButton()
     {
-        if (backButtonBehavior?.OverrideBackButtonAction(_context) == true)
+        if (backButtonBehavior?.OverrideSoftwareBackButtonAction(_context) == true)
             return;
 
         if (_context is ScaffoldView scaffold)

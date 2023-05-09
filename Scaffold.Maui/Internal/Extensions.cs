@@ -65,5 +65,41 @@ namespace Scaffold.Maui.Internal
             });
             return tsc.Task;
         }
+
+        public static async Task<IViewHandler> AwaitHandler(this View view)
+        {
+            if (view.Handler != null)
+                return view.Handler;
+
+            var tsc = new TaskCompletionSource<IViewHandler>();
+            void eventDelegate(object? sender, EventArgs e)
+            {
+                tsc.TrySetResult(view.Handler!);
+            }
+
+            view.HandlerChanged += eventDelegate;
+            var handler = await tsc.Task;
+            view.HandlerChanged -= eventDelegate;
+
+//#if ANDROID
+//            if (handler.PlatformView is Android.Views.View aview)
+//            {
+//                var tsc2 = new TaskCompletionSource<bool>();
+
+//                if (aview.IsAttachedToWindow)
+//                {
+
+//                }
+
+//                void argEnd(object? sender, Android.Views.View.ViewAttachedToWindowEventArgs args)
+//                {
+//                    tsc2.TrySetResult(true);
+//                }
+//                aview.ViewAttachedToWindow += argEnd;
+//                await tsc2.Task;
+//            }
+//#endif
+            return handler;
+        }
     }
 }

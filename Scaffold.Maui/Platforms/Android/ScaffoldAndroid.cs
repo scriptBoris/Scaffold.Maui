@@ -22,30 +22,47 @@ namespace Scaffold.Maui.Platforms.Android
 
         private static bool OnBackPressed(Activity a)
         {
-            ScaffoldView? match = null;
+            ScaffoldView? rootScaffold = null;
             var mp = global::Microsoft.Maui.Controls.Application.Current?.MainPage;
             if (mp is ContentPage c)
             {
                 if (c.Content is ScaffoldView cv)
-                    match = cv;
+                    rootScaffold = cv;
                 else
-                    match = Find(c.Content) as ScaffoldView;
+                    rootScaffold = Find(c.Content) as ScaffoldView;
             }
 
-            if (match != null)
+            if (rootScaffold != null)
             {
-                match.Dispatcher.Dispatch(() =>
+                rootScaffold.Dispatcher.Dispatch(async () =>
                 {
-                    int immersionLength = match.ImmestionLength();
-                    if (immersionLength == 0)
+                    var nested = rootScaffold
+                        .GetScafoldNested()
+                        .Reverse()
+                        .ToArray();
+
+                    foreach (var item in nested)
                     {
-                        // close app
-                        a.MoveTaskToBack(true);
+                        if (item is not ScaffoldView scaffold)
+                            continue;
+
+                        if (scaffold.ZBuffer.Pop())
+                            return;
                     }
-                    else
+
+                    foreach (var item in nested)
                     {
-                        match.HardwareBackButtonInternal();
+                        if (item is not ScaffoldView scaffold)
+                            continue;
+
+                        if (scaffold.BackButtonBehavior?.OverrideHardwareBackButtonAction(item) == true)
+                            return;
+
+                        if (await scaffold.HardwareBackButtonInternal())
+                            return;
                     }
+
+                    a.MoveTaskToBack(true);
                 });
                 return true;
             }

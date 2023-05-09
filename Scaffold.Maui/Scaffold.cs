@@ -195,6 +195,8 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         } 
     }
 
+    internal ZBuffer ZBuffer => _zBufer;
+
     private IBackButtonListener BackButtonListener
     {
         get 
@@ -241,21 +243,33 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         return count;
     }
 
-    internal async void HardwareBackButtonInternal()
+    internal IScaffold[] GetScafoldNested()
     {
-        var iscaffold = ProvideScaffold ?? this;
-        if (iscaffold is not ScaffoldView scaffold)
-            return;
+        var list = new List<IScaffold> { this };
+        var scaffold = this as IScaffold;
 
-        bool successAlert = await scaffold._zBufer.Pop();
-        if (successAlert)
-            return;
-
-        bool canPop = await scaffold.BackButtonListener.OnBackButton();
-        if (canPop)
+        while (scaffold != null)
         {
-            await scaffold.PopAsync().ConfigureAwait(false);
+            //count += Math.Max(scaffold.NavigationStack.Count - 1, 0);
+            scaffold = scaffold is IScaffoldProvider provider ? provider.ProvideScaffold : null;
+            if (scaffold != null)
+                list.Add(scaffold);
         }
+
+        return list.ToArray();
+    }
+
+    internal async Task<bool> HardwareBackButtonInternal()
+    {
+        var current = _navigationController.CurrentFrame?.ViewWrapper.View;
+        if (current == null)
+            return true;
+
+        bool canPop = await BackButtonListener.OnBackButton();
+        if (canPop)
+            return await RemoveView(current, true);
+        else
+            return false;
     }
 
     internal void SoftwareBackButtonInternal()
@@ -287,13 +301,6 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public Size ArrangeChildren(Rect bounds)
     {
-        //var rect = new Rect(0, 0, cacheW, cacheH);
-
-        //foreach (var item in _navigationController.Frames)
-        //    ((IView)item).Arrange(bounds);
-
-        //((IView)_zBufer).Arrange(bounds);
-
         if (_navigationController.CurrentFrame is IView frame)
             frame.Arrange(bounds);
 
@@ -302,20 +309,8 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         return bounds.Size;
     }
 
-    //double cacheW = 0;
-    //double cacheH = 0;
-
     public Size Measure(double widthConstraint, double heightConstraint)
     {
-        //if (cacheW == widthConstraint && cacheH == heightConstraint)
-        //    return new Size(widthConstraint, heightConstraint);
-
-        //cacheW = widthConstraint;
-        //cacheH = heightConstraint;
-
-        //foreach (var item in _navigationController.Frames)
-        //    ((IView)item).Measure(widthConstraint, heightConstraint);
-
         // new
         if (_navigationController.CurrentFrame is IView frame)
             frame.Measure(widthConstraint, heightConstraint);

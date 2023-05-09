@@ -53,13 +53,13 @@ internal class ZBuffer : Layout, ILayoutManager, IDisposable
         return true;
     }
 
-    public async Task<bool> Pop()
+    public bool Pop()
     {
         var last = items.LastOrDefault();
         if (last == null)
             return false;
 
-        await RemoveLayerAsync(last);
+        RemoveLayerAsync(last).ConfigureAwait(false);
         return true;
     }
 

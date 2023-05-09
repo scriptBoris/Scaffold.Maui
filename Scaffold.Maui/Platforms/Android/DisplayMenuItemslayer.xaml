@@ -51,8 +51,9 @@
                             <internal:ImageTint Source="{Binding ImageSource}"
                                                 HeightRequest="24"
                                                 WidthRequest="24"
-                                                TintColor="{AppThemeBinding Light=#222, Dark=#FFF}"/>
+                                                TintColor="{AppThemeBinding Light=#444, Dark=#CCC}"/>
                             <Label Text="{Binding Text}"
+                                   TextColor="{AppThemeBinding Light=#111, Dark=#FFF}"
                                    Margin="0,0,10,0"
                                    VerticalTextAlignment="Center"/>
                         </HorizontalStackLayout>

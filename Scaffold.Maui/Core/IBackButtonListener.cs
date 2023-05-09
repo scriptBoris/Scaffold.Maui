@@ -9,8 +9,8 @@ namespace Scaffold.Maui.Core
     public interface IBackButtonListener
     {
         /// <summary>
-        /// return True - if backbutton will be is override <br/>
-        /// return False - scaffold himself resolve backbutton action
+        /// return True - view will be closed when user click software/hardware backbutton <br/>
+        /// return False - view will not closed when user click software/hardware backbutton 
         /// </summary>
         Task<bool> OnBackButton();
     }

@@ -22,6 +22,7 @@
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             
             <sam:Button x:Name="buttonOk"
+                        Padding="10"
                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
                 <Label x:Name="labelButtonOk"
                        TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
@@ -30,6 +31,7 @@
             </sam:Button>
             
             <sam:Button x:Name="buttonCancel"
+                        Padding="10"
                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
                 <Label x:Name="labelButtonCancel"
                        TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"

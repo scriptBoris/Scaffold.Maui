@@ -1,4 +1,5 @@
 ﻿using Scaffold.Maui.Core;
+using Scaffold.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +30,22 @@ namespace Scaffold.Maui.Toolkit
             return true;
         }
 
-        public bool? OverrideBackButtonAction(IScaffold context)
+        public bool? OverrideSoftwareBackButtonAction(IScaffold context)
         {
             if (context.NavigationStack.Count <= 1)
             {
                 _parent.IsPresented = !_parent.IsPresented;
+                return true;
+            }
+            
+            return null;
+        }
+
+        public bool? OverrideHardwareBackButtonAction(IScaffold context)
+        {
+            if (context.NavigationStack.Count <= 1 && _parent.IsPresented)
+            {
+                _parent.IsPresented = false;
                 return true;
             }
 
@@ -45,7 +57,7 @@ namespace Scaffold.Maui.Toolkit
     public class FlyoutView : Grid, IScaffoldProvider
     {
         private readonly ContentView _flyoutPanel;
-        private readonly ContentView _detailPanel;
+        private readonly Grid _detailPanel;
         private readonly View _darkPanel;
 
         public FlyoutView()
@@ -59,7 +71,7 @@ namespace Scaffold.Maui.Toolkit
             };
 
             // detail
-            _detailPanel = new ContentView();
+            _detailPanel = new Grid();
             Grid.SetColumnSpan(_detailPanel, 2);
             Children.Add(_detailPanel);
 
@@ -67,11 +79,12 @@ namespace Scaffold.Maui.Toolkit
             _darkPanel = new BoxView
             {
                 IsVisible = false,
+                Opacity = 0,
                 Color = Color.FromArgb("#6000"),
             };
             _darkPanel.GestureRecognizers.Add(new TapGestureRecognizer
             {
-                Command = new Command(() => IsPresented = !IsPresented),
+                Command = new Command(() => IsPresented = false),
             });
             Grid.SetColumnSpan(_darkPanel, 2);
             Children.Add(_darkPanel);
@@ -116,7 +129,6 @@ namespace Scaffold.Maui.Toolkit
             {
                 if (b is FlyoutView self)
                     self._flyoutPanel.Content = (n as View);
-                //self._flyoutPanel.SetContent(n as View);
             }
         );
         public View? Flyout
@@ -147,12 +159,46 @@ namespace Scaffold.Maui.Toolkit
 
         public IScaffold? ProvideScaffold => Detail as IScaffold;
 
-        private void UpdateDetail(View? view)
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (!IsPresented)
+            {
+                var def = new GridLength[]
+                {
+                    new GridLength(3, GridUnitType.Star),
+                    GridLength.Star,
+                };
+                _flyoutPanel.TranslationX = -CalculateWidthRules(def, width)[0];
+            }
+        }
+
+        private async void UpdateDetail(View? view)
         {
             if (view is ScaffoldView scaffold)
                 scaffold.BackButtonBehavior ??= new FlyoutBackButtonBehavior(this);
 
-            _detailPanel.Content = view;
+            bool isAnimate = _detailPanel.Children.Count > 0;
+
+            if (view != null)
+            {
+                view.Opacity = isAnimate ? 0 : 1;
+                _detailPanel.Children.Add(view);
+                if (isAnimate)
+                {
+                    await view.AwaitHandler();
+                    await view.FadeTo(1, 180);
+                }
+            }
+
+            for (int i = _detailPanel.Children.Count - 1; i >= 0; i--)
+            {
+                var child = _detailPanel.Children[i];
+                if (child == view)
+                    continue;
+
+                _detailPanel.Children.RemoveAt(i);
+            }
         }
 
         private void UpdateFlyoutMenuVisibility(bool value)
@@ -167,12 +213,65 @@ namespace Scaffold.Maui.Toolkit
         {
             _flyoutPanel.IsVisible = true;
             _darkPanel.IsVisible = true;
+            _flyoutPanel.TranslateTo(0, 0, 180, Easing.SinIn);
+            _darkPanel.FadeTo(1, 180);
         }
 
-        private void Hide()
+        private async void Hide()
         {
+            await Task.WhenAll(
+                _flyoutPanel.TranslateTo(-_flyoutPanel.Width, 0, 180, Easing.SinOut),
+                _darkPanel.FadeTo(0, 180)
+            );
+
             _darkPanel.IsVisible = false;
             _flyoutPanel.IsVisible = false;
+        }
+
+        internal static double[] CalculateWidthRules(GridLength[] viewRules, double availableWidth)
+        {
+            double[] result = new double[viewRules.Length];
+            double totalSizeStar = 0;
+            double totalSizePixel = 0;
+            double freeSpace = availableWidth;
+
+            // Сначала проходим по всем элементам и считаем общую сумму значений GridLength в Star и Pixel
+            for (int i = 0; i < viewRules.Length; i++)
+            {
+                if (viewRules[i].IsStar)
+                {
+                    totalSizeStar += viewRules[i].Value;
+                }
+                else if (viewRules[i].IsAbsolute)
+                {
+                    totalSizePixel += viewRules[i].Value;
+                }
+            }
+
+            freeSpace -= totalSizePixel;
+            if (freeSpace < 0)
+                freeSpace = 0;
+
+            // Затем проходим по всем элементам и вычисляем их фактические размеры
+            for (int i = 0; i < viewRules.Length; i++)
+            {
+                double pixelSize = 0;
+                double starSize = 0;
+
+                if (viewRules[i].IsStar)
+                {
+                    if (viewRules[i].Value > 0 && totalSizeStar > 0)
+                        starSize = freeSpace * (viewRules[i].Value / totalSizeStar);
+                }
+                else if (viewRules[i].IsAbsolute)
+                {
+                    pixelSize = viewRules[i].Value;
+                }
+
+                result[i] = pixelSize + starSize;
+            }
+
+            return result;
         }
     }
 }
