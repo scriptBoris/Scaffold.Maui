@@ -8,15 +8,23 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Core;
 
-public class MenuItemObs : ObservableCollection<MenuItem>
+public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
 {
-    private readonly BindableObject attachedView;
+    private readonly BindableObject _attachedView;
 
-    public MenuItemObs(BindableObject attachedView)
+    public MenuItemCollection(BindableObject attachedView)
     {
-        this.attachedView = attachedView;
+        _attachedView = attachedView;
+        _attachedView.BindingContextChanged += AttachedView_BindingContextChanged;
+
         VisibleItems = new();
         CollapsedItems = new();
+    }
+
+    private void AttachedView_BindingContextChanged(object? sender, EventArgs e)
+    {
+        foreach (var item in this)
+            item.BindingContext = _attachedView.BindingContext;
     }
 
     internal ObservableCollection<MenuItem> VisibleItems { get; private set; }
@@ -44,7 +52,7 @@ public class MenuItemObs : ObservableCollection<MenuItem>
         foreach (var item in Items)
         {
             item.SetupParent(this);
-            item.BindingContext = attachedView.BindingContext;
+            item.BindingContext = _attachedView.BindingContext;
         }
 
         Update();
@@ -69,5 +77,10 @@ public class MenuItemObs : ObservableCollection<MenuItem>
                 CollapsedItems.Add(item);
             }
         }
+    }
+
+    public void Dispose()
+    {
+        _attachedView.BindingContextChanged -= AttachedView_BindingContextChanged;
     }
 }

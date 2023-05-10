@@ -11,7 +11,7 @@ namespace Scaffold.Maui;
 
 public class MenuItem : BindableObject
 {
-    private MenuItemObs? parent;
+    private Core.MenuItemCollection? parent;
 
     // text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
@@ -101,7 +101,7 @@ public class MenuItem : BindableObject
         set => SetValue(IsVisibleProperty, value);
     }
 
-    internal void SetupParent(MenuItemObs? parent)
+    internal void SetupParent(Core.MenuItemCollection? parent)
     {
         this.parent = parent;
     }

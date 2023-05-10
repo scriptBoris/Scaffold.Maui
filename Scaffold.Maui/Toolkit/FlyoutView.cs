@@ -54,11 +54,15 @@ namespace Scaffold.Maui.Toolkit
     }
 
     [ContentProperty(nameof(Flyout))]
-    public class FlyoutView : Grid, IScaffoldProvider
+    public class FlyoutView : Grid, IScaffoldProvider, IAppear, IDisappear, IRemovedFromNavigation
     {
         private readonly ContentView _flyoutPanel;
         private readonly Grid _detailPanel;
         private readonly View _darkPanel;
+
+        public event EventHandler<bool>? Disappear;
+        public event EventHandler<bool>? Appear;
+        public event EventHandler? RemovedFromNavigation;
 
         public FlyoutView()
         {
@@ -147,7 +151,7 @@ namespace Scaffold.Maui.Toolkit
             propertyChanged: (b, o, n) =>
             {
                 if (b is FlyoutView self)
-                    self.UpdateDetail(n as View);
+                    self.UpdateDetail(n as View, o as View);
             }
         );
         public View? Detail
@@ -173,22 +177,28 @@ namespace Scaffold.Maui.Toolkit
             }
         }
 
-        private async void UpdateDetail(View? view)
+        private async void UpdateDetail(View? view, View? oldDetail)
         {
             if (view is ScaffoldView scaffold)
                 scaffold.BackButtonBehavior ??= new FlyoutBackButtonBehavior(this);
 
             bool isAnimate = _detailPanel.Children.Count > 0;
 
+            oldDetail?.TryDisappearing();
+
             if (view != null)
             {
                 view.Opacity = isAnimate ? 0 : 1;
                 _detailPanel.Children.Add(view);
+
+                view.TryAppearing();
+
                 if (isAnimate)
                 {
                     await view.AwaitHandler();
                     await view.FadeTo(1, 180);
                 }
+                view.TryAppearing(true);
             }
 
             for (int i = _detailPanel.Children.Count - 1; i >= 0; i--)
@@ -199,6 +209,8 @@ namespace Scaffold.Maui.Toolkit
 
                 _detailPanel.Children.RemoveAt(i);
             }
+
+            oldDetail?.TryDisappearing(true);
         }
 
         private void UpdateFlyoutMenuVisibility(bool value)
@@ -272,6 +284,25 @@ namespace Scaffold.Maui.Toolkit
             }
 
             return result;
+        }
+
+        public void OnAppear(bool isComplete)
+        {
+            Appear?.Invoke(this, isComplete);
+            Detail?.TryAppearing(isComplete);
+        }
+
+        public void OnDisappear(bool isComplete)
+        {
+            Disappear?.Invoke(this, isComplete);
+            Detail?.TryDisappearing(isComplete);
+        }
+
+        public virtual void OnRemovedFromNavigation()
+        {
+            RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
+            if (Detail is IRemovedFromNavigation rm)
+                rm.OnRemovedFromNavigation();
         }
     }
 }

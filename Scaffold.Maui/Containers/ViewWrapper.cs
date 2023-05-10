@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Containers
 {
-    public class ViewWrapper : Layout, ILayoutManager, IDisposable, IViewWrapper
+    public class ViewWrapper : Layout, ILayoutManager, IViewWrapper
     {
         private View? _overlay;
 
@@ -16,12 +16,7 @@ namespace Scaffold.Maui.Containers
         {
             View = view;
             this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#343434"));
-
-            view.BindingContextChanged += OnBindingContextChanged;
             Children.Add(view);
-
-            if (view.BindingContext != null)
-                SetupBindingContext();
         }
 
         public View View { get; private set; }
@@ -69,18 +64,6 @@ namespace Scaffold.Maui.Containers
             return new Size(widthConstraint, heightConstraint);
         }
 
-        private void OnBindingContextChanged(object? sender, EventArgs e)
-        {
-            SetupBindingContext();
-        }
-
-        protected virtual void SetupBindingContext()
-        {
-            var menu = ScaffoldView.GetMenuItems(View);
-            foreach (var item in menu)
-                item.BindingContext = View.BindingContext;
-        }
-
         public async Task UpdateVisual(NavigatingArgs e)
         {
             if (!e.IsAnimating)
@@ -105,11 +88,6 @@ namespace Scaffold.Maui.Containers
                 default:
                     break;
             }
-        }
-
-        public void Dispose()
-        {
-            View.BindingContextChanged -= OnBindingContextChanged;
         }
     }
 }

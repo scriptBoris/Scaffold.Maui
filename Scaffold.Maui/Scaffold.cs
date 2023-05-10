@@ -28,12 +28,16 @@ public interface IScaffold : IScaffoldProvider
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
 }
 
-public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener
+public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
 {
     public const ushort AnimationTime = 180;
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
+
+    public event EventHandler<bool>? Appear;
+    public event EventHandler<bool>? Disappear;
+    public event EventHandler? RemovedFromNavigation;
 
     public ScaffoldView()
     {
@@ -43,6 +47,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         _navigationController = new(this);
 
         ((INotifyCollectionChanged)_navigationController.NavigationStack).CollectionChanged += NavigationStackChanged;
+        ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
         _zBufer = new();
         Children.Add(_zBufer);
     }
@@ -127,12 +132,12 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     // menu items
     public static readonly BindableProperty MenuItemsProperty = BindableProperty.CreateAttached(
         "ScaffoldMenuItems",
-        typeof(MenuItemObs),
+        typeof(Core.MenuItemCollection),
         typeof(ScaffoldView),
         null,
         defaultValueCreator: b =>
         {
-            return new MenuItemObs(b);
+            return new Core.MenuItemCollection(b);
         },
         propertyChanged: (b,o,n) =>
         {
@@ -147,9 +152,9 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
             }
         }
     );
-    public static MenuItemObs GetMenuItems(BindableObject b)
+    public static Core.MenuItemCollection GetMenuItems(BindableObject b)
     {
-        return (MenuItemObs)b.GetValue(MenuItemsProperty);
+        return (Core.MenuItemCollection)b.GetValue(MenuItemsProperty);
     }
 
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
@@ -218,29 +223,26 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         {
             case NotifyCollectionChangedAction.Remove:
                 var view = e.OldItems![0] as View;
-
                 if (view is IRemovedFromNavigation v)
                     v.OnRemovedFromNavigation();
-                else if (view?.BindingContext is IRemovedFromNavigation vm)
-                    vm.OnRemovedFromNavigation();
                 break;
             default:
                 break;
         }
     }
 
-    internal int ImmestionLength()
+    private void FramesStackChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        int count = 0;
-        var scaffold = this as IScaffold;
-
-        while (scaffold != null)
+        switch (e.Action)
         {
-            count += Math.Max(scaffold.NavigationStack.Count - 1, 0);
-            scaffold = scaffold is IScaffoldProvider provider ? provider.ProvideScaffold : null;
+            case NotifyCollectionChangedAction.Remove:
+                var frame = e.OldItems![0] as Containers.IFrame;
+                if (frame is IDisposable dis)
+                    dis.Dispose();
+                break;
+            default:
+                break;
         }
-
-        return count;
     }
 
     internal IScaffold[] GetScafoldNested()
@@ -396,13 +398,35 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         return await alert.GetResult();
     }
 
+    public void OnAppear(bool isComplete)
+    {
+        if (_navigationController.NavigationStack.LastOrDefault() is IAppear ap)
+            ap.OnAppear(isComplete);
+    }
+
+    public void OnDisappear(bool isComplete)
+    {
+        if (_navigationController.NavigationStack.LastOrDefault() is IDisappear ap)
+            ap.OnDisappear(isComplete);
+    }
+
+    public void OnRemovedFromNavigation()
+    {
+        foreach (var item in _navigationController.NavigationStack.Reverse())
+        {
+            if (item is IRemovedFromNavigation v)
+                v.OnRemovedFromNavigation();
+        }
+        RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
+    }
+
     public void Dispose()
     {
-        foreach (var item in Children)
-        {
-            if (item is IDisposable disposable)
-                disposable.Dispose();
-        }
+        OnRemovedFromNavigation();
+        ((INotifyCollectionChanged)_navigationController.NavigationStack).CollectionChanged -= NavigationStackChanged;
+        ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged -= FramesStackChanged;
+        _navigationController.Dispose();
+        _zBufer.Dispose();
     }
 }
 

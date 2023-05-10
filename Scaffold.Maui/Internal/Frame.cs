@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Scaffold.Maui.Internal
 {
     [DebuggerDisplay($"Frame :: {{{nameof(ViewType)}}}")]
-    internal class Frame : Layout, ILayoutManager, IFrame
+    internal class Frame : Layout, ILayoutManager, IFrame, IDisposable
     {
         private readonly ViewFactory _viewFactory;
         private readonly View _view;
@@ -179,6 +179,17 @@ namespace Scaffold.Maui.Internal
                         break;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            if (NavigationBar is IDisposable nav)
+                nav.Dispose();
+
+            if (ViewWrapper is IDisposable viewWrapper)
+                viewWrapper.Dispose();
+
+            Overlay = null;
         }
     }
 }

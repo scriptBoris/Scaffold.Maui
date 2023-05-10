@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 namespace Scaffold.Maui.Internal
 {
-    internal class NavigationController
+    internal class NavigationController : IDisposable
     {
         private readonly ScaffoldView _scaffold;
-        private readonly List<IFrame> _frames = new();
+        private readonly ObservableCollection<IFrame> _frames = new();
         private readonly ObservableCollection<View> _navigationStack = new();
 
         public NavigationController(ScaffoldView layout)
         {
             _scaffold = layout;
             NavigationStack = new(_navigationStack);
-            Frames = new ReadOnlyCollection<IFrame>(_frames);
+            Frames = new (_frames);
         }
 
         public ReadOnlyObservableCollection<View> NavigationStack { get; private set; }
-        public ReadOnlyCollection<IFrame> Frames { get; private set; }
+        public ReadOnlyObservableCollection<IFrame> Frames { get; private set; }
         public IFrame? CurrentFrame => Frames.LastOrDefault();
 
         internal async Task<IFrame> PushAsync(View view, bool isAnimated, IFrame? currentFrame = null, NavigatingTypes? intentType = null)
@@ -167,6 +167,18 @@ namespace Scaffold.Maui.Internal
                 activity?.Window?.DecorView.ClearFocus();
             }
 #endif
+        }
+
+        public void Dispose()
+        {
+            foreach (var frame in _frames.Reverse())
+            {
+                if (frame.ViewWrapper.View is IRemovedFromNavigation v)
+                    v.OnRemovedFromNavigation();
+
+                if (frame is IDisposable disposable) 
+                    disposable.Dispose();
+            }
         }
     }
 }

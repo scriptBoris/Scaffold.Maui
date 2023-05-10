@@ -10,38 +10,34 @@ namespace Scaffold.Maui.Internal
 {
     internal static class Extensions
     {
-        public static void TryAppearing(this object obj, bool isComplete = false)
+        public static void TryAppearing(this IView iview, bool isComplete = false)
         {
-            if (obj is IAppear ap)
-                ap.OnAppear(isComplete);
-            else if (obj is View view && view.BindingContext is IAppear ap2)
-                ap2.OnAppear(isComplete);
+            if (iview is IAppear v)
+                v.OnAppear(isComplete);
+
+            // avoid stackoverflow (vm != view)
+            //if (iview is View mauiView && mauiView.BindingContext is IAppear vm && vm != iview)
+            //    vm.OnAppear(isComplete);
         }
 
-        public static void TryDisappearing(this object obj, bool isComplete = false)
+        public static void TryDisappearing(this IView iview, bool isComplete = false)
         {
-            if (obj is IDisappear ap)
-                ap.OnDisappear(isComplete);
-            else if (obj is View view && view.BindingContext is IDisappear ap2)
-                ap2.OnDisappear(isComplete);
+            if (iview is IDisappear v)
+                v.OnDisappear(isComplete);
+
+            // avoid stackoverflow (vm != view)
+            //if (iview is View mauiView && mauiView.BindingContext is IDisappear vm && vm != iview)
+            //    vm.OnDisappear(isComplete);
         }
 
         public static void TryAppearing(this IFrame frame, bool isComplete = false)
         {
-            var view = frame.ViewWrapper.View;
-            if (view is IAppear ap)
-                ap.OnAppear(isComplete);
-            else if (view.BindingContext is IAppear ap2)
-                ap2.OnAppear(isComplete);
+            frame.ViewWrapper.View.TryAppearing(isComplete);
         }
 
         public static void TryDisappearing(this IFrame frame, bool isComplete = false)
         {
-            var view = frame.ViewWrapper.View;
-            if (view is IDisappear ap)
-                ap.OnDisappear(isComplete);
-            else if (view.BindingContext is IDisappear ap2)
-                ap2.OnDisappear(isComplete);
+            frame.ViewWrapper.View.TryDisappearing(isComplete);
         }
 
         public static T? ItemOrDefault<T>(this IList<T> self, int index)

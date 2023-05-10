@@ -5,13 +5,12 @@ using Scaffold.Maui.Core;
 
 namespace Scaffold.Maui.Platforms.Android;
 
-public partial class NavigationBar : INavigationBar
+public partial class NavigationBar : INavigationBar, IDisposable
 {
     private readonly View _view;
     private readonly IScaffold _context;
-    private MenuItemObs? itemObs;
+    private Core.MenuItemCollection? menuItems;
     private IBackButtonBehavior? backButtonBehavior;
-    private const double materialNavBarHeight = 56;
 
     public NavigationBar(View view)
 	{
@@ -86,8 +85,11 @@ public partial class NavigationBar : INavigationBar
 
     public void Dispose()
     {
-        if (itemObs != null)
-            itemObs.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
+        if (menuItems != null)
+        {
+            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
+            menuItems.Dispose();
+        }
     }
 
     private void UpdateTitle(View view)
@@ -97,14 +99,17 @@ public partial class NavigationBar : INavigationBar
 
     public void UpdateMenuItems(View view)
     {
-        if (itemObs != null)
-            itemObs.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
+        if (menuItems != null)
+        {
+            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
+            menuItems.Dispose();
+        }
 
-        itemObs = ScaffoldView.GetMenuItems(view);
-        itemObs.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
-        bool colapseVisible = itemObs.CollapsedItems.Count > 0;
+        menuItems = ScaffoldView.GetMenuItems(view);
+        menuItems.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
+        bool colapseVisible = menuItems.CollapsedItems.Count > 0;
 
-        BindableLayout.SetItemsSource(stackMenu, itemObs.VisibleItems);
+        BindableLayout.SetItemsSource(stackMenu, menuItems.VisibleItems);
         buttonMenu.IsVisible = colapseVisible;
     }
 
