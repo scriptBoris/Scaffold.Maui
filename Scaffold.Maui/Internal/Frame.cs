@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Scaffold.Maui.Internal
 {
     [DebuggerDisplay($"Frame :: {{{nameof(ViewType)}}}")]
-    internal class Frame : Layout, ILayoutManager, IFrame, IDisposable
+    public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisappear, IRemovedFromNavigation
     {
         private readonly ViewFactory _viewFactory;
         private readonly View _view;
@@ -190,6 +190,18 @@ namespace Scaffold.Maui.Internal
                 viewWrapper.Dispose();
 
             Overlay = null;
+        }
+
+        public virtual void OnAppear(bool isComplete)
+        {
+        }
+
+        public virtual void OnDisappear(bool isComplete)
+        {
+        }
+
+        public virtual void OnRemovedFromNavigation()
+        {
         }
     }
 }

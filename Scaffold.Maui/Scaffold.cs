@@ -35,19 +35,14 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
 
-    public event EventHandler<bool>? Appear;
-    public event EventHandler<bool>? Disappear;
-    public event EventHandler? RemovedFromNavigation;
-
     public ScaffoldView()
     {
 #if ANDROID
         SafeArea = Scaffold.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
 #endif
         _navigationController = new(this);
-
-        ((INotifyCollectionChanged)_navigationController.NavigationStack).CollectionChanged += NavigationStackChanged;
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
+
         _zBufer = new();
         Children.Add(_zBufer);
     }
@@ -217,28 +212,18 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     }
     #endregion props
 
-    private void NavigationStackChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Remove:
-                var view = e.OldItems![0] as View;
-                if (view is IRemovedFromNavigation v)
-                    v.OnRemovedFromNavigation();
-                break;
-            default:
-                break;
-        }
-    }
-
     private void FramesStackChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Remove:
                 var frame = e.OldItems![0] as Containers.IFrame;
+
+                frame?.TryRemoveFromNavigation();
+
                 if (frame is IDisposable dis)
                     dis.Dispose();
+
                 break;
             default:
                 break;
@@ -252,7 +237,6 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
         while (scaffold != null)
         {
-            //count += Math.Max(scaffold.NavigationStack.Count - 1, 0);
             scaffold = scaffold is IScaffoldProvider provider ? provider.ProvideScaffold : null;
             if (scaffold != null)
                 list.Add(scaffold);
@@ -412,18 +396,13 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public void OnRemovedFromNavigation()
     {
-        foreach (var item in _navigationController.NavigationStack.Reverse())
-        {
-            if (item is IRemovedFromNavigation v)
-                v.OnRemovedFromNavigation();
-        }
-        RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
+        foreach (var frame in _navigationController.Frames.Reverse())
+            frame.TryRemoveFromNavigation();
     }
 
     public void Dispose()
     {
         OnRemovedFromNavigation();
-        ((INotifyCollectionChanged)_navigationController.NavigationStack).CollectionChanged -= NavigationStackChanged;
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged -= FramesStackChanged;
         _navigationController.Dispose();
         _zBufer.Dispose();

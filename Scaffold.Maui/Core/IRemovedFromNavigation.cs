@@ -8,7 +8,6 @@ namespace Scaffold.Maui.Core
 {
     public interface IRemovedFromNavigation
     {
-        event EventHandler? RemovedFromNavigation;
         void OnRemovedFromNavigation();
     }
 }

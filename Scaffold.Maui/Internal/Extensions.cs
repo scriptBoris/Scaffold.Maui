@@ -14,30 +14,39 @@ namespace Scaffold.Maui.Internal
         {
             if (iview is IAppear v)
                 v.OnAppear(isComplete);
-
-            // avoid stackoverflow (vm != view)
-            //if (iview is View mauiView && mauiView.BindingContext is IAppear vm && vm != iview)
-            //    vm.OnAppear(isComplete);
         }
 
         public static void TryDisappearing(this IView iview, bool isComplete = false)
         {
             if (iview is IDisappear v)
                 v.OnDisappear(isComplete);
+        }
 
-            // avoid stackoverflow (vm != view)
-            //if (iview is View mauiView && mauiView.BindingContext is IDisappear vm && vm != iview)
-            //    vm.OnDisappear(isComplete);
+        public static void TryRemoveFromNavigation(this IView iview)
+        {
+            if (iview is IRemovedFromNavigation rm)
+                rm.OnRemovedFromNavigation();
         }
 
         public static void TryAppearing(this IFrame frame, bool isComplete = false)
         {
             frame.ViewWrapper.View.TryAppearing(isComplete);
+            if (frame is IAppear ap)
+                ap.OnAppear(isComplete);
         }
 
         public static void TryDisappearing(this IFrame frame, bool isComplete = false)
         {
             frame.ViewWrapper.View.TryDisappearing(isComplete);
+            if (frame is IDisappear dis)
+                dis.OnDisappear(isComplete);
+        }
+
+        public static void TryRemoveFromNavigation(this IFrame frame)
+        {
+            frame.ViewWrapper.View.TryRemoveFromNavigation();
+            if (frame is IRemovedFromNavigation rm)
+                rm.OnRemovedFromNavigation();
         }
 
         public static T? ItemOrDefault<T>(this IList<T> self, int index)

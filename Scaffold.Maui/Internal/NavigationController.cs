@@ -36,12 +36,12 @@ namespace Scaffold.Maui.Internal
             frame.NavigationBar?.UpdateBackButtonBehavior(_scaffold.BackButtonBehavior);
 
             _frames.Add(frame);
-            _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)frame);
             _navigationStack.Add(view);
+            _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)frame);
 
             TryHideKeyboard();
             oldFrame?.TryDisappearing();
-            view.TryAppearing();
+            frame.TryAppearing();
 
             await frame.UpdateVisual(new NavigatingArgs
             {
@@ -57,7 +57,7 @@ namespace Scaffold.Maui.Internal
                 oldFrameView.IsVisible = false;
 
             oldFrame?.TryDisappearing(true);
-            view.TryAppearing(true);
+            frame.TryAppearing(true);
 
             return frame;
         }
@@ -78,6 +78,7 @@ namespace Scaffold.Maui.Internal
                 prevFrameView.IsVisible = true;
 
             _navigationStack.Remove(currentFrame.ViewWrapper.View);
+            _frames.Remove(currentFrame);
 
             TryHideKeyboard();
             currentFrame.TryDisappearing();
@@ -93,7 +94,6 @@ namespace Scaffold.Maui.Internal
                 SafeArea = _scaffold.SafeArea,
             });
 
-            _frames.Remove(currentFrame);
             _scaffold.Children.Remove((View)currentFrame);
 
             currentFrame.TryDisappearing(true);
@@ -108,11 +108,17 @@ namespace Scaffold.Maui.Internal
             if (oldIndex < 0)
                 return false;
 
-            var frame = Frames[oldIndex];
+            TryHideKeyboard();
+
+            var oldFrame = Frames[oldIndex];
             _frames.RemoveAt(oldIndex);
             _navigationStack.RemoveAt(oldIndex);
-            await PushAsync(newView, isAnimated, frame, NavigatingTypes.Replace);
-            _scaffold.Children.Remove((View)frame);
+            oldFrame.TryDisappearing();
+
+            await PushAsync(newView, isAnimated, oldFrame, NavigatingTypes.Replace);
+            _scaffold.Children.Remove((View)oldFrame);
+            oldFrame.TryDisappearing(true);
+
             return true;
         }
 
@@ -122,8 +128,8 @@ namespace Scaffold.Maui.Internal
                 return false;
 
             var frame = Frames[index];
-            _frames.RemoveAt(index);
             _navigationStack.RemoveAt(index);
+            _frames.RemoveAt(index);
             _scaffold.Children.Remove((View)frame);
             return true;
         }
@@ -147,9 +153,9 @@ namespace Scaffold.Maui.Internal
                 if (frame is View v)
                     v.IsVisible = false;
 
+                _navigationStack.Insert(index, view);
                 _frames.Insert(index, frame);
                 _scaffold.Children.Insert(index, (View)frame);
-                _navigationStack.Insert(index, view);
 
                 return true;
             }
