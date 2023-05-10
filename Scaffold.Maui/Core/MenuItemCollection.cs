@@ -17,6 +17,9 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
         _attachedView = attachedView;
         _attachedView.BindingContextChanged += AttachedView_BindingContextChanged;
 
+        foreach (var item in this)
+            item.BindingContext = attachedView.BindingContext;
+
         VisibleItems = new();
         CollapsedItems = new();
     }
