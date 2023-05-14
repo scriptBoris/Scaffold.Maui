@@ -51,8 +51,8 @@ namespace ScaffoldLib.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = NavigationStack.Count > 1,
                 SafeArea = _scaffold.SafeArea,
-                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(view),
-                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(view),
+                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor,
+                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor,
             });
 
             if (oldFrame is View oldFrameView)
@@ -94,8 +94,8 @@ namespace ScaffoldLib.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = hasBackButton,
                 SafeArea = _scaffold.SafeArea,
-                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View),
-                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View),
+                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor,
+                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor,
             });
 
             _scaffold.Children.Remove((View)currentFrame);

@@ -33,13 +33,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Platforms\Android\DisplayAlertLayer.xaml">
+	  <MauiXaml Update="Containers\Material\DisplayAlertLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Platforms\Android\DisplayMenuItemslayer.xaml">
+	  <MauiXaml Update="Containers\Material\DisplayMenuItemslayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Platforms\Android\NavigationBar.xaml">
+	  <MauiXaml Update="Containers\Material\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

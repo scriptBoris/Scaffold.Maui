@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Material = ScaffoldLib.Maui.Containers.Material;
 
 namespace ScaffoldLib.Maui.Core
 {
@@ -19,7 +20,7 @@ namespace ScaffoldLib.Maui.Core
         public virtual INavigationBar? CreateNavigationBar(View view)
         {
 #if ANDROID
-            return new Platforms.Android.NavigationBar(view);
+            return new Material.NavigationBar(view);
 #else
             return null;
 #endif
@@ -33,7 +34,7 @@ namespace ScaffoldLib.Maui.Core
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok)
         {
 #if ANDROID
-            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok);
+            return new Material.DisplayAlertLayer(title, message, ok);
 #else
             throw new NotImplementedException();
 #endif
@@ -42,7 +43,7 @@ namespace ScaffoldLib.Maui.Core
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, string cancel)
         {
 #if ANDROID
-            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok, cancel);
+            return new Material.DisplayAlertLayer(title, message, ok, cancel);
 #else
             throw new NotImplementedException();
 #endif
@@ -51,7 +52,7 @@ namespace ScaffoldLib.Maui.Core
         public virtual IZBufferLayout CreateDisplayMenuItemslayer(View view)
         {
 #if ANDROID
-            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayMenuItemslayer(view);
+            return new Material.DisplayMenuItemslayer(view);
 #else
             throw new NotImplementedException();
 #endif

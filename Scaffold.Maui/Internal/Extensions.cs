@@ -64,7 +64,7 @@ namespace ScaffoldLib.Maui.Internal
         {
             var tsc = new TaskCompletionSource<bool>();
             var anim = new Animation(callback, start, end);
-            anim.Commit(v, "Anim", length:length, finished: (v, b) =>
+            anim.Commit(v, "Anim", length: length, finished: (v, b) =>
             {
                 tsc.TrySetResult(b);
             });
@@ -86,25 +86,37 @@ namespace ScaffoldLib.Maui.Internal
             var handler = await tsc.Task;
             view.HandlerChanged -= eventDelegate;
 
-//#if ANDROID
-//            if (handler.PlatformView is Android.Views.View aview)
-//            {
-//                var tsc2 = new TaskCompletionSource<bool>();
+            //#if ANDROID
+            //            if (handler.PlatformView is Android.Views.View aview)
+            //            {
+            //                var tsc2 = new TaskCompletionSource<bool>();
 
-//                if (aview.IsAttachedToWindow)
-//                {
+            //                if (aview.IsAttachedToWindow)
+            //                {
 
-//                }
+            //                }
 
-//                void argEnd(object? sender, Android.Views.View.ViewAttachedToWindowEventArgs args)
-//                {
-//                    tsc2.TrySetResult(true);
-//                }
-//                aview.ViewAttachedToWindow += argEnd;
-//                await tsc2.Task;
-//            }
-//#endif
+            //                void argEnd(object? sender, Android.Views.View.ViewAttachedToWindowEventArgs args)
+            //                {
+            //                    tsc2.TrySetResult(true);
+            //                }
+            //                aview.ViewAttachedToWindow += argEnd;
+            //                await tsc2.Task;
+            //            }
+            //#endif
             return handler;
+        }
+
+        public static bool IsDark(this Color col)
+        {
+            double Y = 0.299 * col.Red + 0.587 * col.Green + 0.114 * col.Blue;
+            //var I = 0.596 * col.Red - 0.274 * col.Green - 0.322 * col.Blue;
+            //var Q = 0.211 * col.Red - 0.523 * col.Green + 0.312 * col.Blue;
+            //if (Y > 0.5d)
+            if (Y > 0.5d)
+                return false;
+            else
+                return true;
         }
     }
 }

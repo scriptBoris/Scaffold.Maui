@@ -2,7 +2,7 @@
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-      x:Class="ScaffoldLib.Maui.Platforms.Android.DisplayAlertLayer"
+      x:Class="ScaffoldLib.Maui.Containers.Material.DisplayAlertLayer"
       BackgroundColor="#88000000">
     <Border StrokeShape="RoundRectangle 10"
             BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"

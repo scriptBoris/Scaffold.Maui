@@ -1,7 +1,7 @@
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 
-namespace ScaffoldLib.Maui.Platforms.Android;
+namespace ScaffoldLib.Maui.Containers.Material;
 
 public partial class DisplayAlertLayer : IDisplayAlert
 {

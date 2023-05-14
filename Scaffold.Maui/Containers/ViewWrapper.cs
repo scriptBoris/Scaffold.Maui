@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Layouts;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,7 @@ namespace ScaffoldLib.Maui.Containers
                 case NavigatingTypes.Push:
                     Opacity = 0;
                     TranslationX = 100;
+                    await e.NewContent.AwaitHandler();
                     await Task.WhenAll(
                         this.FadeTo(1, Scaffold.AnimationTime),
                         this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)

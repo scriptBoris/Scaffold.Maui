@@ -2,11 +2,10 @@
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-      xmlns:local="clr-namespace:ScaffoldLib.Maui.Platforms.Android"
-      xmlns:droid="clr-namespace:ScaffoldLib.Maui.Platforms.Android.Internal"
+      xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-      x:Class="ScaffoldLib.Maui.Platforms.Android.NavigationBar"
+      x:Class="ScaffoldLib.Maui.Containers.Material.NavigationBar"
       x:DataType="local:NavigationBar"
       x:Name="navigationBar">
     
@@ -21,7 +20,6 @@
                     Margin="0,0,0,0"
                     CornerRadius="20"
                     Padding="8"
-                    TapColor="#DDFFFFFF"
                     x:Name="backButton">
             <internal:ImageTint Source="ic_arrow_left.png"
                                 HeightRequest="24"
@@ -44,12 +42,11 @@
                      x:Name="stackMenu">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:MenuItem">
-                    <droid:ButtonMenu/>
-                    <!--<droid:ButtonMenu VerticalOptions="Center"
-                                      TapColor="#DDFFFFFF"
+                    <local:ButtonMenu VerticalOptions="Center"
+                                      TapColor="{Binding TapColor, Source={Reference navigationBar}}"
                                       Text="{Binding Text}"
                                       ImageSource="{Binding ImageSource}"
-                                      TapCommand="{Binding Command}"/>-->
+                                      TapCommand="{Binding Command}"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
@@ -61,7 +58,6 @@
                     Margin="5,0,0,0"
                     CornerRadius="20"
                     Padding="8"
-                    TapColor="#DDFFFFFF"
                     x:Name="buttonMenu">
             <internal:ImageTint Source="ic_dots_vertical.png"
                                 HeightRequest="24"

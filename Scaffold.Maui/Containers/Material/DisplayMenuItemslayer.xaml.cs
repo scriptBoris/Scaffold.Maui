@@ -2,7 +2,7 @@ using ScaffoldLib.Maui.Core;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ScaffoldLib.Maui.Platforms.Android;
+namespace ScaffoldLib.Maui.Containers.Material;
 
 public partial class DisplayMenuItemslayer : IZBufferLayout
 {

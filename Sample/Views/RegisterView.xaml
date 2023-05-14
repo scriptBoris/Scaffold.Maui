@@ -4,7 +4,6 @@
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
       x:Class="Sample.Views.RegisterView"
       scaffold:Scaffold.Title="Registration"
-      scaffold:Scaffold.NavigationBarBackgroundColor="DarkOliveGreen"
       Padding="10">
     <StackLayout Spacing="10">
         <Grid ColumnDefinitions="2*,5*"

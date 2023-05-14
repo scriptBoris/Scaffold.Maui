@@ -28,6 +28,7 @@ public interface IScaffold : IScaffoldProvider
 public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
 {
     public const ushort AnimationTime = 180;
+    
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
@@ -109,57 +110,80 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     public static bool GetHasNavigationBar(BindableObject b) =>
         (bool)b.GetValue(HasNavigationBarProperty);
 
-    // navigation bar background color (static)
+    // navigation bar background color
     public static readonly BindableProperty NavigationBarBackgroundColorProperty = BindableProperty.CreateAttached(
-        "ScaffoldNavigationBarBGColor",
+        "NavigationBarBackgroundColor",
         typeof(Color),
         typeof(Scaffold),
-        Color.FromArgb("#6200EE"),
+        null,
         propertyChanged:(b,o,n) =>
         {
-            if (GetScaffoldContext(b) is Scaffold context)
+            if (b is Scaffold scaffold && scaffold._navigationController != null)
+            {
+                foreach (var frame in scaffold._navigationController.Frames)
+                {
+                    var color = GetNavigationBarBackgroundColor(frame.ViewWrapper.View) ?? n as Color ?? defaultNavigationBarBackgroundColor;
+                    frame.NavigationBar?.UpdateNavigationBarBackgroundColor(color);
+                }
+            }
+            else if (GetScaffoldContext(b) is Scaffold context)
+            {
+                var color = n as Color ?? context.NavigationBarBackgroundColor ?? defaultNavigationBarBackgroundColor;
                 context
                     ._navigationController
                     .Frames
                     .FirstOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
-                    .UpdateNavigationBarBackgroundColor((Color)n);
+                    .UpdateNavigationBarBackgroundColor(color);
+            }
         }
     );
-    public static void SetNavigationBarBackgroundColor(BindableObject b, Color value) =>
+    public static void SetNavigationBarBackgroundColor(BindableObject b, Color? value) =>
         b.SetValue(NavigationBarBackgroundColorProperty, value);
-    public static Color GetNavigationBarBackgroundColor(BindableObject b) =>
-        (Color)b.GetValue(NavigationBarBackgroundColorProperty);
-    public Color NavigationBarBackgroundColor
+    public static Color? GetNavigationBarBackgroundColor(BindableObject b) =>
+        b.GetValue(NavigationBarBackgroundColorProperty) as Color;
+    public Color? NavigationBarBackgroundColor
     {
-        get => (Color)GetValue(NavigationBarBackgroundColorProperty);
+        get => GetValue(NavigationBarBackgroundColorProperty) as Color;
         set => SetValue(NavigationBarBackgroundColorProperty, value);
     }
 
-    // navigation bar foreground color (static)
+    // navigation bar foreground color
     public static readonly BindableProperty NavigationBarForegroundColorProperty = BindableProperty.CreateAttached(
-        "ScaffoldNavigationBarFGColor",
+        "NavigationBarForegroundColor",
         typeof(Color),
         typeof(Scaffold),
-        Colors.White,
+        //Colors.White,
+        null,
         propertyChanged: (b, o, n) =>
         {
-            if (GetScaffoldContext(b) is Scaffold context)
+            if (b is Scaffold scaffold && scaffold._navigationController != null)
+            {
+                foreach (var frame in scaffold._navigationController.Frames)
+                {
+                    var color = GetNavigationBarForegroundColor(frame.ViewWrapper.View) ?? n as Color ?? defaultNavigationBarForegroundColor;
+                    frame.NavigationBar?.UpdateNavigationBarForegroundColor(color);
+                }
+            }
+            else if (GetScaffoldContext(b) is Scaffold context)
+            {
+                var color = n as Color ?? context.NavigationBarForegroundColor ?? defaultNavigationBarForegroundColor;
                 context
                     ._navigationController
                     .Frames
                     .FirstOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
-                    .UpdateNavigationBarForegroundColor((Color)n);
+                    .UpdateNavigationBarForegroundColor(color);
+            }
         }
     );
-    public static void SetNavigationBarForegroundColor(BindableObject b, Color value) =>
+    public static void SetNavigationBarForegroundColor(BindableObject b, Color? value) =>
         b.SetValue(NavigationBarForegroundColorProperty, value);
-    public static Color GetNavigationBarForegroundColor(BindableObject b) =>
-        (Color)b.GetValue(NavigationBarForegroundColorProperty);
-    public Color NavigationBarForegroundColor
+    public static Color? GetNavigationBarForegroundColor(BindableObject b) =>
+        b.GetValue(NavigationBarForegroundColorProperty) as Color;
+    public Color? NavigationBarForegroundColor
     {
-        get => (Color)GetValue(NavigationBarForegroundColorProperty);
+        get => GetValue(NavigationBarForegroundColorProperty) as Color;
         set => SetValue(NavigationBarForegroundColorProperty, value);
     }
 
@@ -234,6 +258,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     }
 
     internal ZBuffer ZBuffer => _zBufer;
+    internal static Color defaultNavigationBarBackgroundColor => Color.FromArgb("#6200EE");
+    internal static Color defaultNavigationBarForegroundColor => Colors.White;
 
     private IBackButtonListener BackButtonListener
     {

@@ -1,10 +1,10 @@
-using Android.Content;
 using Microsoft.Maui.Controls;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
-namespace ScaffoldLib.Maui.Platforms.Android;
+namespace ScaffoldLib.Maui.Containers.Material;
 
 public partial class NavigationBar : INavigationBar, IDisposable
 {
@@ -13,6 +13,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     private MenuItemCollection? menuItems;
     private IBackButtonBehavior? backButtonBehavior;
     private Color _foregroundColor = Colors.Black;
+    private Color _tapColor = Colors.Black;
 
     public NavigationBar(View view)
 	{
@@ -42,12 +43,24 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
     }
 
+    public Color TapColor
+    {
+        get => _tapColor;
+        set
+        {
+            _tapColor = value;
+            OnPropertyChanged(nameof(TapColor));
+        }
+    }
+
     protected override void OnHandlerChanged()
     {
         base.OnHandlerChanged();
 
+#if ANDROID
         if (this.Handler?.PlatformView is global::Android.Views.View aview)
             aview.Elevation = 4;
+#endif
     }
 
     private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -72,10 +85,13 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     public async Task UpdateVisual(NavigatingArgs e)
     {
-        Padding = e.SafeArea;
-        UpdateBackButtonVisual(e.HasBackButton);
-        UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
-        UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
+        if (e.NavigationType == NavigatingTypes.Push)
+        {
+            Padding = e.SafeArea;
+            UpdateBackButtonVisual(e.HasBackButton);
+            UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
+            UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
+        }
 
         if (!e.IsAnimating)
             return;
@@ -84,6 +100,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
         {
             case NavigatingTypes.Push:
                 this.Opacity = 0;
+                await e.NewContent.AwaitHandler();
                 await this.FadeTo(1, Scaffold.AnimationTime);
                 break;
             case NavigatingTypes.Pop:
@@ -147,6 +164,16 @@ public partial class NavigationBar : INavigationBar, IDisposable
     public void UpdateNavigationBarBackgroundColor(Color color)
     {
         BackgroundColor = color;
+
+        Color tapColor;
+        if (color.IsDark())
+            tapColor = Color.FromRgba(255, 255, 255, 200);
+        else
+            tapColor = Color.FromRgba(100, 100, 100, 100);
+
+        backButton.TapColor = tapColor;
+        buttonMenu.TapColor = tapColor;
+        TapColor = tapColor;
     }
 
     public void UpdateNavigationBarForegroundColor(Color color)
