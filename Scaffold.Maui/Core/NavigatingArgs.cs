@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Core
+namespace ScaffoldLib.Maui.Core
 {
     public class NavigatingArgs
     {
@@ -12,6 +12,8 @@ namespace Scaffold.Maui.Core
         public required View? OldContent { get; set; }
         public required bool HasBackButton { get; set; }
         public required bool IsAnimating { get; set; }
+        public required Color NavigationBarBackgroundColor { get; set; }
+        public required Color NavigationBarForegroundColor { get; set; }
         public required Thickness SafeArea { get; set; }
         public required NavigatingTypes NavigationType { get; set; }
     }
@@ -21,6 +23,5 @@ namespace Scaffold.Maui.Core
         Push,
         Pop,
         Replace,
-        UpdateVisual,
     }
 }

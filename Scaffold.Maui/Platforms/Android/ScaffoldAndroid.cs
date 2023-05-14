@@ -4,7 +4,7 @@ using Android.Views;
 using Microsoft.Maui.LifecycleEvents;
 using MView = Microsoft.Maui.Controls.View;
 
-namespace Scaffold.Maui.Platforms.Android
+namespace ScaffoldLib.Maui.Platforms.Android
 {
     public static class ScaffoldAndroid
     {
@@ -22,14 +22,14 @@ namespace Scaffold.Maui.Platforms.Android
 
         private static bool OnBackPressed(Activity a)
         {
-            ScaffoldView? rootScaffold = null;
+            Scaffold? rootScaffold = null;
             var mp = global::Microsoft.Maui.Controls.Application.Current?.MainPage;
             if (mp is ContentPage c)
             {
-                if (c.Content is ScaffoldView cv)
+                if (c.Content is Scaffold cv)
                     rootScaffold = cv;
                 else
-                    rootScaffold = Find(c.Content) as ScaffoldView;
+                    rootScaffold = Find(c.Content) as Scaffold;
             }
 
             if (rootScaffold != null)
@@ -43,7 +43,7 @@ namespace Scaffold.Maui.Platforms.Android
 
                     foreach (var item in nested)
                     {
-                        if (item is not ScaffoldView scaffold)
+                        if (item is not Scaffold scaffold)
                             continue;
 
                         if (scaffold.ZBuffer.Pop())
@@ -52,7 +52,7 @@ namespace Scaffold.Maui.Platforms.Android
 
                     foreach (var item in nested)
                     {
-                        if (item is not ScaffoldView scaffold)
+                        if (item is not Scaffold scaffold)
                             continue;
 
                         if (scaffold.BackButtonBehavior?.OverrideHardwareBackButtonAction(item) == true)
@@ -88,7 +88,7 @@ namespace Scaffold.Maui.Platforms.Android
         {
             switch (view)
             {
-                case ScaffoldView vc:
+                case Scaffold vc:
                     return vc;
 
                 case ContentView cv:

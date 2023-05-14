@@ -1,4 +1,4 @@
-using Scaffold.Maui;
+using ScaffoldLib.Maui;
 
 namespace Sample.Views;
 

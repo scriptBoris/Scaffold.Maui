@@ -1,8 +1,8 @@
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui.Core;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Scaffold.Maui.Platforms.Android;
+namespace ScaffoldLib.Maui.Platforms.Android;
 
 public partial class DisplayMenuItemslayer : IZBufferLayout
 {
@@ -22,7 +22,7 @@ public partial class DisplayMenuItemslayer : IZBufferLayout
             Command = new Command(() => Close().ConfigureAwait(false))
         });
 
-        var obs = ScaffoldView.GetMenuItems(view).CollapsedItems;
+        var obs = Scaffold.GetMenuItems(view).CollapsedItems;
         BindableLayout.SetItemsSource(stackMenu, obs);
 	}
 

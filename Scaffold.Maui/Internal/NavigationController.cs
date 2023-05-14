@@ -1,5 +1,5 @@
-﻿using Scaffold.Maui.Containers;
-using Scaffold.Maui.Core;
+﻿using ScaffoldLib.Maui.Containers;
+using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,15 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Internal
+namespace ScaffoldLib.Maui.Internal
 {
     internal class NavigationController : IDisposable
     {
-        private readonly ScaffoldView _scaffold;
+        private readonly Scaffold _scaffold;
         private readonly ObservableCollection<IFrame> _frames = new();
         private readonly ObservableCollection<View> _navigationStack = new();
 
-        public NavigationController(ScaffoldView layout)
+        public NavigationController(Scaffold layout)
         {
             _scaffold = layout;
             NavigationStack = new(_navigationStack);
@@ -51,6 +51,8 @@ namespace Scaffold.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = NavigationStack.Count > 1,
                 SafeArea = _scaffold.SafeArea,
+                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(view),
+                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(view),
             });
 
             if (oldFrame is View oldFrameView)
@@ -92,6 +94,8 @@ namespace Scaffold.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = hasBackButton,
                 SafeArea = _scaffold.SafeArea,
+                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View),
+                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View),
             });
 
             _scaffold.Children.Remove((View)currentFrame);

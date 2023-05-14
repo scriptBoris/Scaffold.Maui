@@ -1,12 +1,12 @@
 ﻿using Microsoft.Maui.Layouts;
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Containers
+namespace ScaffoldLib.Maui.Containers
 {
     public class ViewWrapper : Layout, ILayoutManager, IViewWrapper
     {
@@ -15,7 +15,7 @@ namespace Scaffold.Maui.Containers
         public ViewWrapper(View view)
         {
             View = view;
-            this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#343434"));
+            this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#242424"));
             Children.Add(view);
         }
 
@@ -75,14 +75,14 @@ namespace Scaffold.Maui.Containers
                     Opacity = 0;
                     TranslationX = 100;
                     await Task.WhenAll(
-                        this.FadeTo(1, ScaffoldView.AnimationTime),
-                        this.TranslateTo(0, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                        this.FadeTo(1, Scaffold.AnimationTime),
+                        this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)
                     );
                     break;
                 case NavigatingTypes.Pop:
                     await Task.WhenAll(
-                        this.FadeTo(0, ScaffoldView.AnimationTime, Easing.CubicOut),
-                        this.TranslateTo(50, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                        this.FadeTo(0, Scaffold.AnimationTime, Easing.CubicOut),
+                        this.TranslateTo(50, 0, Scaffold.AnimationTime, Easing.CubicOut)
                     );
                     break;
                 default:

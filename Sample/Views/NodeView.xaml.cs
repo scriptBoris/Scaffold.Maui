@@ -1,5 +1,5 @@
-using Scaffold.Maui;
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui;
+using ScaffoldLib.Maui.Core;
 
 namespace Sample.Views;
 

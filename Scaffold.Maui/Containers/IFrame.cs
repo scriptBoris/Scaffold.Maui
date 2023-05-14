@@ -1,11 +1,11 @@
-﻿using Scaffold.Maui.Core;
+﻿using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Containers
+namespace ScaffoldLib.Maui.Containers
 {
     public interface IFrame
     {

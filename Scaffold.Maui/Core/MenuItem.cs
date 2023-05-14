@@ -1,4 +1,4 @@
-﻿using Scaffold.Maui.Core;
+﻿using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
-namespace Scaffold.Maui;
+namespace ScaffoldLib.Maui;
 
 public class MenuItem : BindableObject
 {
-    private Core.MenuItemCollection? parent;
+    private MenuItemCollection? parent;
 
     // text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
@@ -101,7 +102,7 @@ public class MenuItem : BindableObject
         set => SetValue(IsVisibleProperty, value);
     }
 
-    internal void SetupParent(Core.MenuItemCollection? parent)
+    internal void SetupParent(MenuItemCollection? parent)
     {
         this.parent = parent;
     }

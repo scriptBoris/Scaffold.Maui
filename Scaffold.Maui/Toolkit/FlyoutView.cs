@@ -1,12 +1,12 @@
-﻿using Scaffold.Maui.Core;
-using Scaffold.Maui.Internal;
+﻿using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Toolkit
+namespace ScaffoldLib.Maui.Toolkit
 {
     internal class FlyoutBackButtonBehavior : IBackButtonBehavior
     {
@@ -66,7 +66,7 @@ namespace Scaffold.Maui.Toolkit
 
         public FlyoutView()
         {
-            ScaffoldView.SetHasNavigationBar(this, false);
+            Scaffold.SetHasNavigationBar(this, false);
             ColumnSpacing = 0;
             ColumnDefinitions = new ColumnDefinitionCollection
             {
@@ -179,7 +179,7 @@ namespace Scaffold.Maui.Toolkit
 
         private async void UpdateDetail(View? view, View? oldDetail)
         {
-            if (view is ScaffoldView scaffold)
+            if (view is Scaffold scaffold)
                 scaffold.BackButtonBehavior ??= new FlyoutBackButtonBehavior(this);
 
             bool isAnimate = _detailPanel.Children.Count > 0;

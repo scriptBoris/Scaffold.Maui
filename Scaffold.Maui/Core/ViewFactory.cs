@@ -1,13 +1,13 @@
 ﻿using Microsoft.Maui.Controls;
-using Scaffold.Maui.Containers;
-using Scaffold.Maui.Internal;
+using ScaffoldLib.Maui.Containers;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Core
+namespace ScaffoldLib.Maui.Core
 {
     public class ViewFactory
     {
@@ -33,7 +33,7 @@ namespace Scaffold.Maui.Core
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok)
         {
 #if ANDROID
-            return new Scaffold.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok);
+            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok);
 #else
             throw new NotImplementedException();
 #endif
@@ -42,7 +42,7 @@ namespace Scaffold.Maui.Core
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, string cancel)
         {
 #if ANDROID
-            return new Scaffold.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok, cancel);
+            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayAlertLayer(title, message, ok, cancel);
 #else
             throw new NotImplementedException();
 #endif
@@ -51,7 +51,7 @@ namespace Scaffold.Maui.Core
         public virtual IZBufferLayout CreateDisplayMenuItemslayer(View view)
         {
 #if ANDROID
-            return new Scaffold.Maui.Platforms.Android.DisplayMenuItemslayer(view);
+            return new global::ScaffoldLib.Maui.Platforms.Android.DisplayMenuItemslayer(view);
 #else
             throw new NotImplementedException();
 #endif

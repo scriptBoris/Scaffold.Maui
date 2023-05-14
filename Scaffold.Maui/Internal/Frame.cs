@@ -1,6 +1,6 @@
 ﻿using Microsoft.Maui.Layouts;
-using Scaffold.Maui.Containers;
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui.Containers;
+using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Internal
+namespace ScaffoldLib.Maui.Internal
 {
     [DebuggerDisplay($"Frame :: {{{nameof(ViewType)}}}")]
     public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisappear, IRemovedFromNavigation
@@ -115,7 +115,7 @@ namespace Scaffold.Maui.Internal
         public void DrawLayout()
         {
             bool oldIsVisible = NavigationBar != null;
-            bool isVisible = ScaffoldView.GetHasNavigationBar(_view);
+            bool isVisible = Scaffold.GetHasNavigationBar(_view);
             if (oldIsVisible != isVisible)
             {
                 if (isVisible)
@@ -151,12 +151,12 @@ namespace Scaffold.Maui.Internal
             if (e.NavigationType == NavigatingTypes.Replace)
             {
                 this.Opacity = 0;
-                await this.FadeTo(1, ScaffoldView.AnimationTime);
+                await this.FadeTo(1, Scaffold.AnimationTime);
                 return;
             }
 
-            bool oldHasBar = e.OldContent != null ? ScaffoldView.GetHasNavigationBar(e.OldContent) : false;
-            bool newHasBar = ScaffoldView.GetHasNavigationBar(e.NewContent);
+            bool oldHasBar = e.OldContent != null ? Scaffold.GetHasNavigationBar(e.OldContent) : false;
+            bool newHasBar = Scaffold.GetHasNavigationBar(e.NewContent);
             if (oldHasBar != newHasBar)
             {
                 switch (e.NavigationType)
@@ -165,14 +165,14 @@ namespace Scaffold.Maui.Internal
                         this.Opacity = 0;
                         this.TranslationX = 100;
                         await Task.WhenAll(
-                            this.FadeTo(1, ScaffoldView.AnimationTime),
-                            this.TranslateTo(0, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                            this.FadeTo(1, Scaffold.AnimationTime),
+                            this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)
                         );
                         break;
                     case NavigatingTypes.Pop:
                         await Task.WhenAll(
-                            this.FadeTo(0, ScaffoldView.AnimationTime, Easing.CubicOut),
-                            this.TranslateTo(50, 0, ScaffoldView.AnimationTime, Easing.CubicOut)
+                            this.FadeTo(0, Scaffold.AnimationTime, Easing.CubicOut),
+                            this.TranslateTo(50, 0, Scaffold.AnimationTime, Easing.CubicOut)
                         );
                         break;
                     default:

@@ -1,11 +1,11 @@
-using Scaffold.Maui;
+using ScaffoldLib.Maui;
 using System.Windows.Input;
 
 namespace Sample.Views;
 
 public partial class MasterView
 {
-	private List<ScaffoldView> navigations = new();
+	private List<Scaffold> navigations = new();
 
 	public MasterView()
 	{
@@ -37,8 +37,8 @@ public partial class MasterView
 				default:
 					throw new ArgumentException();
 			}
-			nav = new ScaffoldView();
-			nav.PushAsync(view);
+			nav = new Scaffold();
+			nav.PushAsync(view).ConfigureAwait(false);
 			navigations.Add(nav);
 		}
 		Detail = nav;

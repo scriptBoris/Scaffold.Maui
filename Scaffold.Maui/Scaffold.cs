@@ -1,13 +1,10 @@
-﻿using ButtonSam.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Layouts;
-using Microsoft.Maui.LifecycleEvents;
-using Scaffold.Maui.Core;
-using Scaffold.Maui.Internal;
+﻿using Microsoft.Maui.Layouts;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 
-namespace Scaffold.Maui;
+namespace ScaffoldLib.Maui;
 
 public interface IScaffold : IScaffoldProvider
 {
@@ -28,17 +25,17 @@ public interface IScaffold : IScaffoldProvider
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
 }
 
-public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
+public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
 {
     public const ushort AnimationTime = 180;
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
 
-    public ScaffoldView()
+    public Scaffold()
     {
 #if ANDROID
-        SafeArea = Scaffold.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
+        SafeArea = global::ScaffoldLib.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
 #endif
         _navigationController = new(this);
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
@@ -52,27 +49,23 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
     public static readonly BindableProperty ScaffoldContextProperty = BindableProperty.CreateAttached(
         "ScaffoldContext",
         typeof(IScaffold),
-        typeof(ScaffoldView),
+        typeof(Scaffold),
         null
     );
-    internal static void SetScaffoldContext(BindableObject b, IScaffold value)
-    {
+    internal static void SetScaffoldContext(BindableObject b, IScaffold value) =>
         b.SetValue(ScaffoldContextProperty, value);
-    }
-    public static IScaffold? GetScaffoldContext(BindableObject b)
-    {
-        return b.GetValue(ScaffoldContextProperty) as IScaffold;
-    }
+    public static IScaffold? GetScaffoldContext(BindableObject b) =>
+        b.GetValue(ScaffoldContextProperty) as IScaffold;
 
     // title
     public static readonly BindableProperty TitleProperty = BindableProperty.CreateAttached(
         "ScaffoldTitle",
         typeof(string),
-        typeof(ScaffoldView),
+        typeof(Scaffold),
         null,
         propertyChanged:(b,o,n) =>
         {
-            if (GetScaffoldContext(b) is ScaffoldView scaffold)
+            if (GetScaffoldContext(b) is Scaffold scaffold)
             {
                 var navBar = scaffold
                     ._navigationController
@@ -86,24 +79,20 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
             }
         }
     );
-    public static void SetTitle(BindableObject b, string? value)
-    {
+    public static void SetTitle(BindableObject b, string? value) => 
         b.SetValue(TitleProperty, value);
-    }
-    public static string? GetTitle(BindableObject b)
-    {
-        return b.GetValue(TitleProperty) as string;
-    }
+    public static string? GetTitle(BindableObject b) => 
+        b.GetValue(TitleProperty) as string;
 
     // has navigation bar
     public static readonly BindableProperty HasNavigationBarProperty = BindableProperty.CreateAttached(
         "ScaffoldHasNavigationBar",
         typeof(bool),
-        typeof(ScaffoldView),
+        typeof(Scaffold),
         true,
         propertyChanged:(b,o,n) =>
         {
-            if (GetScaffoldContext(b) is ScaffoldView scaffold)
+            if (GetScaffoldContext(b) is Scaffold scaffold)
             {
                 scaffold
                     ._navigationController
@@ -115,20 +104,70 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
             }
         }
     );
-    public static void SetHasNavigationBar(BindableObject b, bool value)
-    {
+    public static void SetHasNavigationBar(BindableObject b, bool value) =>
         b.SetValue(HasNavigationBarProperty, value);
-    }
-    public static bool GetHasNavigationBar(BindableObject b)
+    public static bool GetHasNavigationBar(BindableObject b) =>
+        (bool)b.GetValue(HasNavigationBarProperty);
+
+    // navigation bar background color (static)
+    public static readonly BindableProperty NavigationBarBackgroundColorProperty = BindableProperty.CreateAttached(
+        "ScaffoldNavigationBarBGColor",
+        typeof(Color),
+        typeof(Scaffold),
+        Color.FromArgb("#6200EE"),
+        propertyChanged:(b,o,n) =>
+        {
+            if (GetScaffoldContext(b) is Scaffold context)
+                context
+                    ._navigationController
+                    .Frames
+                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .NavigationBar?
+                    .UpdateNavigationBarBackgroundColor((Color)n);
+        }
+    );
+    public static void SetNavigationBarBackgroundColor(BindableObject b, Color value) =>
+        b.SetValue(NavigationBarBackgroundColorProperty, value);
+    public static Color GetNavigationBarBackgroundColor(BindableObject b) =>
+        (Color)b.GetValue(NavigationBarBackgroundColorProperty);
+    public Color NavigationBarBackgroundColor
     {
-        return (bool)b.GetValue(HasNavigationBarProperty);
+        get => (Color)GetValue(NavigationBarBackgroundColorProperty);
+        set => SetValue(NavigationBarBackgroundColorProperty, value);
+    }
+
+    // navigation bar foreground color (static)
+    public static readonly BindableProperty NavigationBarForegroundColorProperty = BindableProperty.CreateAttached(
+        "ScaffoldNavigationBarFGColor",
+        typeof(Color),
+        typeof(Scaffold),
+        Colors.White,
+        propertyChanged: (b, o, n) =>
+        {
+            if (GetScaffoldContext(b) is Scaffold context)
+                context
+                    ._navigationController
+                    .Frames
+                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .NavigationBar?
+                    .UpdateNavigationBarForegroundColor((Color)n);
+        }
+    );
+    public static void SetNavigationBarForegroundColor(BindableObject b, Color value) =>
+        b.SetValue(NavigationBarForegroundColorProperty, value);
+    public static Color GetNavigationBarForegroundColor(BindableObject b) =>
+        (Color)b.GetValue(NavigationBarForegroundColorProperty);
+    public Color NavigationBarForegroundColor
+    {
+        get => (Color)GetValue(NavigationBarForegroundColorProperty);
+        set => SetValue(NavigationBarForegroundColorProperty, value);
     }
 
     // menu items
     public static readonly BindableProperty MenuItemsProperty = BindableProperty.CreateAttached(
         "ScaffoldMenuItems",
         typeof(Core.MenuItemCollection),
-        typeof(ScaffoldView),
+        typeof(Scaffold),
         null,
         defaultValueCreator: b =>
         {
@@ -136,7 +175,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         },
         propertyChanged: (b,o,n) =>
         {
-            if (GetScaffoldContext(b) is ScaffoldView context)
+            if (GetScaffoldContext(b) is Scaffold context)
             {
                 context
                     ._navigationController
@@ -152,10 +191,11 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         return (Core.MenuItemCollection)b.GetValue(MenuItemsProperty);
     }
 
+    // view factory
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
         nameof(ViewFactory),
         typeof(ViewFactory),
-        typeof(ScaffoldView),
+        typeof(Scaffold),
         new ViewFactory()
     );
     public ViewFactory ViewFactory
@@ -163,8 +203,6 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
         get => (ViewFactory)GetValue(ViewFactoryProperty);  
         set => SetValue(ViewFactoryProperty, value);
     }
-    //public ViewFactory ViewFactory { get; set; } = new();
-
     #endregion bindable props
 
     #region props
@@ -308,7 +346,7 @@ public class ScaffoldView : Layout, IScaffold, ILayoutManager, IDisposable, IBac
 
     public async Task PushAsync(View view, bool isAnimated = true)
     {
-        ScaffoldView.SetScaffoldContext(view, this);
+        Scaffold.SetScaffoldContext(view, this);
         await _navigationController.PushAsync(view, isAnimated);
     }
 
@@ -413,6 +451,6 @@ public static class ScaffoldExtensions
 {
     public static IScaffold? GetContext(this View view)
     {
-        return ScaffoldView.GetScaffoldContext(view);
+        return Scaffold.GetScaffoldContext(view);
     }
 }

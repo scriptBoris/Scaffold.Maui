@@ -1,16 +1,18 @@
 using Android.Content;
 using Microsoft.Maui.Controls;
-using Scaffold.Maui.Containers;
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui.Containers;
+using ScaffoldLib.Maui.Core;
+using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
-namespace Scaffold.Maui.Platforms.Android;
+namespace ScaffoldLib.Maui.Platforms.Android;
 
 public partial class NavigationBar : INavigationBar, IDisposable
 {
     private readonly View _view;
     private readonly IScaffold _context;
-    private Core.MenuItemCollection? menuItems;
+    private MenuItemCollection? menuItems;
     private IBackButtonBehavior? backButtonBehavior;
+    private Color _foregroundColor = Colors.Black;
 
     public NavigationBar(View view)
 	{
@@ -27,9 +29,16 @@ public partial class NavigationBar : INavigationBar, IDisposable
     public string? Title 
     { 
         get => labelTitle.Text;
-        set
+        set => labelTitle.Text = value;
+    }
+
+    public Color ForegroundColor
+    {
+        get => _foregroundColor;
+        set 
         {
-            labelTitle.Text = value;
+            _foregroundColor = value;
+            OnPropertyChanged(nameof(ForegroundColor));
         }
     }
 
@@ -51,13 +60,13 @@ public partial class NavigationBar : INavigationBar, IDisposable
         if (backButtonBehavior?.OverrideSoftwareBackButtonAction(_context) == true)
             return;
 
-        if (_context is ScaffoldView scaffold)
+        if (_context is Scaffold scaffold)
             scaffold.SoftwareBackButtonInternal();
     }
 
     private void OnMenuButton()
     {
-        if (_view.GetContext() is ScaffoldView scaffold)
+        if (_view.GetContext() is Scaffold scaffold)
             scaffold.ShowCollapsedMenusInternal(_view);
     }
 
@@ -65,6 +74,8 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         Padding = e.SafeArea;
         UpdateBackButtonVisual(e.HasBackButton);
+        UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
+        UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
 
         if (!e.IsAnimating)
             return;
@@ -73,10 +84,10 @@ public partial class NavigationBar : INavigationBar, IDisposable
         {
             case NavigatingTypes.Push:
                 this.Opacity = 0;
-                await this.FadeTo(1, ScaffoldView.AnimationTime);
+                await this.FadeTo(1, Scaffold.AnimationTime);
                 break;
             case NavigatingTypes.Pop:
-                await this.FadeTo(0, ScaffoldView.AnimationTime);
+                await this.FadeTo(0, Scaffold.AnimationTime);
                 break;
             default:
                 break;
@@ -94,7 +105,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     private void UpdateTitle(View view)
     {
-        labelTitle.Text = ScaffoldView.GetTitle(view);
+        labelTitle.Text = Scaffold.GetTitle(view);
     }
 
     public void UpdateMenuItems(View view)
@@ -105,7 +116,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
             menuItems.Dispose();
         }
 
-        menuItems = ScaffoldView.GetMenuItems(view);
+        menuItems = Scaffold.GetMenuItems(view);
         menuItems.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
         bool colapseVisible = menuItems.CollapsedItems.Count > 0;
 
@@ -131,5 +142,18 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         backButtonBehavior = behavior;
         UpdateBackButtonVisual(backButton.IsVisible);
+    }
+
+    public void UpdateNavigationBarBackgroundColor(Color color)
+    {
+        BackgroundColor = color;
+    }
+
+    public void UpdateNavigationBarForegroundColor(Color color)
+    {
+        imageBackButton.TintColor = color;
+        labelTitle.TextColor = color;
+        imageMenu.TintColor = color;
+        ForegroundColor = color;
     }
 }

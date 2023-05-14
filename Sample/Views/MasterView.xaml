@@ -2,13 +2,13 @@
 <toolkit:FlyoutView
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:scaffold="clr-namespace:Scaffold.Maui;assembly=Scaffold.Maui"
-    xmlns:toolkit="clr-namespace:Scaffold.Maui.Toolkit;assembly=Scaffold.Maui"
+    xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+    xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit;assembly=Scaffold.Maui"
     xmlns:local="clr-namespace:Sample.Views"
     x:Class="Sample.Views.MasterView"
     x:DataType="local:MasterView"
-    scaffold:ScaffoldView.Title="Master view"
-    scaffold:ScaffoldView.HasNavigationBar="False">
+    scaffold:Scaffold.Title="Master view"
+    scaffold:Scaffold.HasNavigationBar="False">
     <StackLayout Padding="5">
         <Button Text="Home"
                 Command="{Binding CommandSelectMenu}"

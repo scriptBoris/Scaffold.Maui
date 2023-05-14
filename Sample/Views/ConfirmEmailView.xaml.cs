@@ -1,4 +1,4 @@
-using Scaffold.Maui;
+using ScaffoldLib.Maui;
 using System.Windows.Input;
 
 namespace Sample.Views;

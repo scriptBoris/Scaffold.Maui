@@ -1,11 +1,11 @@
-﻿using Scaffold.Maui.Core;
+﻿using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Containers;
+namespace ScaffoldLib.Maui.Containers;
 
 public interface INavigationBar
 {
@@ -13,6 +13,8 @@ public interface INavigationBar
     Task UpdateVisual(NavigatingArgs args);
     void UpdateMenuItems(View view);
     void UpdateNavigationBarVisible(bool visible);
+    void UpdateNavigationBarBackgroundColor(Color color);
+    void UpdateNavigationBarForegroundColor(Color color);
     void UpdateBackButtonBehavior(IBackButtonBehavior? behavior);
 }
 

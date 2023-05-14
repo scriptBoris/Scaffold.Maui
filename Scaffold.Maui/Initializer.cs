@@ -1,28 +1,27 @@
 ﻿using ButtonSam.Maui;
-using Scaffold.Maui.Internal;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui
+namespace ScaffoldLib.Maui;
+
+public static class Initializer
 {
-    public static class Initializer
+    public static MauiAppBuilder UseScaffold(this MauiAppBuilder builder)
     {
-        public static MauiAppBuilder UseScaffold(this MauiAppBuilder builder)
-        {
 #if ANDROID
-            Platforms.Android.ScaffoldAndroid.Init(builder);
+        Platforms.Android.ScaffoldAndroid.Init(builder);
 #endif
 
-            builder.ConfigureMauiHandlers(h =>
-            {
-                h.AddHandler(typeof(ImageTint), typeof(ImageTintHandler));
-            });
+        builder.ConfigureMauiHandlers(h =>
+        {
+            h.AddHandler(typeof(ImageTint), typeof(ImageTintHandler));
+        });
 
-            builder.UseButtonSam();
-            return builder;
-        }
+        builder.UseButtonSam();
+        return builder;
     }
 }

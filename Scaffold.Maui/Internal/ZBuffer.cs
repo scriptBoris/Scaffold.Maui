@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Scaffold.Maui.Core;
+using ScaffoldLib.Maui.Core;
 
-namespace Scaffold.Maui.Internal;
+namespace ScaffoldLib.Maui.Internal;
 
 internal class ZBuffer : Layout, ILayoutManager, IDisposable
 {

@@ -1,4 +1,4 @@
-﻿using Scaffold.Maui;
+﻿using ScaffoldLib.Maui;
 
 namespace Sample;
 
@@ -7,7 +7,8 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+        Content = new Scaffold();
     }
 
-    public ScaffoldView Scaffold => scaffold;
+    public Scaffold Scaffold => (Scaffold)Content;
 }

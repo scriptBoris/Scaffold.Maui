@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Core;
+namespace ScaffoldLib.Maui.Core;
 
 public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
 {

@@ -1,12 +1,12 @@
-﻿using Scaffold.Maui.Containers;
-using Scaffold.Maui.Core;
+﻿using ScaffoldLib.Maui.Containers;
+using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scaffold.Maui.Internal
+namespace ScaffoldLib.Maui.Internal
 {
     internal static class Extensions
     {

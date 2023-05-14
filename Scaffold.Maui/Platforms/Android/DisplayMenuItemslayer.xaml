@@ -2,8 +2,9 @@
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-      xmlns:internal="clr-namespace:Scaffold.Maui.Internal"
-      x:Class="Scaffold.Maui.Platforms.Android.DisplayMenuItemslayer"
+      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+      x:Class="ScaffoldLib.Maui.Platforms.Android.DisplayMenuItemslayer"
       x:Name="root"
       BackgroundColor="Transparent">
     
@@ -27,7 +28,7 @@
                      MinimumWidthRequest="130"
                      Spacing="0">
             <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="internal:ButtonMenu">
+                <DataTemplate x:DataType="scaffold:MenuItem">
                     <sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
                                 TapCommandParameter="{Binding .}"
                                 CornerRadius="0"

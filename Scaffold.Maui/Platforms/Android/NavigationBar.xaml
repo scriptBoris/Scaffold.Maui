@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:local="clr-namespace:Scaffold.Maui.Platforms.Android"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-      xmlns:internal="clr-namespace:Scaffold.Maui.Internal"
-      xmlns:scaffold="clr-namespace:Scaffold.Maui"
-      x:Class="Scaffold.Maui.Platforms.Android.NavigationBar"
+      xmlns:local="clr-namespace:ScaffoldLib.Maui.Platforms.Android"
+      xmlns:droid="clr-namespace:ScaffoldLib.Maui.Platforms.Android.Internal"
+      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+      x:Class="ScaffoldLib.Maui.Platforms.Android.NavigationBar"
       x:DataType="local:NavigationBar"
-      BackgroundColor="{AppThemeBinding Light=#ee1d23, Dark=#171717}">
+      x:Name="navigationBar">
     
     <StackLayout Orientation="Horizontal"
                  Spacing="0"
@@ -20,21 +21,20 @@
                     Margin="0,0,0,0"
                     CornerRadius="20"
                     Padding="8"
-                    TapColor="{AppThemeBinding Light=#DFFF, Dark=#DFFF}"
+                    TapColor="#DDFFFFFF"
                     x:Name="backButton">
             <internal:ImageTint Source="ic_arrow_left.png"
-                                TintColor="#FFF"
                                 HeightRequest="24"
                                 WidthRequest="24"
                                 x:Name="imageBackButton"/>
         </sam:Button>
 
+        <!--title-->
         <Label FontSize="22"
                Margin="13,0,0,0"
                VerticalTextAlignment="Center"
                HorizontalOptions="FillAndExpand"
                LineBreakMode="TailTruncation"
-               TextColor="White"
                x:Name="labelTitle"/>
 
         <!--menu items-->
@@ -44,29 +44,29 @@
                      x:Name="stackMenu">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:MenuItem">
-                    <internal:ButtonMenu VerticalOptions="Center"
-                                         Text="{Binding Text}"
-                                         TapColor="#DDFFFFFF"
-                                         ImageColor="#FFF"
-                                         ImageSource="{Binding ImageSource}"
-                                         TapCommand="{Binding Command}"/>
+                    <droid:ButtonMenu/>
+                    <!--<droid:ButtonMenu VerticalOptions="Center"
+                                      TapColor="#DDFFFFFF"
+                                      Text="{Binding Text}"
+                                      ImageSource="{Binding ImageSource}"
+                                      TapCommand="{Binding Command}"/>-->
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
-        <!--collapsed menu-->
+        <!--menu button-->
         <sam:Button BackgroundColor="Transparent"
                     VerticalOptions="Center"
                     HorizontalOptions="Start"
                     Margin="5,0,0,0"
                     CornerRadius="20"
                     Padding="8"
-                    TapColor="{AppThemeBinding Light=#DFFF, Dark=#DFFF}"
+                    TapColor="#DDFFFFFF"
                     x:Name="buttonMenu">
             <internal:ImageTint Source="ic_dots_vertical.png"
                                 HeightRequest="24"
                                 WidthRequest="24"
-                                TintColor="#FFF"/>
+                                x:Name="imageMenu"/>
         </sam:Button>
     </StackLayout>
 </Grid>

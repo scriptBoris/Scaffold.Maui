@@ -22,6 +22,7 @@
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
+		<RootNamespace>ScaffoldLib.Maui</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
