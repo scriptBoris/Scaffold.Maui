@@ -71,7 +71,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 var navBar = scaffold
                     ._navigationController
                     .Frames
-                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar;
 
                 if (navBar != null)
@@ -98,10 +98,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 scaffold
                     ._navigationController
                     .Frames
-                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .DrawLayout();
-                    //.NavigationBar?
-                    //.UpdateNavigationBarVisible((bool)n);
             }
         }
     );
@@ -124,17 +122,19 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 {
                     var color = GetNavigationBarBackgroundColor(frame.ViewWrapper.View) ?? n as Color ?? defaultNavigationBarBackgroundColor;
                     frame.NavigationBar?.UpdateNavigationBarBackgroundColor(color);
+                    frame.ResolveStatusBarColor();
                 }
             }
             else if (GetScaffoldContext(b) is Scaffold context)
             {
                 var color = n as Color ?? context.NavigationBarBackgroundColor ?? defaultNavigationBarBackgroundColor;
-                context
+                var frame = context
                     ._navigationController
                     .Frames
-                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
-                    .NavigationBar?
-                    .UpdateNavigationBarBackgroundColor(color);
+                    .LastOrDefault(x => x.ViewWrapper.View == b);
+
+                frame?.NavigationBar?.UpdateNavigationBarBackgroundColor(color);
+                frame?.ResolveStatusBarColor();
             }
         }
     );
@@ -171,7 +171,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 context
                     ._navigationController
                     .Frames
-                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
                     .UpdateNavigationBarForegroundColor(color);
             }
@@ -204,7 +204,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 context
                     ._navigationController
                     .Frames
-                    .FirstOrDefault(x => x.ViewWrapper.View == b)?
+                    .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
                     .UpdateMenuItems((View)b);
             }
@@ -214,6 +214,27 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     {
         return (Core.MenuItemCollection)b.GetValue(MenuItemsProperty);
     }
+
+    // status bar foreground color
+    public static readonly BindableProperty StatusBarForegroundColorProperty = BindableProperty.CreateAttached(
+        "StatusBarForegroundColor",
+        typeof(StatusBarColorTypes),
+        typeof(Scaffold),
+        StatusBarColorTypes.DependsByNavigationBarColor,
+        propertyChanged: (b, o, n) =>
+        {
+            if (GetScaffoldContext(b) is Scaffold context)
+                context
+                    ._navigationController
+                    .Frames
+                    .LastOrDefault(x => x.ViewWrapper.View == b && x.IsAppear)?
+                    .ResolveStatusBarColor();
+        }
+    );
+    public static void SetStatusBarForegroundColor(BindableObject b, StatusBarColorTypes value) =>
+        b.SetValue(StatusBarForegroundColorProperty, value);
+    public static StatusBarColorTypes GetStatusBarForegroundColor(BindableObject b) =>
+        (StatusBarColorTypes)b.GetValue(StatusBarForegroundColorProperty);
 
     // view factory
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
@@ -470,6 +491,49 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged -= FramesStackChanged;
         _navigationController.Dispose();
         _zBufer.Dispose();
+    }
+
+    public static async void SetupStatusBarColor(StatusBarColorTypes colorType)
+    {
+#if ANDROID21_0_OR_GREATER
+        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+
+        if (activity == null)
+            activity = await Platforms.Android.ScaffoldAndroid.AwaitActivity.Task;
+
+        if (activity?.Window == null)
+            return;
+
+        //switch (colorType)
+        //{
+        //    case StatusBarColorTypes.Light:
+        //        activity.Window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;
+        //        break;
+        //    case StatusBarColorTypes.Dark:
+        //        activity.Window.DecorView.SystemUiVisibility = (StatusBarVisibility)0;
+        //        break;
+        //    default:
+        //        break;
+        //}
+
+        int i1;
+        int i2;
+        switch (colorType)
+        {
+            case StatusBarColorTypes.Light:
+                i1 = (int)Android.Views.WindowInsetsControllerAppearance.None;
+                i2 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
+                break;
+            case StatusBarColorTypes.Dark:
+                i1 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
+                i2 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
+                break;
+            default:
+                throw new ArgumentException($"value {colorType} is not supported.");
+        }
+        activity.Window.InsetsController?.SetSystemBarsAppearance(i1, i2);
+
+#endif
     }
 }
 

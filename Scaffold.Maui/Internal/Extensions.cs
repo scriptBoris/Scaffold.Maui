@@ -28,8 +28,26 @@ namespace ScaffoldLib.Maui.Internal
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void TryAppearing(this IFrame frame, bool isComplete = false)
+        public static void TryAppearing(this IFrame frame, bool isComplete = false, Color? bgColor = null)
         {
+            if (isComplete == false)
+            {
+                frame.IsAppear = true;
+
+                var statusBarStyle = Scaffold.GetStatusBarForegroundColor(frame.ViewWrapper.View);
+                if (statusBarStyle != StatusBarColorTypes.DependsByNavigationBarColor)
+                {
+                    Scaffold.SetupStatusBarColor(statusBarStyle);
+                }
+                else if (bgColor != null)
+                {
+                    if (bgColor.IsDark())
+                        Scaffold.SetupStatusBarColor(StatusBarColorTypes.Light);
+                    else
+                        Scaffold.SetupStatusBarColor(StatusBarColorTypes.Dark);
+                }
+            }
+
             frame.ViewWrapper.View.TryAppearing(isComplete);
             if (frame is IAppear ap)
                 ap.OnAppear(isComplete);
@@ -37,6 +55,9 @@ namespace ScaffoldLib.Maui.Internal
 
         public static void TryDisappearing(this IFrame frame, bool isComplete = false)
         {
+            if (isComplete == false)
+                frame.IsAppear = false;
+
             frame.ViewWrapper.View.TryDisappearing(isComplete);
             if (frame is IDisappear dis)
                 dis.OnDisappear(isComplete);
@@ -47,6 +68,28 @@ namespace ScaffoldLib.Maui.Internal
             frame.ViewWrapper.View.TryRemoveFromNavigation();
             if (frame is IRemovedFromNavigation rm)
                 rm.OnRemovedFromNavigation();
+        }
+
+        public static void ResolveStatusBarColor(this IFrame frame)
+        {
+            if (!frame.IsAppear)
+                return;
+
+            var type = Scaffold.GetStatusBarForegroundColor(frame.ViewWrapper.View);
+            if (type != StatusBarColorTypes.DependsByNavigationBarColor)
+            {
+                Scaffold.SetupStatusBarColor(type);
+            }
+            else
+            {
+                var rbar = (frame.NavigationBar as View)?.BackgroundColor;
+                var vbar = Scaffold.GetNavigationBarBackgroundColor(frame.ViewWrapper.View);
+                var bgColor = vbar ?? rbar ?? Scaffold.defaultNavigationBarBackgroundColor;
+                if (bgColor.IsDark())
+                    Scaffold.SetupStatusBarColor(StatusBarColorTypes.Light);
+                else
+                    Scaffold.SetupStatusBarColor(StatusBarColorTypes.Dark);
+            }
         }
 
         public static T? ItemOrDefault<T>(this IList<T> self, int index)

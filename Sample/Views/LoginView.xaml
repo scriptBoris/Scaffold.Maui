@@ -6,6 +6,7 @@
              Padding="10"
              scaffold:Scaffold.Title="Login"
              scaffold:Scaffold.HasNavigationBar="False"
+             scaffold:Scaffold.StatusBarForegroundColor="{AppThemeBinding Light=Dark, Dark=Light}"
              VerticalOptions="CenterAndExpand">
     <Image Source="dotnet_bot.png"
            HeightRequest="130"/>

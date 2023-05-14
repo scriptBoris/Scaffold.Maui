@@ -5,7 +5,7 @@
              xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
              x:Class="Sample.Views.ConfirmEmailView"
              x:DataType="local:ConfirmEmailView"
-             scaffold:Scaffold.NavigationBarForegroundColor="Black"
+             scaffold:Scaffold.NavigationBarForegroundColor="#333"
              scaffold:Scaffold.NavigationBarBackgroundColor="White"
              scaffold:Scaffold.Title="Confirm email">
 

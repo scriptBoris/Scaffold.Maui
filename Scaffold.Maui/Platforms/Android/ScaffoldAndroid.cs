@@ -8,6 +8,8 @@ namespace ScaffoldLib.Maui.Platforms.Android
 {
     public static class ScaffoldAndroid
     {
+        internal static TaskCompletionSource<Activity> AwaitActivity { get; private set; } = new();
+
         internal static void Init(MauiAppBuilder builder)
         {
             builder.ConfigureLifecycleEvents(x =>
@@ -82,6 +84,7 @@ namespace ScaffoldLib.Maui.Platforms.Android
                 // todo разобраться как правильно и безопасно делать statusbar прозрачным и что бы можно было разместить контент под ним
                 root.SystemUiVisibility = (StatusBarVisibility)flag;
             }
+            AwaitActivity.TrySetResult(a);
         }
 
         private static MView? Find(MView view)

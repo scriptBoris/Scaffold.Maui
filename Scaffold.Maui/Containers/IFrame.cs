@@ -9,6 +9,7 @@ namespace ScaffoldLib.Maui.Containers
 {
     public interface IFrame
     {
+        bool IsAppear { get; set; }
         INavigationBar? NavigationBar { get; }
         IViewWrapper ViewWrapper { get; }
         View? Overlay { get; set; }

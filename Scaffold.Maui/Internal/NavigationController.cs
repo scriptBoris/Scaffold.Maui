@@ -39,9 +39,13 @@ namespace ScaffoldLib.Maui.Internal
             _navigationStack.Add(view);
             _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)frame);
 
+
+            var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor;
+            var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
+
             TryHideKeyboard();
             oldFrame?.TryDisappearing();
-            frame.TryAppearing();
+            frame.TryAppearing(false, bgColor);
 
             await frame.UpdateVisual(new NavigatingArgs
             {
@@ -51,8 +55,8 @@ namespace ScaffoldLib.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = NavigationStack.Count > 1,
                 SafeArea = _scaffold.SafeArea,
-                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor,
-                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor,
+                NavigationBarBackgroundColor = bgColor,
+                NavigationBarForegroundColor = fgColor,
             });
 
             if (oldFrame is View oldFrameView)
@@ -82,9 +86,12 @@ namespace ScaffoldLib.Maui.Internal
             _navigationStack.Remove(currentFrame.ViewWrapper.View);
             _frames.Remove(currentFrame);
 
+            var bgColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor;
+            var fgColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
+            
             TryHideKeyboard();
             currentFrame.TryDisappearing();
-            prevFrame.TryAppearing();
+            prevFrame.TryAppearing(false, bgColor);
 
             await currentFrame.UpdateVisual(new NavigatingArgs
             {
@@ -94,8 +101,8 @@ namespace ScaffoldLib.Maui.Internal
                 IsAnimating = isAnimated,
                 HasBackButton = hasBackButton,
                 SafeArea = _scaffold.SafeArea,
-                NavigationBarBackgroundColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor,
-                NavigationBarForegroundColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor,
+                NavigationBarBackgroundColor = bgColor,
+                NavigationBarForegroundColor = fgColor,
             });
 
             _scaffold.Children.Remove((View)currentFrame);

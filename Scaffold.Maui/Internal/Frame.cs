@@ -30,6 +30,7 @@ namespace ScaffoldLib.Maui.Internal
         }
 
         internal string ViewType => _view.GetType().Name;
+        public bool IsAppear { get; set; }
         public INavigationBar? NavigationBar { get; private set; }
         public IViewWrapper ViewWrapper { get; private set; }
         public View? Overlay 
