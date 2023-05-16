@@ -10,31 +10,30 @@
              scaffold:Scaffold.Title="Confirm email">
 
     <scaffold:Scaffold.MenuItems>
-        <scaffold:MenuItem Text="Retry 1"
+        <scaffold:MenuItem Text="Retry"
                            ImageSource="refresh.png"
-                           ImageColor="White"
                            Command="{Binding CommandRetry}"/>
-
-        <scaffold:MenuItem Text="Retry 2"
+        <scaffold:MenuItem Text="Retry (green)"
                            ImageSource="refresh.png"
-                           ImageColor="White"
+                           Color="Green"
                            Command="{Binding CommandRetry}"/>
-
-        <scaffold:MenuItem Text="Retry 3"
-                           ImageSource="refresh.png"
-                           ImageColor="White"
-                           IsCollapsed="True"
+        <scaffold:MenuItem Text="Chrome"
+                           UseOriginalColor="True"
+                           ImageSource="chrome.png"
                            Command="{Binding CommandRetry}"/>
 
         <scaffold:MenuItem Text="Retry 4"
                            ImageSource="refresh.png"
-                           ImageColor="White"
                            IsCollapsed="True"
                            Command="{Binding CommandRetry}"/>
-        
-        <scaffold:MenuItem Text="Retry 5"
-                           ImageColor="White"
+        <scaffold:MenuItem Text="Retry (green)"
                            ImageSource="refresh.png"
+                           Color="Green"
+                           IsCollapsed="True"
+                           Command="{Binding CommandRetry}"/>
+        <scaffold:MenuItem Text="Chrome"
+                           UseOriginalColor="True"
+                           ImageSource="chrome.png"
                            IsCollapsed="True"
                            Command="{Binding CommandRetry}"/>
     </scaffold:Scaffold.MenuItems>

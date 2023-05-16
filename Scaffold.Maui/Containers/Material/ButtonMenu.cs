@@ -23,36 +23,73 @@ public class ButtonMenu : ButtonSam.Maui.Button
         set => SetValue(ImageSourceProperty, value);
     }
 
-    // foreground color
-    public static readonly BindableProperty ForegroundColorProperty = BindableProperty.Create(
-        nameof(ForegroundColor),
-        typeof(Color),
-        typeof(ButtonMenu),
-        null,
-        propertyChanged:(b,o,n) =>
-        {
-            if (b is ButtonMenu self && self.Content is ImageTint img)
-                img.TintColor = n as Color;
-        }
-    );
-    public Color? ForegroundColor
-    {
-        get => GetValue(ForegroundColorProperty) as Color;
-        set => SetValue(ForegroundColorProperty, value);
-    }
-
     // text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
         nameof(Text),
         typeof(string),
         typeof(ButtonMenu),
-        null, 
+        null,
         propertyChanged: Update
     );
     public string? Text
     {
         get => GetValue(TextProperty) as string;
         set => SetValue(TextProperty, value);
+    }
+
+    // foreground color
+    public static readonly BindableProperty ForegroundColorProperty = BindableProperty.Create(
+        nameof(ForegroundColor),
+        typeof(Color),
+        typeof(ButtonMenu),
+        Colors.White,
+        propertyChanged:(b,o,n) =>
+        {
+            if (b is ButtonMenu self)
+                self.UpdateColor();
+        }
+    );
+    public Color ForegroundColor
+    {
+        get => (Color)GetValue(ForegroundColorProperty);
+        set => SetValue(ForegroundColorProperty, value);
+    }
+
+    // Menu item color
+    public static readonly BindableProperty MenuItemColorProperty = BindableProperty.Create(
+        nameof(MenuItemColor),
+        typeof(Color),
+        typeof(ButtonMenu),
+        null,
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is ButtonMenu self)
+                self.UpdateColor();
+        }
+    );
+    public Color? MenuItemColor
+    {
+        get => GetValue(MenuItemColorProperty) as Color;
+        set => SetValue(MenuItemColorProperty, value);
+    }
+
+
+    // use original color
+    public static readonly BindableProperty UseOriginalColorProperty = BindableProperty.Create(
+        nameof(UseOriginalColor),
+        typeof(bool),
+        typeof(ButtonMenu),
+        false,
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is ButtonMenu self)
+                self.UpdateColor();
+        }
+    );
+    public bool UseOriginalColor
+    {
+        get => (bool)GetValue(UseOriginalColorProperty);
+        set => SetValue(UseOriginalColorProperty, value);
     }
 
     private static void Update(BindableObject b, object old, object newest)
@@ -74,7 +111,6 @@ public class ButtonMenu : ButtonSam.Maui.Button
                 WidthRequest = 26,
                 HeightRequest = 26,
                 Source = ImageSource,
-                TintColor = ForegroundColor,
             };
             CornerRadius = 18;
         }
@@ -86,6 +122,26 @@ public class ButtonMenu : ButtonSam.Maui.Button
                 Text = Text,
             };
             CornerRadius = 8;
+        }
+    }
+
+    private void UpdateColor()
+    {
+        var color = MenuItemColor ?? ForegroundColor;
+
+        if (UseOriginalColor)
+            color = null;
+
+        switch (Content)
+        {
+            case ImageTint img:
+                img.TintColor = color;
+                break;
+            case Label label:
+                label.TextColor = color;
+                break;
+            default:
+                break;
         }
     }
 }

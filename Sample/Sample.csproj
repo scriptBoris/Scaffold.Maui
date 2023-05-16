@@ -50,6 +50,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\chrome.svg" />
 	  <None Remove="Resources\Images\refresh.svg" />
 	</ItemGroup>
 

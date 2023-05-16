@@ -43,6 +43,9 @@
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:MenuItem">
                     <local:ButtonMenu VerticalOptions="Center"
+                                      ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
+                                      MenuItemColor="{Binding Color}"
+                                      UseOriginalColor="{Binding UseOriginalColor}"
                                       TapColor="{Binding TapColor, Source={Reference navigationBar}}"
                                       Text="{Binding Text}"
                                       ImageSource="{Binding ImageSource}"

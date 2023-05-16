@@ -40,17 +40,30 @@ public class MenuItem : BindableObject
         set => SetValue(ImageSourceProperty, value);
     }
 
-    // image color
-    public static readonly BindableProperty ImageColorProperty = BindableProperty.Create(
-        nameof(ImageColor),
+    // color
+    public static readonly BindableProperty ColorProperty = BindableProperty.Create(
+        nameof(Color),
         typeof(Color),
         typeof(MenuItem),
         null
     );
-    public Color? ImageColor
+    public Color? Color
     {
-        get => GetValue(ImageColorProperty) as Color;
-        set => SetValue(ImageColorProperty, value);
+        get => GetValue(ColorProperty) as Color;
+        set => SetValue(ColorProperty, value);
+    }
+
+    // use original color
+    public static readonly BindableProperty UseOriginalColorProperty = BindableProperty.Create(
+        nameof(UseOriginalColor),
+        typeof(bool),
+        typeof(MenuItem),
+        false
+    );
+    public bool UseOriginalColor
+    {
+        get => (bool)GetValue(UseOriginalColorProperty);
+        set => SetValue(UseOriginalColorProperty, value);
     }
 
     // command

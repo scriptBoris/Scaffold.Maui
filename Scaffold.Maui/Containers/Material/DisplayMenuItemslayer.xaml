@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+      xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
       x:Class="ScaffoldLib.Maui.Containers.Material.DisplayMenuItemslayer"
       x:Name="root"
@@ -29,7 +30,16 @@
                      Spacing="0">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:MenuItem">
-                    <sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
+                    <local:ButtonMenuOnPopup 
+                        TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
+                        TapCommandParameter="{Binding .}"
+                        CornerRadius="0"
+                        Padding="10"
+                        BackgroundColor="Transparent"
+                        UseOriginalColor="{Binding UseOriginalColor}"
+                        Text="{Binding Text}"
+                        ImageSource="{Binding ImageSource}"/>
+                    <!--<sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
                                 TapCommandParameter="{Binding .}"
                                 CornerRadius="0"
                                 Padding="10"
@@ -44,7 +54,7 @@
                                    Margin="0,0,10,0"
                                    VerticalTextAlignment="Center"/>
                         </HorizontalStackLayout>
-                    </sam:Button>
+                    </sam:Button>-->
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
