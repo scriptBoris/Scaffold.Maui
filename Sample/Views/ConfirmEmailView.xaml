@@ -5,8 +5,8 @@
              xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
              x:Class="Sample.Views.ConfirmEmailView"
              x:DataType="local:ConfirmEmailView"
-             scaffold:Scaffold.NavigationBarForegroundColor="#333"
-             scaffold:Scaffold.NavigationBarBackgroundColor="White"
+             scaffold:Scaffold.NavigationBarForegroundColor="#FFF"
+             scaffold:Scaffold.NavigationBarBackgroundColor="#343434"
              scaffold:Scaffold.Title="Confirm email">
 
     <scaffold:Scaffold.MenuItems>
@@ -14,8 +14,8 @@
                            ImageSource="refresh.png"
                            Command="{Binding CommandRetry}"/>
         <scaffold:MenuItem Text="Retry (green)"
-                           ImageSource="refresh.png"
                            Color="Green"
+                           ImageSource="refresh.png"
                            Command="{Binding CommandRetry}"/>
         <scaffold:MenuItem Text="Chrome"
                            UseOriginalColor="True"

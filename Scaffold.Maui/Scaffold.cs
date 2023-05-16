@@ -355,7 +355,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     internal void ShowCollapsedMenusInternal(View view)
     {
         this.Dispatcher.Dispatch(() => {
-            var overlay = ViewFactory.CreateDisplayMenuItemslayer(view);
+            var overlay = ViewFactory.CreateCollapsedMenuItemsLayer(view);
             _zBufer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
         });
     }

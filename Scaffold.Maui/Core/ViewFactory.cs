@@ -19,11 +19,7 @@ namespace ScaffoldLib.Maui.Core
 
         public virtual INavigationBar? CreateNavigationBar(View view)
         {
-#if ANDROID
             return new Material.NavigationBar(view);
-#else
-            return null;
-#endif
         }
 
         public virtual IViewWrapper CreateViewWrapper(View view)
@@ -33,29 +29,17 @@ namespace ScaffoldLib.Maui.Core
 
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok)
         {
-#if ANDROID
             return new Material.DisplayAlertLayer(title, message, ok);
-#else
-            throw new NotImplementedException();
-#endif
         }
 
         public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, string cancel)
         {
-#if ANDROID
             return new Material.DisplayAlertLayer(title, message, ok, cancel);
-#else
-            throw new NotImplementedException();
-#endif
         }
 
-        public virtual IZBufferLayout CreateDisplayMenuItemslayer(View view)
+        public virtual IZBufferLayout CreateCollapsedMenuItemsLayer(View view)
         {
-#if ANDROID
             return new Material.CollapsedMenuItemLayer(view);
-#else
-            throw new NotImplementedException();
-#endif
         }
     }
 }

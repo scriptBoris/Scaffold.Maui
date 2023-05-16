@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Internal;
+﻿using ButtonSam.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ScaffoldLib.Maui.Containers.Material;
 /// <summary>
 /// Button menu on navigation bar (non collapsed)
 /// </summary>
-public class ButtonMenu : ButtonSam.Maui.Button
+internal class ButtonMenu : Internal.Button
 {
     private ContentType currentContentType = ContentType.None;
 
@@ -104,6 +105,21 @@ public class ButtonMenu : ButtonSam.Maui.Button
         set => SetValue(UseOriginalColorProperty, value);
     }
     #endregion bindable props
+
+    protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
+    {
+        if (args.Input.X < 0 || args.Input.X > Width)
+        {
+            args.IsPressed = false;
+            return;
+        }
+
+        if (args.Input.Y < 0 || args.Input.Y > Height)
+        {
+            args.IsPressed = false;
+            return;
+        }
+    }
 
     private void Update()
     {

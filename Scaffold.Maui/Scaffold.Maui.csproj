@@ -21,15 +21,17 @@
 		<Version>0.9.11-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>icon.png</PackageIcon>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 		<RootNamespace>ScaffoldLib.Maui</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\Images\ic_arrow_left.svg" />
-	  <None Remove="Resources\Images\ic_dots_horizontal.svg" />
-	  <None Remove="Resources\Images\ic_dots_vertical.svg" />
-	  <None Remove="Resources\Images\ic_scaffold_menu.svg" />
+		<None Include="..\Nuget\icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,15 +46,21 @@
 	  </MauiXaml>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="ButtonSam.Maui" Version="1.0.0" />
+	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">
+	  <PackageReference Include="SkiaSharp" Version="2.88.3" />
 	</ItemGroup>
+
 
 	<ItemGroup>
 	  <MauiImage Include="Resources\Images\ic_arrow_left.svg" />
 	  <MauiImage Include="Resources\Images\ic_dots_horizontal.svg" />
 	  <MauiImage Include="Resources\Images\ic_dots_vertical.svg" />
 	  <MauiImage Include="Resources\Images\ic_scaffold_menu.svg" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <PackageReference Include="ButtonSam.Maui" Version="1.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>

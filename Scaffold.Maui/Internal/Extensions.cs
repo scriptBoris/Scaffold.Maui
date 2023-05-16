@@ -114,6 +114,19 @@ namespace ScaffoldLib.Maui.Internal
             return tsc.Task;
         }
 
+        public static byte[] ToBytes(this Stream str)
+        {
+            byte[] byteArray;
+            str.Position = 0;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                str.CopyTo(ms);
+                byteArray = ms.ToArray();
+            }
+            str.Position = 0;
+            return byteArray;
+        }
+
         public static async Task<IViewHandler> AwaitHandler(this View view)
         {
             if (view.Handler != null)
