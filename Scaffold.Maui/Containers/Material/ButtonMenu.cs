@@ -12,6 +12,9 @@ namespace ScaffoldLib.Maui.Containers.Material;
 /// </summary>
 public class ButtonMenu : ButtonSam.Maui.Button
 {
+    private ContentType currentContentType = ContentType.None;
+
+    #region bindable props
     // image source
     public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(
         nameof(ImageSource), 
@@ -100,51 +103,94 @@ public class ButtonMenu : ButtonSam.Maui.Button
         get => (bool)GetValue(UseOriginalColorProperty);
         set => SetValue(UseOriginalColorProperty, value);
     }
+    #endregion bindable props
 
     private void Update()
     {
+        var oldValue = currentContentType;
+        ContentType newValue;
+
         if (ImageSource != null)
+            newValue = ContentType.Icon;
+        else if (Text != null)
+            newValue = ContentType.Text;
+        else
+            newValue = ContentType.None;
+
+        currentContentType = newValue;
+
+        if (oldValue != newValue)
         {
-            Padding = new Thickness(5);
-            BackgroundColor = Colors.Transparent;
-            Content = new ImageTint
+            switch (newValue)
             {
-                WidthRequest = 26,
-                HeightRequest = 26,
-                Source = ImageSource,
-            };
-            CornerRadius = 18;
+                case ContentType.Icon:
+                    Padding = new Thickness(5);
+                    BackgroundColor = Colors.Transparent;
+                    Content = new ImageTint
+                    {
+                        WidthRequest = 26,
+                        HeightRequest = 26,
+                        Source = ImageSource,
+                    };
+                    CornerRadius = 18;
+                    break;
+
+                case ContentType.Text:
+                    Padding = new Thickness(10);
+                    Content = new Label
+                    {
+                        Text = Text,
+                    };
+                    CornerRadius = 8;
+                    break;
+
+                default:
+                    Content = null;
+                    return;
+            }
+            UpdateColor();
         }
         else
         {
-            Padding = new Thickness(10);
-            Content = new Label
+            switch (newValue)
             {
-                Text = Text,
-            };
-            CornerRadius = 8;
+                case ContentType.Icon:
+                    if (Content is ImageTint img)
+                        img.Source = ImageSource;
+                    break;
+                case ContentType.Text:
+                    if (Content is Label label)
+                        label.Text = Text;
+                    break;
+                default:
+                    break;
+            }
         }
-
-        UpdateColor();
     }
 
     private void UpdateColor()
     {
-        var color = MenuItemColor ?? ForegroundColor;
-
-        if (UseOriginalColor)
-            color = null;
-
         switch (Content)
         {
             case ImageTint img:
-                img.TintColor = color;
+                var iconColor = MenuItemColor ?? ForegroundColor;
+                if (UseOriginalColor)
+                    iconColor = null;
+
+                img.TintColor = iconColor;
                 break;
             case Label label:
-                label.TextColor = color;
+                label.TextColor = MenuItemColor ?? ForegroundColor;
                 break;
             default:
                 break;
         }
+    }
+
+    private enum ContentType
+    {
+        None,
+        Icon,
+        Text,
     }
 }
