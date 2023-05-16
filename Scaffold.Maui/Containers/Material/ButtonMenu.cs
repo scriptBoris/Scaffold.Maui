@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
+/// <summary>
+/// Button menu on navigation bar (non collapsed)
+/// </summary>
 public class ButtonMenu : ButtonSam.Maui.Button
 {
     // image source
@@ -15,7 +18,10 @@ public class ButtonMenu : ButtonSam.Maui.Button
         typeof(ImageSource),
         typeof(ButtonMenu),
         null,
-        propertyChanged: Update
+        propertyChanged: (b,o,n) => 
+        {
+            if (b is ButtonMenu self) self.Update(); 
+        }
     );
     public ImageSource? ImageSource
     {
@@ -29,7 +35,10 @@ public class ButtonMenu : ButtonSam.Maui.Button
         typeof(string),
         typeof(ButtonMenu),
         null,
-        propertyChanged: Update
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is ButtonMenu self) self.Update();
+        }
     );
     public string? Text
     {
@@ -42,7 +51,7 @@ public class ButtonMenu : ButtonSam.Maui.Button
         nameof(ForegroundColor),
         typeof(Color),
         typeof(ButtonMenu),
-        Colors.White,
+        Colors.Black,
         propertyChanged:(b,o,n) =>
         {
             if (b is ButtonMenu self)
@@ -92,14 +101,6 @@ public class ButtonMenu : ButtonSam.Maui.Button
         set => SetValue(UseOriginalColorProperty, value);
     }
 
-    private static void Update(BindableObject b, object old, object newest)
-    {
-        if (b is ButtonMenu self)
-        {
-            self.Update();
-        }
-    }
-
     private void Update()
     {
         if (ImageSource != null)
@@ -123,6 +124,8 @@ public class ButtonMenu : ButtonSam.Maui.Button
             };
             CornerRadius = 8;
         }
+
+        UpdateColor();
     }
 
     private void UpdateColor()

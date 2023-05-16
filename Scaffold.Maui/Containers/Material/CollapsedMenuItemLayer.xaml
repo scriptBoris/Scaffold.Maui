@@ -5,7 +5,7 @@
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
       xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-      x:Class="ScaffoldLib.Maui.Containers.Material.DisplayMenuItemslayer"
+      x:Class="ScaffoldLib.Maui.Containers.Material.CollapsedMenuItemLayer"
       x:Name="root"
       BackgroundColor="Transparent">
     

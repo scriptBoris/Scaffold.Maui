@@ -52,7 +52,7 @@ namespace ScaffoldLib.Maui.Core
         public virtual IZBufferLayout CreateDisplayMenuItemslayer(View view)
         {
 #if ANDROID
-            return new Material.DisplayMenuItemslayer(view);
+            return new Material.CollapsedMenuItemLayer(view);
 #else
             throw new NotImplementedException();
 #endif

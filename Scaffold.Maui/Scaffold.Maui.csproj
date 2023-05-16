@@ -18,7 +18,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.9.9-beta</Version>
+		<Version>0.9.10-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
@@ -36,7 +36,7 @@
 	  <MauiXaml Update="Containers\Material\DisplayAlertLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Containers\Material\DisplayMenuItemslayer.xaml">
+	  <MauiXaml Update="Containers\Material\CollapsedMenuItemLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Containers\Material\NavigationBar.xaml">
@@ -53,6 +53,12 @@
 	  <MauiImage Include="Resources\Images\ic_dots_horizontal.svg" />
 	  <MauiImage Include="Resources\Images\ic_dots_vertical.svg" />
 	  <MauiImage Include="Resources\Images\ic_scaffold_menu.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Containers\Material\CollapsedMenuItemLayer.xaml.cs">
+	    <DependentUpon>CollapsedMenuItemLayer.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

@@ -4,14 +4,14 @@ using System.Windows.Input;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
-public partial class DisplayMenuItemslayer : IZBufferLayout
+public partial class CollapsedMenuItemLayer : IZBufferLayout
 {
     private bool isBusy;
     private TaskCompletionSource<bool> tsc = new();
 
     public event VoidDelegate? DeatachLayer;
 
-    public DisplayMenuItemslayer(View view)
+    public CollapsedMenuItemLayer(View view)
 	{
 		InitializeComponent();
         Padding = view.GetContext()?.SafeArea ?? new Thickness();

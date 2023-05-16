@@ -14,7 +14,6 @@ namespace ScaffoldLib.Maui.Internal
         private bool hasHandler;
 
         private ImageTint Proxy => (ImageTint)VirtualView;
-        private new ImageView? PlatformView => hasHandler ? base.PlatformView : null;
 
         public override void SetVirtualView(IView view)
         {
@@ -24,6 +23,9 @@ namespace ScaffoldLib.Maui.Internal
 
         public void SetTint(Microsoft.Maui.Graphics.Color? color)
         {
+            if (!hasHandler)
+                return;
+
             if (color != null)
             {
                 var src = PorterDuff.Mode.SrcIn ?? throw new InvalidOperationException("PorterDuff.Mode.SrcIn should not be null at runtime.");
@@ -38,8 +40,8 @@ namespace ScaffoldLib.Maui.Internal
 
         protected override void ConnectHandler(ImageView platformView)
         {
-            base.ConnectHandler(platformView);
             hasHandler = true;
+            base.ConnectHandler(platformView);
         }
 
         protected override void DisconnectHandler(ImageView platformView)

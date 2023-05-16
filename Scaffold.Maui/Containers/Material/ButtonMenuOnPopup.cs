@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
+/// <summary>
+/// Button menu on popup dialog (show collapsed menu items)
+/// </summary>
 public class ButtonMenuOnPopup : ButtonSam.Maui.Button
 {
     private readonly ImageTint _icon;
