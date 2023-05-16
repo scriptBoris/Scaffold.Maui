@@ -1,4 +1,5 @@
 ﻿using Android.Graphics;
+using Android.Widget;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,10 @@ namespace ScaffoldLib.Maui.Internal
 {
     internal partial class ImageTintHandler
     {
+        private bool hasHandler;
+
         private ImageTint Proxy => (ImageTint)VirtualView;
+        private new ImageView? PlatformView => hasHandler ? base.PlatformView : null;
 
         public override void SetVirtualView(IView view)
         {
@@ -24,12 +28,24 @@ namespace ScaffoldLib.Maui.Internal
             {
                 var src = PorterDuff.Mode.SrcIn ?? throw new InvalidOperationException("PorterDuff.Mode.SrcIn should not be null at runtime.");
                 var port = new PorterDuffColorFilter(color.ToPlatform(), src);
-                PlatformView.SetColorFilter(port);
+                PlatformView?.SetColorFilter(port);
             }
             else
             {
-                PlatformView.SetColorFilter(null);
+                PlatformView?.SetColorFilter(null);
             }
+        }
+
+        protected override void ConnectHandler(ImageView platformView)
+        {
+            base.ConnectHandler(platformView);
+            hasHandler = true;
+        }
+
+        protected override void DisconnectHandler(ImageView platformView)
+        {
+            hasHandler = false;
+            base.DisconnectHandler(platformView);
         }
     }
 }
