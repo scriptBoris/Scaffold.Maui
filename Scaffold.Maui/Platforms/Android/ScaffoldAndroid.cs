@@ -108,21 +108,5 @@ namespace ScaffoldLib.Maui.Platforms.Android
 
             return null;
         }
-
-        internal static Thickness GetSafeArea()
-        {
-            double statusBarHeight = 0;
-            var context = global::Android.App.Application.Context;
-
-            int resourceId = context.Resources?.GetIdentifier("status_bar_height", "dimen", "android") ?? 0;
-            if (resourceId > 0)
-            {
-                int h = context.Resources?.GetDimensionPixelSize(resourceId) ?? 0;
-                double den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
-                statusBarHeight = (h != 0) ? h / den : 0;
-            }
-
-            return new Thickness(0, statusBarHeight, 0, 0);
-        }
     }
 }

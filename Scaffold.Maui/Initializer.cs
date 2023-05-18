@@ -14,6 +14,10 @@ public static class Initializer
     {
 #if ANDROID
         Platforms.Android.ScaffoldAndroid.Init(builder);
+#elif WINDOWS
+        Platforms.Windows.ScaffoldWindows.Init(builder);
+#elif IOS
+        Platforms.iOS.ScaffoldIOS.Init(builder);
 #endif
 
         builder.ConfigureMauiHandlers(h =>

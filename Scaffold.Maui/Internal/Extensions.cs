@@ -174,5 +174,39 @@ namespace ScaffoldLib.Maui.Internal
             else
                 return true;
         }
+
+        public static Scaffold? GetRootScaffold(this Page page)
+        {
+            if (page is ContentPage c)
+            {
+                //if (c.Content is Scaffold cv)
+                //    return cv;
+                //else
+                    return FindScaffold(c.Content) as Scaffold;
+            }
+            return null;
+        }
+
+        private static View? FindScaffold(View view)
+        {
+            switch (view)
+            {
+                case Scaffold vc:
+                    return vc;
+
+                case ContentView cv:
+                    return FindScaffold(cv);
+
+                case Layout l:
+                    foreach (var item in l.Children)
+                        return FindScaffold((View)item);
+                    break;
+
+                default:
+                    return null;
+            }
+
+            return null;
+        }
     }
 }

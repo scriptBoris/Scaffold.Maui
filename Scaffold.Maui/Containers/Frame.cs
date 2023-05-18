@@ -1,5 +1,4 @@
 ﻿using Microsoft.Maui.Layouts;
-using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Internal
+namespace ScaffoldLib.Maui.Containers
 {
     [DebuggerDisplay($"Frame :: {{{nameof(ViewType)}}}")]
     public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisappear, IRemovedFromNavigation
@@ -33,7 +32,7 @@ namespace ScaffoldLib.Maui.Internal
         public bool IsAppear { get; set; }
         public INavigationBar? NavigationBar { get; private set; }
         public IViewWrapper ViewWrapper { get; private set; }
-        public View? Overlay 
+        public View? Overlay
         {
             get => _overlay;
             set
@@ -62,7 +61,7 @@ namespace ScaffoldLib.Maui.Internal
 #endif
         }
 
-        public Size ArrangeChildren(Rect bounds)
+        public virtual Size ArrangeChildren(Rect bounds)
         {
             double offsetY = 0;
             if (NavigationBar is IView bar)
@@ -85,17 +84,17 @@ namespace ScaffoldLib.Maui.Internal
             return bounds.Size;
         }
 
-        public Size Measure(double widthConstraint, double heightConstraint)
+        public virtual Size Measure(double widthConstraint, double heightConstraint)
         {
             double freeH = heightConstraint;
 
-            if (NavigationBar  is IView bar)
+            if (NavigationBar is IView bar)
             {
                 var m = bar.Measure(widthConstraint, freeH);
                 freeH -= m.Height;
             }
 
-            if (ViewWrapper is IView view) 
+            if (ViewWrapper is IView view)
             {
                 view.Measure(widthConstraint, freeH);
             }
@@ -144,6 +143,12 @@ namespace ScaffoldLib.Maui.Internal
             await Task.WhenAll(tasks);
         }
 
+        public void UpdateSafeArea(Thickness safeArea)
+        {
+            NavigationBar?.UpdateSafeArea(safeArea);
+            ViewWrapper.UpdateSafeArea(safeArea);
+        }
+
         private async Task CommonAnimation(NavigatingArgs e)
         {
             if (!e.IsAnimating)
@@ -151,7 +156,7 @@ namespace ScaffoldLib.Maui.Internal
 
             if (e.NavigationType == NavigatingTypes.Replace)
             {
-                this.Opacity = 0;
+                Opacity = 0;
                 await this.FadeTo(1, Scaffold.AnimationTime);
                 return;
             }
@@ -163,8 +168,8 @@ namespace ScaffoldLib.Maui.Internal
                 switch (e.NavigationType)
                 {
                     case NavigatingTypes.Push:
-                        this.Opacity = 0;
-                        this.TranslationX = 100;
+                        Opacity = 0;
+                        TranslationX = 100;
                         await Task.WhenAll(
                             this.FadeTo(1, Scaffold.AnimationTime),
                             this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)

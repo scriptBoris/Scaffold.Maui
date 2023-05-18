@@ -11,6 +11,8 @@ namespace ScaffoldLib.Maui.Containers
     {
         View? Overlay { get; set; }
         View View { get; }
+
+        void UpdateSafeArea(Thickness safeArea);
         Task UpdateVisual(NavigatingArgs args);
     }
 }

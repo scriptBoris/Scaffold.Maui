@@ -32,12 +32,21 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
+    private Thickness _safeArea;
 
     public Scaffold()
     {
+        IPlatformSpecific platform;
 #if ANDROID
-        SafeArea = global::ScaffoldLib.Maui.Platforms.Android.ScaffoldAndroid.GetSafeArea();
+        platform = new ScaffoldLib.Maui.Platforms.Android.PlatformSpecific();
+#elif WINDOWS
+        platform = new ScaffoldLib.Maui.Platforms.Windows.PlatformSpecific();
+#elif IOS
+        platform = new ScaffoldLib.Maui.Platforms.iOS.PlatformSpecific();
 #endif
+
+        SafeArea = platform.GetSafeArea();
+
         _navigationController = new(this);
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
 
@@ -67,17 +76,12 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         propertyChanged:(b,o,n) =>
         {
             if (GetScaffoldContext(b) is Scaffold scaffold)
-            {
-                var navBar = scaffold
+                scaffold
                     ._navigationController
                     .Frames
                     .LastOrDefault(x => x.ViewWrapper.View == b)?
-                    .NavigationBar;
-
-                if (navBar != null)
-                    navBar.Title = n as string;
-                //.UpdateTitle(n as string);
-            }
+                    .NavigationBar?
+                    .UpdateTitle(n as string);
         }
     );
     public static void SetTitle(BindableObject b, string? value) => 
@@ -252,7 +256,15 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     #region props
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
-    public Thickness SafeArea { get; private set; }
+    public Thickness SafeArea 
+    {
+        get => _safeArea; 
+        internal set
+        {
+            _safeArea = value;
+            UpdateSafeArea();
+        } 
+    }
     public IScaffold? ProvideScaffold
     {
         get 
@@ -313,6 +325,13 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             default:
                 break;
         }
+    }
+
+    private void UpdateSafeArea()
+    {
+        if (_navigationController != null)
+            foreach (var frame in _navigationController.Frames)
+                frame.UpdateSafeArea(SafeArea);
     }
 
     internal IScaffold[] GetScafoldNested()

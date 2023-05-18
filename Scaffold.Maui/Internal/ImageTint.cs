@@ -22,10 +22,10 @@ namespace ScaffoldLib.Maui.Internal
             null,
             propertyChanged: (b,o,n) =>
             {
-#if ANDROID
-                if (b is ImageTint self && self.Handler is ImageTintHandler h) h.SetTint(n as Color);
-#elif WINDOWS
+#if WINDOWS
                 if (b is ImageTint self) self.UpdateSource();
+#else
+                if (b is ImageTint self && self.Handler is ImageTintHandler h) h.SetTint(n as Color);
 #endif
             }
         );
@@ -57,7 +57,7 @@ namespace ScaffoldLib.Maui.Internal
         {
             cancel.ThrowIfCancellationRequested();
             cancel = new CancellationToken();
-            var res = await Platforms.Windows.WinImageTools.Handle(Source, TintColor, cancel);
+            var res = await Platforms.Windows.WinImageTools.ProcessImage(Source, TintColor, cancel);
             if (res.IsCanceled)
                 return;
 

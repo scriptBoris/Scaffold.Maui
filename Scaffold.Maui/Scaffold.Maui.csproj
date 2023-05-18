@@ -44,6 +44,9 @@
 	  <MauiXaml Update="Containers\Material\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">

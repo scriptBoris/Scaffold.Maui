@@ -18,7 +18,7 @@ internal static class WinImageTools
         public static ImgResult Result(ImageSource? result) => new ImgResult { Source = result };
     }
 
-    public static async Task<ImgResult> Handle(ImageSource? source, Color? tintColor, CancellationToken cancel)
+    public static async Task<ImgResult> ProcessImage(ImageSource? source, Color? tintColor, CancellationToken cancel)
     {
         if (source == null || tintColor == null)
             return ImgResult.Result(source);

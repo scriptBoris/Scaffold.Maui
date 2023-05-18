@@ -27,12 +27,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
         UpdateMenuItems(view);
     }
 
-    public string? Title 
-    { 
-        get => labelTitle.Text;
-        set => labelTitle.Text = value;
-    }
-
     public Color ForegroundColor
     {
         get => _foregroundColor;
@@ -87,7 +81,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         if (e.NavigationType == NavigatingTypes.Push)
         {
-            Padding = e.SafeArea;
+            UpdateSafeArea(e.SafeArea);
             UpdateBackButtonVisual(e.HasBackButton);
             UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
             UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
@@ -122,7 +116,13 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     private void UpdateTitle(View view)
     {
-        labelTitle.Text = Scaffold.GetTitle(view);
+        string? title = Scaffold.GetTitle(view);
+        UpdateTitle(title);
+    }
+
+    public void UpdateTitle(string? title)
+    {
+        labelTitle.Text = title;
     }
 
     public void UpdateMenuItems(View view)
@@ -182,5 +182,10 @@ public partial class NavigationBar : INavigationBar, IDisposable
         labelTitle.TextColor = color;
         imageMenu.TintColor = color;
         ForegroundColor = color;
+    }
+
+    public void UpdateSafeArea(Thickness safeArea)
+    {
+        Padding = new Thickness(0, safeArea.Top, 0, 0);
     }
 }

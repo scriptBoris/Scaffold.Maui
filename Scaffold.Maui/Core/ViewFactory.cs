@@ -7,18 +7,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Material = ScaffoldLib.Maui.Containers.Material;
-
+using WinUI = ScaffoldLib.Maui.Containers.WinUI;
 namespace ScaffoldLib.Maui.Core
 {
     public class ViewFactory
     {
         public virtual IFrame CreateFrame(View view)
         {
-            return new Internal.Frame(view, this);
+#if WINDOWS
+            return new WinUI.WinUIFrame(view, this);
+#else
+            return new Containers.Frame(view, this);
+#endif
         }
 
         public virtual INavigationBar? CreateNavigationBar(View view)
         {
+#if WINDOWS
+            return new WinUI.NavigationBar(view);
+#endif
             return new Material.NavigationBar(view);
         }
 

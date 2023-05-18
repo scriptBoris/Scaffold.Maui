@@ -91,5 +91,9 @@ namespace ScaffoldLib.Maui.Containers
                     break;
             }
         }
+
+        public virtual void UpdateSafeArea(Thickness safeArea)
+        {
+        }
     }
 }
