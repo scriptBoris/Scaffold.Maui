@@ -31,21 +31,24 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
+    private readonly static IPlatformSpecific _platform;
     private IBackButtonBehavior? _backButtonBehavior;
     private Thickness _safeArea;
 
+    static Scaffold()
+    {
+#if ANDROID
+        _platform = new ScaffoldLib.Maui.Platforms.Android.PlatformSpecific();
+#elif WINDOWS
+        _platform = new ScaffoldLib.Maui.Platforms.Windows.PlatformSpecific();
+#elif IOS
+        _platform = new ScaffoldLib.Maui.Platforms.iOS.PlatformSpecific();
+#endif
+    }
+
     public Scaffold()
     {
-        IPlatformSpecific platform;
-#if ANDROID
-        platform = new ScaffoldLib.Maui.Platforms.Android.PlatformSpecific();
-#elif WINDOWS
-        platform = new ScaffoldLib.Maui.Platforms.Windows.PlatformSpecific();
-#elif IOS
-        platform = new ScaffoldLib.Maui.Platforms.iOS.PlatformSpecific();
-#endif
-
-        SafeArea = platform.GetSafeArea();
+        SafeArea = _platform.GetSafeArea();
 
         _navigationController = new(this);
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
@@ -512,47 +515,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         _zBufer.Dispose();
     }
 
-    public static async void SetupStatusBarColor(StatusBarColorTypes colorType)
+    public static void SetupStatusBarColor(StatusBarColorTypes colorType)
     {
-#if ANDROID21_0_OR_GREATER
-        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
-
-        if (activity == null)
-            activity = await Platforms.Android.ScaffoldAndroid.AwaitActivity.Task;
-
-        if (activity?.Window == null)
-            return;
-
-        //switch (colorType)
-        //{
-        //    case StatusBarColorTypes.Light:
-        //        activity.Window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;
-        //        break;
-        //    case StatusBarColorTypes.Dark:
-        //        activity.Window.DecorView.SystemUiVisibility = (StatusBarVisibility)0;
-        //        break;
-        //    default:
-        //        break;
-        //}
-
-        int i1;
-        int i2;
-        switch (colorType)
-        {
-            case StatusBarColorTypes.Light:
-                i1 = (int)Android.Views.WindowInsetsControllerAppearance.None;
-                i2 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
-                break;
-            case StatusBarColorTypes.Dark:
-                i1 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
-                i2 = (int)Android.Views.WindowInsetsControllerAppearance.LightStatusBars;
-                break;
-            default:
-                throw new ArgumentException($"value {colorType} is not supported.");
-        }
-        activity.Window.InsetsController?.SetSystemBarsAppearance(i1, i2);
-
-#endif
+        _platform.SetStatusBarColorScheme(colorType);
     }
 }
 

@@ -10,5 +10,5 @@ public partial class MainPage : ContentPage
         Content = new Scaffold();
     }
 
-    public Scaffold Scaffold => (Scaffold)Content;
+    public IScaffold Scaffold => (IScaffold)Content;
 }

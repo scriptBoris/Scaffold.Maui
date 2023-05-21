@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Internal;
+﻿using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace ScaffoldLib.Maui.Platforms.Windows
         public Thickness GetSafeArea()
         {
             return new Thickness(0, 40, 0, 0);
+        }
+
+        public void SetStatusBarColorScheme(StatusBarColorTypes scheme)
+        {
+            //TODO Доделать на шындовс
         }
     }
 }

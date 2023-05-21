@@ -28,7 +28,7 @@ namespace ScaffoldLib.Maui.Internal
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void TryAppearing(this IFrame frame, bool isComplete = false, Color? bgColor = null)
+        public static void TryAppearing(this IFrame frame, bool isComplete = false, Color? navigationBarBgColor = null)
         {
             if (isComplete == false)
             {
@@ -39,9 +39,9 @@ namespace ScaffoldLib.Maui.Internal
                 {
                     Scaffold.SetupStatusBarColor(statusBarStyle);
                 }
-                else if (bgColor != null)
+                else if (navigationBarBgColor != null)
                 {
-                    if (bgColor.IsDark())
+                    if (navigationBarBgColor.IsDark())
                         Scaffold.SetupStatusBarColor(StatusBarColorTypes.Light);
                     else
                         Scaffold.SetupStatusBarColor(StatusBarColorTypes.Dark);
@@ -142,24 +142,23 @@ namespace ScaffoldLib.Maui.Internal
             var handler = await tsc.Task;
             view.HandlerChanged -= eventDelegate;
 
-            //#if ANDROID
-            //            if (handler.PlatformView is Android.Views.View aview)
-            //            {
-            //                var tsc2 = new TaskCompletionSource<bool>();
+            //if (view.IsLoaded)
+            //{
+            //    return handler;
+            //}
+            //else
+            //{
+            //    var tscLoaded = new TaskCompletionSource<bool>();
+            //    void eventLoaded(object? sender, EventArgs e)
+            //    {
+            //        tscLoaded.TrySetResult(true);
+            //    }
 
-            //                if (aview.IsAttachedToWindow)
-            //                {
+            //    view.Loaded += eventLoaded;
+            //    await tscLoaded.Task;
+            //    view.Loaded -= eventLoaded;
+            //}
 
-            //                }
-
-            //                void argEnd(object? sender, Android.Views.View.ViewAttachedToWindowEventArgs args)
-            //                {
-            //                    tsc2.TrySetResult(true);
-            //                }
-            //                aview.ViewAttachedToWindow += argEnd;
-            //                await tsc2.Task;
-            //            }
-            //#endif
             return handler;
         }
 

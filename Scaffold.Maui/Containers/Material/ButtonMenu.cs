@@ -140,15 +140,15 @@ internal class ButtonMenu : Internal.Button
             switch (newValue)
             {
                 case ContentType.Icon:
-                    Padding = new Thickness(5);
+                    Padding = new Thickness(8);
                     BackgroundColor = Colors.Transparent;
                     Content = new ImageTint
                     {
-                        WidthRequest = 26,
-                        HeightRequest = 26,
+                        WidthRequest = 24,
+                        HeightRequest = 24,
                         Source = ImageSource,
                     };
-                    CornerRadius = 18;
+                    CornerRadius = 20;
                     break;
 
                 case ContentType.Text:

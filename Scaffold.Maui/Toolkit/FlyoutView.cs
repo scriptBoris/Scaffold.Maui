@@ -54,53 +54,50 @@ namespace ScaffoldLib.Maui.Toolkit
     }
 
     [ContentProperty(nameof(Flyout))]
-    public class FlyoutView : Grid, IScaffoldProvider, IAppear, IDisappear, IRemovedFromNavigation
+    public class FlyoutView : ZLayout, IScaffoldProvider, IAppear, IDisappear, IRemovedFromNavigation
     {
-        private readonly ContentView _flyoutPanel;
-        private readonly Grid _detailPanel;
-        private readonly View _darkPanel;
-
-        public event EventHandler<bool>? Disappear;
-        public event EventHandler<bool>? Appear;
-        public event EventHandler? RemovedFromNavigation;
+        private readonly ZLayout _panelDetail;
+        private readonly ContentView _panelFlyout;
+        private readonly View _panelFlyoutBackground;
 
         public FlyoutView()
         {
             Scaffold.SetHasNavigationBar(this, false);
-            ColumnSpacing = 0;
-            ColumnDefinitions = new ColumnDefinitionCollection
-            {
-                new ColumnDefinition(new GridLength(3, GridUnitType.Star)),
-                new ColumnDefinition(GridLength.Star),
-            };
+            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions = LayoutOptions.Fill;
 
             // detail
-            _detailPanel = new Grid();
-            Grid.SetColumnSpan(_detailPanel, 2);
-            Children.Add(_detailPanel);
+            _panelDetail = new()
+            {
+                VerticalOptions = LayoutOptions.Fill,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+            Children.Add(_panelDetail);
 
-            // dark
-            _darkPanel = new BoxView
+            // flyout background
+            _panelFlyoutBackground = new BoxView
             {
                 IsVisible = false,
                 Opacity = 0,
                 Color = Color.FromArgb("#6000"),
+                VerticalOptions = LayoutOptions.Fill,
+                HorizontalOptions = LayoutOptions.Fill,
             };
-            _darkPanel.GestureRecognizers.Add(new TapGestureRecognizer
+            _panelFlyoutBackground.GestureRecognizers.Add(new TapGestureRecognizer
             {
                 Command = new Command(() => IsPresented = false),
             });
-            Grid.SetColumnSpan(_darkPanel, 2);
-            Children.Add(_darkPanel);
+            Children.Add(_panelFlyoutBackground);
 
             // flyot
-            _flyoutPanel = new()
+            _panelFlyout = new()
             {
                 IsVisible = false,
+                VerticalOptions = LayoutOptions.Fill,
+                HorizontalOptions = LayoutOptions.Start,
             };
-            _flyoutPanel.SetAppTheme(ContentView.BackgroundColorProperty, Colors.White, Colors.Black);
-            Grid.SetColumn(_flyoutPanel, 0);
-            Children.Add(_flyoutPanel);
+            _panelFlyout.SetAppTheme(ContentView.BackgroundColorProperty, Colors.White, Colors.Black);
+            Children.Add(_panelFlyout);
         }
 
         #region bindable props
@@ -132,7 +129,7 @@ namespace ScaffoldLib.Maui.Toolkit
             propertyChanged: (b, o, n) =>
             {
                 if (b is FlyoutView self)
-                    self._flyoutPanel.Content = (n as View);
+                    self._panelFlyout.Content = (n as View);
             }
         );
         public View? Flyout
@@ -163,18 +160,34 @@ namespace ScaffoldLib.Maui.Toolkit
 
         public IScaffold? ProvideScaffold => Detail as IScaffold;
 
-        protected override void OnSizeAllocated(double width, double height)
+        //protected override void OnSizeAllocated(double width, double height)
+        //{
+        //    base.OnSizeAllocated(width, height);
+        //    if (!IsPresented)
+        //    {
+        //        var def = new GridLength[]
+        //        {
+        //            new GridLength(3, GridUnitType.Star),
+        //            GridLength.Star,
+        //        };
+        //        _panelFlyout.TranslationX = -CalculateWidthRules(def, width)[0];
+        //    }
+        //}
+
+        private bool isFirst = true;
+        public override Size Measure(double widthConstraint, double heightConstraint)
         {
-            base.OnSizeAllocated(width, height);
-            if (!IsPresented)
+            var w = widthConstraint * 0.7;
+            _panelFlyout.WidthRequest = w;
+
+            //if (!IsPresented)
+            if (isFirst && !IsPresented)
             {
-                var def = new GridLength[]
-                {
-                    new GridLength(3, GridUnitType.Star),
-                    GridLength.Star,
-                };
-                _flyoutPanel.TranslationX = -CalculateWidthRules(def, width)[0];
+                _panelFlyout.TranslationX = -w;
+                isFirst = false;
             }
+
+            return base.Measure(widthConstraint, heightConstraint);
         }
 
         private async void UpdateDetail(View? view, View? oldDetail)
@@ -182,14 +195,14 @@ namespace ScaffoldLib.Maui.Toolkit
             if (view is Scaffold scaffold)
                 scaffold.BackButtonBehavior ??= new FlyoutBackButtonBehavior(this);
 
-            bool isAnimate = _detailPanel.Children.Count > 0;
+            bool isAnimate = _panelDetail.Children.Count > 0;
 
             oldDetail?.TryDisappearing();
 
             if (view != null)
             {
                 view.Opacity = isAnimate ? 0 : 1;
-                _detailPanel.Children.Add(view);
+                _panelDetail.Children.Add(view);
 
                 view.TryAppearing();
 
@@ -201,13 +214,13 @@ namespace ScaffoldLib.Maui.Toolkit
                 view.TryAppearing(true);
             }
 
-            for (int i = _detailPanel.Children.Count - 1; i >= 0; i--)
+            for (int i = _panelDetail.Children.Count - 1; i >= 0; i--)
             {
-                var child = _detailPanel.Children[i];
+                var child = _panelDetail.Children[i];
                 if (child == view)
                     continue;
 
-                _detailPanel.Children.RemoveAt(i);
+                _panelDetail.Children.RemoveAt(i);
             }
 
             oldDetail?.TryDisappearing(true);
@@ -223,21 +236,21 @@ namespace ScaffoldLib.Maui.Toolkit
 
         private void Show()
         {
-            _flyoutPanel.IsVisible = true;
-            _darkPanel.IsVisible = true;
-            _flyoutPanel.TranslateTo(0, 0, 180, Easing.SinIn);
-            _darkPanel.FadeTo(1, 180);
+            _panelFlyout.IsVisible = true;
+            _panelFlyoutBackground.IsVisible = true;
+            _panelFlyout.TranslateTo(0, 0, 180, Easing.SinIn);
+            _panelFlyoutBackground.FadeTo(1, 180);
         }
 
         private async void Hide()
         {
             await Task.WhenAll(
-                _flyoutPanel.TranslateTo(-_flyoutPanel.Width, 0, 180, Easing.SinOut),
-                _darkPanel.FadeTo(0, 180)
+                _panelFlyout.TranslateTo(-_panelFlyout.Width, 0, 180, Easing.SinOut),
+                _panelFlyoutBackground.FadeTo(0, 180)
             );
 
-            _darkPanel.IsVisible = false;
-            _flyoutPanel.IsVisible = false;
+            _panelFlyoutBackground.IsVisible = false;
+            _panelFlyout.IsVisible = false;
         }
 
         internal static double[] CalculateWidthRules(GridLength[] viewRules, double availableWidth)
@@ -288,19 +301,16 @@ namespace ScaffoldLib.Maui.Toolkit
 
         public void OnAppear(bool isComplete)
         {
-            Appear?.Invoke(this, isComplete);
             Detail?.TryAppearing(isComplete);
         }
 
         public void OnDisappear(bool isComplete)
         {
-            Disappear?.Invoke(this, isComplete);
             Detail?.TryDisappearing(isComplete);
         }
 
         public virtual void OnRemovedFromNavigation()
         {
-            RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
             if (Detail is IRemovedFromNavigation rm)
                 rm.OnRemovedFromNavigation();
         }

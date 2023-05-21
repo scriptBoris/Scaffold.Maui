@@ -5,7 +5,7 @@
              x:Class="Sample.Views.HomeView"
              scaffold:Scaffold.Title="Home"
              Padding="10">
-    <StackLayout>
+    <StackLayout Spacing="10">
         <Button Text="Open node"
                 Clicked="Button_Clicked"/>
     </StackLayout>

@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Internal;
+﻿using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,21 @@ namespace ScaffoldLib.Maui.Platforms.iOS
             }
 
             return new Thickness(0, top, 0, bottom);
+        }
+
+        public void SetStatusBarColorScheme(StatusBarColorTypes scheme)
+        {
+            switch (scheme)
+            {
+                case StatusBarColorTypes.Light:
+                    UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, true);
+                    break;
+                case StatusBarColorTypes.Dark:
+                    UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.DarkContent, true);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
