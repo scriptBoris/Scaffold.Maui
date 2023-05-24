@@ -14,7 +14,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
     public CollapsedMenuItemLayer(View view)
 	{
 		InitializeComponent();
-        Padding = view.GetContext()?.SafeArea ?? new Thickness();
+        Padding = Scaffold.SafeArea;
         CommandSelectedMenu = new Command(ActionSelectedMenu);
         BindingContext = this;
         GestureRecognizers.Add(new TapGestureRecognizer

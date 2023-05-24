@@ -28,8 +28,11 @@ namespace ScaffoldLib.Maui.Internal
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void TryAppearing(this IFrame frame, bool isComplete = false, Color? navigationBarBgColor = null)
+        public static void TryAppearing(this IFrame frame, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
         {
+            if (parentStl == AppearingStates.Disappear)
+                return;
+
             if (isComplete == false)
             {
                 frame.IsAppear = true;
@@ -53,8 +56,11 @@ namespace ScaffoldLib.Maui.Internal
                 ap.OnAppear(isComplete);
         }
 
-        public static void TryDisappearing(this IFrame frame, bool isComplete = false)
+        public static void TryDisappearing(this IFrame frame, bool isComplete, AppearingStates parentStl)
         {
+            if (parentStl == AppearingStates.Disappear)
+                return;
+
             if (isComplete == false)
                 frame.IsAppear = false;
 

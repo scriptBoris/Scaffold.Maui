@@ -11,7 +11,6 @@ public interface IScaffold : IScaffoldProvider
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
 
-    Thickness SafeArea { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
@@ -31,30 +30,31 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
-    private readonly static IPlatformSpecific _platform;
     private IBackButtonBehavior? _backButtonBehavior;
-    private Thickness _safeArea;
+    private static Thickness _safeArea;
+
+    public static event EventHandler<Thickness>? SafeAreaChanged;
 
     static Scaffold()
     {
 #if ANDROID
-        _platform = new ScaffoldLib.Maui.Platforms.Android.PlatformSpecific();
+        PlatformSpec = new ScaffoldLib.Maui.Platforms.Android.PlatformSpecific();
 #elif WINDOWS
-        _platform = new ScaffoldLib.Maui.Platforms.Windows.PlatformSpecific();
+        PlatformSpec = new ScaffoldLib.Maui.Platforms.Windows.PlatformSpecific();
 #elif IOS
-        _platform = new ScaffoldLib.Maui.Platforms.iOS.PlatformSpecific();
+        PlatformSpec = new ScaffoldLib.Maui.Platforms.iOS.PlatformSpecific();
 #endif
     }
 
     public Scaffold()
     {
-        SafeArea = _platform.GetSafeArea();
-
         _navigationController = new(this);
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
 
         _zBufer = new();
         Children.Add(_zBufer);
+
+        SafeAreaChanged += OnSafeAreaChanged;
     }
 
     #region bindable props
@@ -258,16 +258,25 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     #endregion bindable props
 
     #region props
-    public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
-    public Thickness SafeArea 
+    internal static IPlatformSpecific PlatformSpec { get; private set; }
+
+    internal AppearingStates AppearingState { get; private set; } = AppearingStates.None;
+
+    public static Thickness SafeArea 
     {
         get => _safeArea; 
         internal set
         {
-            _safeArea = value;
-            UpdateSafeArea();
-        } 
+            if (_safeArea != value)
+            {
+                _safeArea = value;
+                SafeAreaChanged?.Invoke(null, value);
+            }
+        }
     }
+
+    public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
+    
     public IScaffold? ProvideScaffold
     {
         get 
@@ -330,11 +339,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         }
     }
 
-    private void UpdateSafeArea()
+    private void OnSafeAreaChanged(object? sender, Thickness e)
     {
         if (_navigationController != null)
             foreach (var frame in _navigationController.Frames)
-                frame.UpdateSafeArea(SafeArea);
+                frame.UpdateSafeArea(e);
     }
 
     internal IScaffold[] GetScafoldNested()
@@ -491,14 +500,29 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public void OnAppear(bool isComplete)
     {
-        if (_navigationController.NavigationStack.LastOrDefault() is IAppear ap)
-            ap.OnAppear(isComplete);
+        var stl = AppearingState;
+        AppearingState = isComplete ? AppearingStates.Appear : AppearingStates.Appearing;
+        if (stl == AppearingState)
+            return;
+
+        var f = _navigationController.Frames.LastOrDefault();
+        if (f != null)
+        {
+            var view = f.ViewWrapper.View;
+            var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? NavigationBarBackgroundColor ?? defaultNavigationBarBackgroundColor;
+            f.TryAppearing(isComplete, AppearingState, bgColor);
+        }
     }
 
     public void OnDisappear(bool isComplete)
     {
-        if (_navigationController.NavigationStack.LastOrDefault() is IDisappear ap)
-            ap.OnDisappear(isComplete);
+        var stl = AppearingState;
+        AppearingState = isComplete ? AppearingStates.Disappear : AppearingStates.Disappearing;
+        if (stl == AppearingState)
+            return;
+
+        var f = _navigationController.Frames.LastOrDefault();
+        f?.TryDisappearing(isComplete, stl);
     }
 
     public void OnRemovedFromNavigation()
@@ -511,13 +535,14 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     {
         OnRemovedFromNavigation();
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged -= FramesStackChanged;
+        SafeAreaChanged -= OnSafeAreaChanged;
         _navigationController.Dispose();
         _zBufer.Dispose();
     }
 
     public static void SetupStatusBarColor(StatusBarColorTypes colorType)
     {
-        _platform.SetStatusBarColorScheme(colorType);
+        PlatformSpec.SetStatusBarColorScheme(colorType);
     }
 }
 

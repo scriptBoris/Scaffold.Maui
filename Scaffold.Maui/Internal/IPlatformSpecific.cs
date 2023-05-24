@@ -9,7 +9,7 @@ namespace ScaffoldLib.Maui.Internal
 {
     internal interface IPlatformSpecific
     {
-        void SetStatusBarColorScheme(StatusBarColorTypes scheme);
         Thickness GetSafeArea();
+        void SetStatusBarColorScheme(StatusBarColorTypes scheme);
     }
 }

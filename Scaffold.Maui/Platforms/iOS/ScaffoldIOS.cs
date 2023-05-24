@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls.Platform;
+﻿using Foundation;
+using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.LifecycleEvents;
@@ -10,43 +11,67 @@ using System.Text;
 using System.Threading.Tasks;
 using UIKit;
 
-namespace ScaffoldLib.Maui.Platforms.iOS
+namespace ScaffoldLib.Maui.Platforms.iOS;
+
+internal static class ScaffoldIOS
 {
-    internal static class ScaffoldIOS
+    internal static void Init(MauiAppBuilder builder)
     {
-        internal static void Init(MauiAppBuilder builder)
+        builder.ConfigureLifecycleEvents(x =>
         {
-            builder.ConfigureLifecycleEvents(x =>
+            x.AddiOS(ios =>
             {
-                x.AddiOS(ios =>
+                ios.FinishedLaunching(OnFinishedLaunching);
+                ios.OnActivated(e =>
                 {
-                    ios.FinishedLaunching((a, e) =>
+                    var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+                    if (scaffold != null)
                     {
-                        var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
-                        //var window = page?.GetParentWindow();
-
-                        if (page != null)
-                        {
-                            var safe = new PlatformSpecific().GetSafeArea();
-                            page.OnThisPlatform().SetUseSafeArea(false);
-                            page.Padding = new Thickness(0, -safe.Top, 0, -safe.Bottom);
-
-                            var scaffold = page.GetRootScaffold();
-                            if (scaffold != null)
-                                scaffold.SafeArea = safe;
-                        }
-
-                        //if (page.Handler is PageHandler p)
-                        //{
-                        //    var container = p.PlatformView;
-                        //    container.InsetsLayoutMarginsFromSafeArea = false;
-                        //    var mm = container.LayoutMargins;
-                        //}
-
-                        return true;
-                    });
+                        scaffold.OnAppear(false);
+                        scaffold.OnAppear(true);
+                    }
+                });
+                ios.DidEnterBackground(e =>
+                {
+                    var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+                    if (scaffold != null)
+                    {
+                        scaffold.OnDisappear(false);
+                        scaffold.OnDisappear(true);
+                    }
                 });
             });
+        });
+    }
+
+    private static bool OnFinishedLaunching(UIApplication a, NSDictionary e)
+    {
+        var safe = Scaffold.PlatformSpec.GetSafeArea();
+        Scaffold.SafeArea = safe;
+
+        var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
+        if (page != null)
+        {
+            page.SizeChanged += (o, e) =>
+            {
+                UpdateSafeArea();
+            };
+            page.OnThisPlatform().SetUseSafeArea(false);
+            page.Padding = new Thickness(0, -safe.Top, 0, -safe.Bottom);
+        }
+
+        return true;
+    }
+
+    private static void UpdateSafeArea()
+    {
+        var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
+        if (page != null)
+        {
+            var safe = Scaffold.PlatformSpec.GetSafeArea();
+            Scaffold.SafeArea = safe;
+            page.OnThisPlatform().SetUseSafeArea(false);
+            page.Padding = new Thickness(-safe.Left, -safe.Top, -safe.Right, -safe.Bottom);
         }
     }
 }

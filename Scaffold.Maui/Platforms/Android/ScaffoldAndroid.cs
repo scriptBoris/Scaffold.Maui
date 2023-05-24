@@ -2,6 +2,7 @@
 using Android.OS;
 using Android.Views;
 using Microsoft.Maui.LifecycleEvents;
+using ScaffoldLib.Maui.Internal;
 using MView = Microsoft.Maui.Controls.View;
 
 namespace ScaffoldLib.Maui.Platforms.Android
@@ -16,24 +17,58 @@ namespace ScaffoldLib.Maui.Platforms.Android
             {
                 x.AddAndroid(a =>
                 {
-                    a.OnBackPressed(OnBackPressed);
                     a.OnCreate(OnCreate);
+                    a.OnBackPressed(OnBackPressed);
+                    a.OnStart(a =>
+                    {
+                        var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+                        if (scaffold != null)
+                        {
+                            scaffold.OnAppear(false);
+                            scaffold.OnAppear(true);
+                        }
+                    });
+                    a.OnStop(a =>
+                    {
+                        var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+                        if (scaffold != null)
+                        {
+                            scaffold.OnDisappear(false);
+                            scaffold.OnDisappear(true);
+                        }
+                    });
                 });
             });
         }
 
+        private static void OnCreate(Activity a, Bundle? savedInstanceState)
+        {
+            // setup transparent statusbar
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+            {
+                a.Window!.SetStatusBarColor(global::Android.Graphics.Color.Transparent);
+                var flag = SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable;
+                var root = a.FindViewById(global::Android.Resource.Id.Content)!;
+
+                // todo разобраться как правильно и безопасно делать statusbar прозрачным и что бы можно было разместить контент под ним
+                root.SystemUiVisibility = (StatusBarVisibility)flag;
+            }
+            AwaitActivity.TrySetResult(a);
+
+            var safe = Scaffold.PlatformSpec.GetSafeArea();
+            Scaffold.SafeArea = safe;
+
+            var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+            if (scaffold != null)
+            {
+                scaffold.OnAppear(false);
+                scaffold.OnAppear(true);
+            }
+        }
+
         private static bool OnBackPressed(Activity a)
         {
-            Scaffold? rootScaffold = null;
-            var mp = global::Microsoft.Maui.Controls.Application.Current?.MainPage;
-            if (mp is ContentPage c)
-            {
-                if (c.Content is Scaffold cv)
-                    rootScaffold = cv;
-                else
-                    rootScaffold = Find(c.Content) as Scaffold;
-            }
-
+            var rootScaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
             if (rootScaffold != null)
             {
                 rootScaffold.Dispatcher.Dispatch(async () =>
@@ -70,43 +105,6 @@ namespace ScaffoldLib.Maui.Platforms.Android
             }
 
             return false;
-        }
-
-        private static void OnCreate(Activity a, Bundle? savedInstanceState)
-        {
-            // setup transparent statusbar
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
-            {
-                a.Window!.SetStatusBarColor(global::Android.Graphics.Color.Transparent);
-                var flag = SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable;
-                var root = a.FindViewById(global::Android.Resource.Id.Content)!;
-
-                // todo разобраться как правильно и безопасно делать statusbar прозрачным и что бы можно было разместить контент под ним
-                root.SystemUiVisibility = (StatusBarVisibility)flag;
-            }
-            AwaitActivity.TrySetResult(a);
-        }
-
-        private static MView? Find(MView view)
-        {
-            switch (view)
-            {
-                case Scaffold vc:
-                    return vc;
-
-                case ContentView cv:
-                    return Find(cv);
-
-                case Layout l:
-                    foreach (var item in l.Children)
-                        return Find((MView)item);
-                    break;
-
-                default:
-                    return null;
-            }
-
-            return null;
         }
     }
 }

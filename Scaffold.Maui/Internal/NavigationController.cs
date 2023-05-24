@@ -22,6 +22,7 @@ namespace ScaffoldLib.Maui.Internal
             Frames = new (_frames);
         }
 
+        private AppearingStates AppearingStl => _scaffold.AppearingState;
         public ReadOnlyObservableCollection<View> NavigationStack { get; private set; }
         public ReadOnlyObservableCollection<IFrame> Frames { get; private set; }
         public IFrame? CurrentFrame => Frames.LastOrDefault();
@@ -44,8 +45,8 @@ namespace ScaffoldLib.Maui.Internal
             var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
 
             TryHideKeyboard();
-            oldFrame?.TryDisappearing();
-            frame.TryAppearing(false, bgColor);
+            oldFrame?.TryDisappearing(false, AppearingStl);
+            frame.TryAppearing(false, AppearingStl, bgColor);
 
             await frame.UpdateVisual(new NavigatingArgs
             {
@@ -54,7 +55,6 @@ namespace ScaffoldLib.Maui.Internal
                 OldContent = oldFrame?.ViewWrapper.View,
                 IsAnimating = isAnimated,
                 HasBackButton = NavigationStack.Count > 1,
-                SafeArea = _scaffold.SafeArea,
                 NavigationBarBackgroundColor = bgColor,
                 NavigationBarForegroundColor = fgColor,
             });
@@ -62,8 +62,8 @@ namespace ScaffoldLib.Maui.Internal
             if (oldFrame is View oldFrameView)
                 oldFrameView.IsVisible = false;
 
-            oldFrame?.TryDisappearing(true);
-            frame.TryAppearing(true);
+            oldFrame?.TryDisappearing(true, AppearingStl);
+            frame.TryAppearing(true, AppearingStl);
 
             return frame;
         }
@@ -90,8 +90,8 @@ namespace ScaffoldLib.Maui.Internal
             var fgColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
             
             TryHideKeyboard();
-            currentFrame.TryDisappearing();
-            prevFrame.TryAppearing(false, bgColor);
+            currentFrame.TryDisappearing(false, AppearingStl);
+            prevFrame.TryAppearing(false, AppearingStl, bgColor);
 
             await currentFrame.UpdateVisual(new NavigatingArgs
             {
@@ -100,15 +100,14 @@ namespace ScaffoldLib.Maui.Internal
                 OldContent = currentFrame.ViewWrapper.View,
                 IsAnimating = isAnimated,
                 HasBackButton = hasBackButton,
-                SafeArea = _scaffold.SafeArea,
                 NavigationBarBackgroundColor = bgColor,
                 NavigationBarForegroundColor = fgColor,
             });
 
             _scaffold.Children.Remove((View)currentFrame);
 
-            currentFrame.TryDisappearing(true);
-            prevFrame.TryAppearing(true);
+            currentFrame.TryDisappearing(true, AppearingStl);
+            prevFrame.TryAppearing(true, AppearingStl);
 
             return true;
         }
@@ -124,11 +123,11 @@ namespace ScaffoldLib.Maui.Internal
             var oldFrame = Frames[oldIndex];
             _frames.RemoveAt(oldIndex);
             _navigationStack.RemoveAt(oldIndex);
-            oldFrame.TryDisappearing();
+            oldFrame.TryDisappearing(false, AppearingStl);
 
             await PushAsync(newView, isAnimated, oldFrame, NavigatingTypes.Replace);
             _scaffold.Children.Remove((View)oldFrame);
-            oldFrame.TryDisappearing(true);
+            oldFrame.TryDisappearing(true, AppearingStl);
 
             return true;
         }

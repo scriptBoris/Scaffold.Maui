@@ -81,7 +81,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         if (e.NavigationType == NavigatingTypes.Push)
         {
-            UpdateSafeArea(e.SafeArea);
+            UpdateSafeArea(Scaffold.SafeArea);
             UpdateBackButtonVisual(e.HasBackButton);
             UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
             UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
@@ -186,6 +186,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     public void UpdateSafeArea(Thickness safeArea)
     {
-        Padding = new Thickness(0, safeArea.Top, 0, 0);
+        Padding = new Thickness(safeArea.Left, safeArea.Top, safeArea.Right, 0);
     }
 }

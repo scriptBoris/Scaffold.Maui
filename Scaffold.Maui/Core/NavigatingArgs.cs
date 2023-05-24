@@ -14,7 +14,6 @@ namespace ScaffoldLib.Maui.Core
         public required bool IsAnimating { get; set; }
         public required Color NavigationBarBackgroundColor { get; set; }
         public required Color NavigationBarForegroundColor { get; set; }
-        public required Thickness SafeArea { get; set; }
         public required NavigatingTypes NavigationType { get; set; }
     }
 

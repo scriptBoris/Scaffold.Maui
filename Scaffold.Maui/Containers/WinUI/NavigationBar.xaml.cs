@@ -27,7 +27,7 @@ public partial class NavigationBar : INavigationBar
         if (e.NavigationType == NavigatingTypes.Push)
         {
             buttonBack.IsVisible = e.HasBackButton;
-            UpdateSafeArea(e.SafeArea);
+            UpdateSafeArea(Scaffold.SafeArea);
             UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
             UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
         }

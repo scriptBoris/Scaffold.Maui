@@ -15,6 +15,8 @@ namespace ScaffoldLib.Maui.Platforms.iOS
         {
             double top = 0;
             double bottom = 0;
+            double right = 0;
+            double left = 0;
             if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
             {
                 var window = UIApplication.SharedApplication.Windows.LastOrDefault();
@@ -22,6 +24,8 @@ namespace ScaffoldLib.Maui.Platforms.iOS
                 {
                     top = window.SafeAreaInsets.Top;
                     bottom = window.SafeAreaInsets.Bottom;
+                    right = window.SafeAreaInsets.Right;
+                    left = window.SafeAreaInsets.Left;
                 }
             }
             else
@@ -29,7 +33,7 @@ namespace ScaffoldLib.Maui.Platforms.iOS
                 top = UIApplication.SharedApplication.StatusBarFrame.Height;
             }
 
-            return new Thickness(0, top, 0, bottom);
+            return new Thickness(left, top, right, bottom);
         }
 
         public void SetStatusBarColorScheme(StatusBarColorTypes scheme)

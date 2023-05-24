@@ -12,10 +12,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>Sample</ApplicationTitle>
+		<ApplicationTitle>Scaffold.sample</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.sample</ApplicationId>
+		<ApplicationId>com.companyname.scaffold.sample</ApplicationId>
 		<ApplicationIdGuid>515733f8-e1da-4a48-bd75-f7c6835d90cf</ApplicationIdGuid>
 
 		<!-- Versions -->
