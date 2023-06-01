@@ -18,7 +18,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.9.15-beta</Version>
+		<Version>0.9.24-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -28,10 +28,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\Nuget\icon.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
+		<None Include="..\Nuget\icon.png" Pack="True" PackagePath="\" />
+		<!--<EmbeddedResource Include="Resources\Images\*" Pack="True" PackagePath="net7.0\Resources\Images\" />-->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -53,14 +51,15 @@
 	  <PackageReference Include="SkiaSharp" Version="2.88.3" />
 	</ItemGroup>
 
-
 	<ItemGroup>
-	  <MauiImage Include="Resources\Images\ic_arrow_left.svg" />
-	  <MauiImage Include="Resources\Images\ic_dots_horizontal.svg" />
-	  <MauiImage Include="Resources\Images\ic_dots_vertical.svg" />
-	  <MauiImage Include="Resources\Images\ic_scaffold_menu.svg" />
+		<MauiImage Include="Resources\Images\*" Pack="True" PackagePath="Resources\Images\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\drawable\ic_arrow_left.xml" />
+	  <None Remove="Platforms\Android\Resources\drawable\ic_dots_vertical.xml" />
+	  <None Remove="Platforms\Android\Resources\drawable\ic_scaffold_menu.xml" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="ButtonSam.Maui" Version="1.0.3" />
