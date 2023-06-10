@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-      x:Class="ScaffoldLib.Maui.Containers.WinUI.NavigationBar"
-      MinimumWidthRequest="100">
-    <StackLayout Orientation="Horizontal" 
-                 Spacing="10">
-        <internal:Button Margin="5"
-                         CornerRadius="5"
-                         Padding="6"
-                         BackgroundColor="Transparent"
-                         x:Name="buttonBack">
-            <internal:ImageTint Source="ic_arrow_left.png"
-                                WidthRequest="18"
-                                HeightRequest="18"/>
+<Grid
+    x:Class="ScaffoldLib.Maui.Containers.WinUI.NavigationBar"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+    MinimumWidthRequest="100">
+    <StackLayout
+        Orientation="Horizontal"
+        Spacing="0">
+        <internal:Button
+            x:Name="buttonBack"
+            Margin="5"
+            Padding="6"
+            BackgroundColor="Transparent"
+            CornerRadius="5">
+            <internal:ImageTint
+                x:Name="imageBackButton"
+                HeightRequest="18"
+                Source="ic_arrow_left.png"
+                WidthRequest="18" />
         </internal:Button>
-        <Label VerticalTextAlignment="Center"
-               x:Name="labelTitle"/>
+        <Label
+            x:Name="labelTitle"
+            Margin="10,0,0,0"
+            VerticalTextAlignment="Center" />
     </StackLayout>
 </Grid>

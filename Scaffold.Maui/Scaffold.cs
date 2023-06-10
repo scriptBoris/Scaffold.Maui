@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Containers;
 
 namespace ScaffoldLib.Maui;
 
@@ -303,6 +304,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     }
 
     internal ZBuffer ZBuffer => _zBufer;
+    internal IFrame? CurrentFrame => _navigationController.CurrentFrame;
     internal static Color defaultNavigationBarBackgroundColor => Color.FromArgb("#6200EE");
     internal static Color defaultNavigationBarForegroundColor => Colors.White;
 

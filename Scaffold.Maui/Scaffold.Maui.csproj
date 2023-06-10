@@ -44,6 +44,9 @@
 	  <MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Internal\WindowsMinMaxClose.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">
@@ -61,7 +64,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="ButtonSam.Maui" Version="1.0.3" />
+	  <PackageReference Include="ButtonSam.Maui" Version="1.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>

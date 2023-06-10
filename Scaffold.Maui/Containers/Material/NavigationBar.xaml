@@ -1,71 +1,80 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
-      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-      x:Class="ScaffoldLib.Maui.Containers.Material.NavigationBar"
-      x:DataType="local:NavigationBar"
-      x:Name="navigationBar">
-    
-    <StackLayout Orientation="Horizontal"
-                 Spacing="0"
-                 Margin="7,0"
-                 HeightRequest="56">
+<Grid
+    x:Class="ScaffoldLib.Maui.Containers.Material.NavigationBar"
+    x:DataType="local:NavigationBar"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+    xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
+    xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+    x:Name="navigationBar">
+
+    <StackLayout
+        Margin="7,0"
+        HeightRequest="56"
+        Orientation="Horizontal"
+        Spacing="0">
         <!--back button-->
-        <internal:Button BackgroundColor="Transparent"
-                         VerticalOptions="Center"
-                         HorizontalOptions="Start"
-                         Margin="0,0,0,0"
-                         CornerRadius="20"
-                         Padding="8"
-                         x:Name="backButton">
-            <internal:ImageTint Source="ic_arrow_left.png"
-                                HeightRequest="24"
-                                WidthRequest="24"
-                                x:Name="imageBackButton"/>
+        <internal:Button
+            x:Name="backButton"
+            Margin="0,0,0,0"
+            Padding="8"
+            BackgroundColor="Transparent"
+            CornerRadius="20"
+            HorizontalOptions="Start"
+            VerticalOptions="Center">
+            <internal:ImageTint
+                x:Name="imageBackButton"
+                HeightRequest="24"
+                Source="ic_arrow_left.png"
+                WidthRequest="24" />
         </internal:Button>
 
         <!--title-->
-        <Label FontSize="22"
-               Margin="13,0,0,0"
-               VerticalTextAlignment="Center"
-               HorizontalOptions="FillAndExpand"
-               LineBreakMode="TailTruncation"
-               x:Name="labelTitle"/>
+        <Label
+            x:Name="labelTitle"
+            Margin="13,0,0,0"
+            FontSize="22"
+            HorizontalOptions="FillAndExpand"
+            LineBreakMode="TailTruncation"
+            VerticalTextAlignment="Center" />
 
         <!--menu items-->
-        <StackLayout Margin="0,0,0,0"
-                     Orientation="Horizontal"
-                     Spacing="5"
-                     x:Name="stackMenu">
+        <StackLayout
+            x:Name="stackMenu"
+            Margin="0,0,0,0"
+            Orientation="Horizontal"
+            Spacing="5">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:MenuItem">
-                    <local:ButtonMenu VerticalOptions="Center"
-                                      BackgroundColor="Transparent"
-                                      ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
-                                      MenuItemColor="{Binding Color}"
-                                      UseOriginalColor="{Binding UseOriginalColor}"
-                                      TapColor="{Binding TapColor, Source={Reference navigationBar}}"
-                                      Text="{Binding Text}"
-                                      ImageSource="{Binding ImageSource}"
-                                      TapCommand="{Binding Command}"/>
+                    <local:ButtonMenu
+                        BackgroundColor="Transparent"
+                        ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
+                        ImageSource="{Binding ImageSource}"
+                        MenuItemColor="{Binding Color}"
+                        TapColor="{Binding TapColor, Source={Reference navigationBar}}"
+                        TapCommand="{Binding Command}"
+                        Text="{Binding Text}"
+                        UseOriginalColor="{Binding UseOriginalColor}"
+                        VerticalOptions="Center" />
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
         <!--menu button-->
-        <internal:Button BackgroundColor="Transparent"
-                         VerticalOptions="Center"
-                         HorizontalOptions="Start"
-                         Margin="5,0,0,0"
-                         CornerRadius="20"
-                         Padding="8"
-                         x:Name="buttonMenu">
-            <internal:ImageTint Source="ic_dots_vertical.png"
-                                HeightRequest="24"
-                                WidthRequest="24"
-                                x:Name="imageMenu"/>
+        <internal:Button
+            x:Name="buttonMenu"
+            Margin="5,0,0,0"
+            Padding="8"
+            BackgroundColor="Transparent"
+            CornerRadius="20"
+            HorizontalOptions="Start"
+            VerticalOptions="Center">
+            <internal:ImageTint
+                x:Name="imageMenu"
+                HeightRequest="24"
+                Source="ic_dots_vertical.png"
+                WidthRequest="24" />
         </internal:Button>
     </StackLayout>
 </Grid>

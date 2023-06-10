@@ -5,30 +5,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Internal
+namespace ScaffoldLib.Maui.Internal;
+
+internal class Button : ButtonSam.Maui.Button
 {
-    internal class Button : ButtonSam.Maui.Button
+    //protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
+    //{
+    //    if (args.Input.X < 0 || args.Input.X > Width) 
+    //    {
+    //        args.IsPressed = false;
+    //        return;
+    //    }
+
+    //    if (args.Input.Y < 0 || args.Input.Y > Height)
+    //    {
+    //        args.IsPressed = false;
+    //        return;
+    //    }
+    //}
+
+    protected override void OnGesturePressed(InteractiveEventArgs args)
     {
-        protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
+        args = new InteractiveEventArgs
         {
-            if (args.Input.X < 0 || args.Input.X > Width) 
-            {
-                args.IsPressed = false;
-                return;
-            }
-
-            if (args.Input.Y < 0 || args.Input.Y > Height)
-            {
-                args.IsPressed = false;
-                return;
-            }
-        }
-
-        protected override void HandleInteractiveStarted(HandleInteractiveStartedArgs args)
-        {
-            args.StartX = (float)Width / 2f;
-            args.StartY = (float)Height / 2f;
-            args.IsPressed = true;
-        }
+            DeviceInputType = args.DeviceInputType,
+            InputType = args.InputType,
+            State = args.State,
+            X = (float)Width / 2f,
+            Y = (float)Height / 2f,
+        };
+        base.OnGesturePressed(args);
     }
 }

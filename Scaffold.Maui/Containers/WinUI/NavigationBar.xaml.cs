@@ -2,7 +2,7 @@ using ScaffoldLib.Maui.Core;
 
 namespace ScaffoldLib.Maui.Containers.WinUI;
 
-public partial class NavigationBar : INavigationBar
+public partial class NavigationBar : INavigationBar, IWindowsBehavior
 {
     private readonly View _view;
 
@@ -20,6 +20,16 @@ public partial class NavigationBar : INavigationBar
 
         UpdateTitle(Scaffold.GetTitle(view));
         UpdateMenuItems(view);
+    }
+
+    public Rect[] UndragArea
+    {
+        get
+        {
+            if (!buttonBack.IsVisible)
+                return new Rect[] { };
+            return new Rect[] { buttonBack.Frame };
+        }
     }
 
     public async Task UpdateVisual(NavigatingArgs e)
@@ -71,11 +81,12 @@ public partial class NavigationBar : INavigationBar
     public void UpdateNavigationBarForegroundColor(Color color)
     {
         labelTitle.TextColor = color;
+        imageBackButton.TintColor = color;
     }
 
     public void UpdateNavigationBarVisible(bool visible)
     {
-
+        IsVisible = visible;
     }
 
     public void UpdateSafeArea(Thickness safeArea)

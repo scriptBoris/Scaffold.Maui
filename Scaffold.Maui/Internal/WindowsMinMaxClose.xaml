@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="ScaffoldLib.Maui.Internal.WindowsMinMaxClose"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+    xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui">
+    <Grid
+        ColumnDefinitions="*, Auto, Auto, Auto"
+        VerticalOptions="Start">
+
+        <sbutton:Button
+            x:Name="buttonCollapse"
+            Grid.Column="1"
+            Padding="0"
+            BackgroundColor="Transparent"
+            CornerRadius="0">
+            <internal:ImageTint
+                x:Name="imageCollapse"
+                Source="win_collapse.png" />
+        </sbutton:Button>
+
+        <sbutton:Button
+            x:Name="buttonMax"
+            Grid.Column="2"
+            Padding="0"
+            BackgroundColor="Transparent"
+            CornerRadius="0">
+            <internal:ImageTint
+                x:Name="imageMax"
+                Source="win_max.png" />
+        </sbutton:Button>
+
+        <sbutton:Button
+            x:Name="buttonClose"
+            Grid.Column="3"
+            Padding="0"
+            BackgroundColor="Transparent"
+            CornerRadius="0"
+            TapColor="DarkRed">
+            <internal:ImageTint
+                x:Name="imageClose"
+                Source="win_close.png" />
+        </sbutton:Button>
+    </Grid>
+</ContentView>

@@ -17,7 +17,10 @@ namespace ScaffoldLib.Maui.Platforms.Windows
 
         public void SetStatusBarColorScheme(StatusBarColorTypes scheme)
         {
-            //TODO Доделать на шындовс
+            if (ScaffoldWindows.WindowController == null)
+                ScaffoldWindows.InitialColorScheme = scheme;
+            else
+                ScaffoldWindows.WindowController.SetupColorScheme(scheme);
         }
     }
 }

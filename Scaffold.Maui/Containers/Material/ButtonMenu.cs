@@ -106,20 +106,20 @@ internal class ButtonMenu : Internal.Button
     }
     #endregion bindable props
 
-    protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
-    {
-        if (args.Input.X < 0 || args.Input.X > Width)
-        {
-            args.IsPressed = false;
-            return;
-        }
+    //protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
+    //{
+    //    if (args.Input.X < 0 || args.Input.X > Width)
+    //    {
+    //        args.IsPressed = false;
+    //        return;
+    //    }
 
-        if (args.Input.Y < 0 || args.Input.Y > Height)
-        {
-            args.IsPressed = false;
-            return;
-        }
-    }
+    //    if (args.Input.Y < 0 || args.Input.Y > Height)
+    //    {
+    //        args.IsPressed = false;
+    //        return;
+    //    }
+    //}
 
     private void Update()
     {
