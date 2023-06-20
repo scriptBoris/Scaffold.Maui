@@ -18,5 +18,3 @@ public interface INavigationBar
     void UpdateBackButtonBehavior(IBackButtonBehavior? behavior);
     void UpdateSafeArea(Thickness safeArea);
 }
-
-

@@ -2,7 +2,6 @@
 
 public interface IBackButtonBehavior
 {
-    View? LeftViewExtended(IScaffold context);
     bool? OverrideSoftwareBackButtonAction(IScaffold context);
     bool? OverrideHardwareBackButtonAction(IScaffold context);
 

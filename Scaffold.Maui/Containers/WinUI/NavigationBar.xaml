@@ -8,7 +8,6 @@
     <StackLayout
         Orientation="Horizontal"
         Spacing="0">
-        <ContentView x:Name="leftViewContainer" />
         <internal:Button
             x:Name="buttonBack"
             Margin="5"

@@ -35,8 +35,6 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
             if (buttonBack.IsVisible)
                 rects.Add(buttonBack.Frame);
 
-            rects.Add(leftViewContainer.Frame);
-
             return rects.ToArray();
         }
     }
@@ -77,7 +75,6 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     public void UpdateBackButtonBehavior(IBackButtonBehavior? behavior)
     {
         backButtonBehavior = behavior;
-        leftViewContainer.Content = behavior?.LeftViewExtended(_context);
     }
 
     public void UpdateMenuItems(View view)

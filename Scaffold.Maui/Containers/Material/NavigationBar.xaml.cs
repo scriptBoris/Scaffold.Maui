@@ -188,8 +188,4 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         Padding = new Thickness(safeArea.Left, safeArea.Top, safeArea.Right, 0);
     }
-
-    public void PassParameters(object parameter)
-    {
-    }
 }

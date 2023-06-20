@@ -129,31 +129,6 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
 
             return null;
         }
-
-        public View? LeftViewExtended(IScaffold context)
-        {
-#if WINDOWS
-            var cmd = new Command(() =>
-            {
-                _parent.IsPresented = !_parent.IsPresented;
-            });
-            return new ButtonSam.Maui.Button
-            {
-                Margin = new Thickness(5, 5, 0, 5),
-                Padding = 6,
-                BackgroundColor = Colors.Transparent,
-                CornerRadius = 5,
-                TapCommand = cmd,
-                Content = new ImageTint
-                {
-                    HeightRequest = 18,
-                    WidthRequest = 18,
-                    Source = "ic_scaffold_menu.png",
-                },
-            };
-#else
-            return null;
-#endif
-        }
     }
+
 }
