@@ -8,6 +8,7 @@
     <StackLayout
         Orientation="Horizontal"
         Spacing="0">
+        <ContentView x:Name="leftViewContainer" />
         <internal:Button
             x:Name="buttonBack"
             Margin="5"
@@ -16,9 +17,9 @@
             CornerRadius="5">
             <internal:ImageTint
                 x:Name="imageBackButton"
+                WidthRequest="18"
                 HeightRequest="18"
-                Source="ic_arrow_left.png"
-                WidthRequest="18" />
+                Source="ic_arrow_left.png" />
         </internal:Button>
         <Label
             x:Name="labelTitle"

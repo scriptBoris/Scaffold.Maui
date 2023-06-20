@@ -47,6 +47,12 @@
 	  <MauiXaml Update="Internal\WindowsMinMaxClose.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewMaterial.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewWinUI.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">

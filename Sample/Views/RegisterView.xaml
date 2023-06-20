@@ -1,41 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
-      x:Class="Sample.Views.RegisterView"
-      scaffold:Scaffold.Title="Registration"
-      Padding="10">
+<Grid
+    x:Class="Sample.Views.RegisterView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+    Padding="10"
+    scaffold:Scaffold.Title="Registration">
     <StackLayout Spacing="10">
-        <Grid ColumnDefinitions="2*,5*"
-              RowDefinitions="Auto, Auto, Auto, Auto">
+        <Grid
+            ColumnDefinitions="2*,5*"
+            RowDefinitions="Auto, Auto, Auto, Auto">
 
-            <Label Text="First name"
-                   VerticalTextAlignment="Center"/>
-            <Entry Placeholder="Required"
-                   Grid.Column="1"
-                   Grid.Row="0"/>
+            <Label
+                Text="First name"
+                VerticalTextAlignment="Center" />
+            <Entry
+                Grid.Row="0"
+                Grid.Column="1"
+                Placeholder="Required" />
 
-            <Label Text="Last name"
-                   VerticalTextAlignment="Center"
-                   Grid.Row="1"/>
-            <Entry Placeholder="Required"
-                   Grid.Column="1"
-                   Grid.Row="1"/>
+            <Label
+                Grid.Row="1"
+                Text="Last name"
+                VerticalTextAlignment="Center" />
+            <Entry
+                Grid.Row="1"
+                Grid.Column="1"
+                Placeholder="Required" />
 
-            <Label Text="Email"
-                   VerticalTextAlignment="Center"
-                   Grid.Row="2"/>
-            <Entry Placeholder="Required"
-                   Grid.Column="1"
-                   Grid.Row="2"/>
+            <Label
+                Grid.Row="2"
+                Text="Email"
+                VerticalTextAlignment="Center" />
+            <Entry
+                Grid.Row="2"
+                Grid.Column="1"
+                Placeholder="Required" />
 
-            <Label Text="Birthday"
-                   VerticalTextAlignment="Center"
-                   Grid.Row="3"/>
-            <DatePicker Grid.Column="1"
-                        Grid.Row="3"/>
+            <Label
+                Grid.Row="3"
+                Text="Birthday"
+                VerticalTextAlignment="Center" />
+            <DatePicker
+                Grid.Row="3"
+                Grid.Column="1" />
         </Grid>
-        <Button Text="Accept"
-                Clicked="Button_Clicked"/>
+        <Button
+            Clicked="Button_Clicked"
+            Text="Accept" />
     </StackLayout>
 </Grid>

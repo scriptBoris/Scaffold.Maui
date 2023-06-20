@@ -8,7 +8,7 @@ using UIKit;
 
 namespace ScaffoldLib.Maui.Internal;
 
-internal partial class ImageTintHandler
+public partial class ImageTintHandler
 {
     private bool hasHandler;
     private ImageTint Proxy => (ImageTint)VirtualView;

@@ -38,6 +38,7 @@ public partial class MasterView
 					throw new ArgumentException();
 			}
 			nav = new Scaffold();
+			nav.AutomationId = menuId.ToString();
 			nav.PushAsync(view).ConfigureAwait(false);
 			navigations.Add(nav);
 		}

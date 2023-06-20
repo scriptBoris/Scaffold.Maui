@@ -1,16 +1,20 @@
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 
 namespace ScaffoldLib.Maui.Containers.WinUI;
 
 public partial class NavigationBar : INavigationBar, IWindowsBehavior
 {
     private readonly View _view;
+    private readonly IScaffold _context;
+    private IBackButtonBehavior? backButtonBehavior;
 
     public NavigationBar(View view)
 	{
         _view = view;
+        _context = view.GetContext() ?? throw new Exception();
 
-		InitializeComponent();
+        InitializeComponent();
 
         buttonBack.TapCommand = new Command(() =>
         {
@@ -26,9 +30,14 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     {
         get
         {
-            if (!buttonBack.IsVisible)
-                return new Rect[] { };
-            return new Rect[] { buttonBack.Frame };
+            var rects = new List<Rect>();
+
+            if (buttonBack.IsVisible)
+                rects.Add(buttonBack.Frame);
+
+            rects.Add(leftViewContainer.Frame);
+
+            return rects.ToArray();
         }
     }
 
@@ -67,6 +76,8 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
 
     public void UpdateBackButtonBehavior(IBackButtonBehavior? behavior)
     {
+        backButtonBehavior = behavior;
+        leftViewContainer.Content = behavior?.LeftViewExtended(_context);
     }
 
     public void UpdateMenuItems(View view)

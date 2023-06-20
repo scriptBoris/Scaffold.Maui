@@ -12,6 +12,7 @@ public interface IScaffold : IScaffoldProvider
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
 
+    ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
@@ -28,7 +29,8 @@ public interface IScaffold : IScaffoldProvider
 public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
 {
     public const ushort AnimationTime = 180;
-    
+
+    private readonly ObservableCollection<IBehavior> _externalBevahiors = new();
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
@@ -49,6 +51,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Scaffold()
     {
+        ExternalBevahiors = new(_externalBevahiors);
+
         _navigationController = new(this);
         ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
 
@@ -276,6 +280,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         }
     }
 
+    public ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
     
     public IScaffold? ProvideScaffold
@@ -388,9 +393,19 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     internal void ShowCollapsedMenusInternal(View view)
     {
         this.Dispatcher.Dispatch(() => {
-            var overlay = ViewFactory.CreateCollapsedMenuItemsLayer(view);
+            var overlay = ViewFactory.CreateCollapsedMenuItemsLayer(view, this);
             _zBufer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
         });
+    }
+
+    public void AddBehavior(IBehavior behavior)
+    {
+        _externalBevahiors.Add(behavior);
+    }
+
+    public bool RemoveBehavior(IBehavior behavior)
+    {
+        return _externalBevahiors.Remove(behavior);
     }
 
     public virtual Task<bool> OnBackButton()
@@ -488,14 +503,14 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public async Task DisplayAlert(string title, string message, string cancel)
     {
-        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel);
+        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         await alert.GetResult();
     }
 
     public async Task<bool> DisplayAlert(string title, string message, string ok, string cancel)
     {
-        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel);
+        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return await alert.GetResult();
     }
@@ -553,5 +568,10 @@ public static class ScaffoldExtensions
     public static IScaffold? GetContext(this View view)
     {
         return Scaffold.GetScaffoldContext(view);
+    }
+
+    internal static Scaffold GetContextScaffold(this View view)
+    {
+        return (Scaffold)Scaffold.GetScaffoldContext(view)!;
     }
 }

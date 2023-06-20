@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
-             x:Class="Sample.Views.LoginView"
-             Padding="10"
-             scaffold:Scaffold.Title="Login"
-             scaffold:Scaffold.HasNavigationBar="False"
-             scaffold:Scaffold.StatusBarForegroundColor="{AppThemeBinding Light=Dark, Dark=Light}"
-             VerticalOptions="CenterAndExpand">
-    <Image Source="dotnet_bot.png"
-           HeightRequest="130"/>
-    <Border Padding="10"
-            StrokeShape="RoundRectangle 8"
-            StrokeThickness="1"
-            Margin="0,20,0,120"
-            WidthRequest="270">
+<StackLayout
+    x:Class="Sample.Views.LoginView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+    Padding="10"
+    VerticalOptions="CenterAndExpand"
+    scaffold:Scaffold.HasNavigationBar="False"
+    scaffold:Scaffold.StatusBarForegroundColor="{AppThemeBinding Light=Dark, Dark=Light}"
+    scaffold:Scaffold.Title="Login">
+    <Image
+        HeightRequest="130"
+        Source="dotnet_bot.png" />
+    <Border
+        Margin="0,20,0,120"
+        Padding="10"
+        StrokeShape="RoundRectangle 8"
+        StrokeThickness="1"
+        WidthRequest="270">
         <StackLayout Spacing="10">
-            <Label Text="Login"/>
-            <Entry Placeholder="Email"/>
-            <Entry Placeholder="Password"/>
-            <Button Text="Login"
-                    Clicked="Button_Clicked"/>
-            <Button Text="Register"
-                    Clicked="Button_Clicked_1"/>
+            <Label Text="Login" />
+            <Entry Placeholder="Email" />
+            <Entry Placeholder="Password" />
+            <Button
+                Clicked="Button_Clicked"
+                Text="Login" />
+            <Button
+                Clicked="Button_Clicked_1"
+                Text="Register" />
         </StackLayout>
     </Border>
 </StackLayout>
