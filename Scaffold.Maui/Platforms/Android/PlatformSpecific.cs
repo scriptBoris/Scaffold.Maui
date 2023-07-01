@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.OS;
+using Android.Views;
 using AndroidX.Core.View;
 using Google.Android.Material.Elevation;
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
@@ -53,7 +54,23 @@ namespace ScaffoldLib.Maui.Platforms.Android
             else
             {
                 var ctrl = ViewCompat.GetWindowInsetsController(activity.Window.DecorView);
-                ctrl.AppearanceLightStatusBars = colorType == StatusBarColorTypes.Dark;
+                // Old
+                if (ctrl != null)
+                {
+                    ctrl.AppearanceLightStatusBars = colorType == StatusBarColorTypes.Dark;
+                }
+                // No support
+                else
+                {
+                    if (colorType == StatusBarColorTypes.Dark)
+                    {
+                        activity.Window.StatusBarContrastEnforced = true;
+                    }
+                    else
+                    {
+                        activity.Window.StatusBarContrastEnforced = false;
+                    }
+                }
             }
         }
 
