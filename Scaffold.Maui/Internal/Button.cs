@@ -9,20 +9,46 @@ namespace ScaffoldLib.Maui.Internal;
 
 internal class Button : ButtonSam.Maui.Button
 {
-    //protected override void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
-    //{
-    //    if (args.Input.X < 0 || args.Input.X > Width) 
-    //    {
-    //        args.IsPressed = false;
-    //        return;
-    //    }
+    private void OnGestureMove_origin(InteractiveEventArgs args)
+    {
+        float num = Math.Abs(StartX - args.X);
+        float num2 = Math.Abs(StartY - args.Y);
+        if (num > 40f || num2 > 40f)
+        {
+            IsPressed = false;
+        }
 
-    //    if (args.Input.Y < 0 || args.Input.Y > Height)
-    //    {
-    //        args.IsPressed = false;
-    //        return;
-    //    }
-    //}
+        if (args.DeviceInputType == DeviceInputTypes.Mouse)
+        {
+            IsMouseOver = new Rect(0.0, 0.0, base.Frame.Width, base.Frame.Height).Contains(args.X, args.Y);
+        }
+        else
+        {
+            IsMouseOver = false;
+        }
+    }
+
+    protected override void OnGestureMove(InteractiveEventArgs args)
+    {
+        bool isMouseOver = base.IsMouseOver;
+        bool isPressed = base.IsPressed;
+        OnGestureMove_origin(args);
+        if (isPressed != base.IsPressed)
+        {
+            OnAnimationFinish();
+        }
+        else if (!base.IsPressed && !IsRippleEffectSupport && isMouseOver != base.IsMouseOver)
+        {
+            if (base.IsMouseOver && base.IsEnabled)
+            {
+                AnimationMouseOverStart();
+            }
+            else if (!base.IsMouseOver)
+            {
+                AnimationMouseOverRestore();
+            }
+        }
+    }
 
     protected override void OnGesturePressed(InteractiveEventArgs args)
     {
