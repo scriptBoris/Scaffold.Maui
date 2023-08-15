@@ -62,13 +62,16 @@ namespace ScaffoldLib.Maui.Platforms.Android
                 // No support
                 else
                 {
-                    if (colorType == StatusBarColorTypes.Dark)
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Lollipop)
                     {
-                        activity.Window.StatusBarContrastEnforced = true;
-                    }
-                    else
-                    {
-                        activity.Window.StatusBarContrastEnforced = false;
+                        if (colorType == StatusBarColorTypes.Dark)
+                        {
+                            activity.Window.StatusBarContrastEnforced = true;
+                        }
+                        else
+                        {
+                            activity.Window.StatusBarContrastEnforced = false;
+                        }
                     }
                 }
             }
