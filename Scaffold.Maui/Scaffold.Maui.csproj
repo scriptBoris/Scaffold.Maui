@@ -18,7 +18,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.9.28-beta</Version>
+		<Version>0.9.29-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
