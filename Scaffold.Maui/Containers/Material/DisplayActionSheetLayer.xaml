@@ -29,7 +29,9 @@
                              Spacing="0">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
-                            <sam:Button BackgroundColor="Transparent"
+                            <sam:Button Margin="0"
+                                        Padding="10"
+                                        BackgroundColor="Transparent"
                                         CornerRadius="0"
                                         TapCommand="{Binding CommandTapItem, Source={Reference root}}"
                                         TapCommandParameter="{Binding .}">
