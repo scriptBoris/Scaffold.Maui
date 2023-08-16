@@ -32,6 +32,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Containers\Material\DisplayActionSheetLayer.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Containers\Material\DisplayAlertLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

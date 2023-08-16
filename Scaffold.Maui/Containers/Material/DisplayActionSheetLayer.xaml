@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="ScaffoldLib.Maui.Containers.Material.DisplayActionSheetLayer"
+             x:Name="root"
+             BackgroundColor="#88000000">
+    <Border Padding="0"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
+            HorizontalOptions="Center"
+            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
+            StrokeShape="RoundRectangle 10"
+            VerticalOptions="Center"
+            WidthRequest="250">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer />
+        </Border.GestureRecognizers>
+
+        <StackLayout x:Name="rootStackLayout"
+                     Padding="0,10"
+                     Spacing="7">
+            <Label x:Name="labelTitle"
+                   Margin="10,0"
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+
+            <ScrollView MaximumHeightRequest="200"
+                        VerticalScrollBarVisibility="Always">
+                <StackLayout x:Name="itemList"
+                             Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <sam:Button BackgroundColor="Transparent"
+                                        CornerRadius="0"
+                                        TapCommand="{Binding CommandTapItem, Source={Reference root}}"
+                                        TapCommandParameter="{Binding .}">
+                                <Label Text="{Binding Value}" />
+                            </sam:Button>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </ScrollView>
+
+            <sam:Button x:Name="buttonDestruction"
+                        Margin="10,0"
+                        Padding="10"
+                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+                <Label x:Name="labelButtonDestruction"
+                       Margin="0,0,10,0"
+                       HorizontalTextAlignment="End"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+            </sam:Button>
+
+            <sam:Button x:Name="buttonCancel"
+                        Margin="10,0"
+                        Padding="10"
+                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+                <Label x:Name="labelButtonCancel"
+                       Margin="0,0,10,0"
+                       HorizontalTextAlignment="End"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+            </sam:Button>
+        </StackLayout>
+    </Border>
+</ContentView>

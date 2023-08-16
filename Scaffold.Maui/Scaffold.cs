@@ -24,6 +24,7 @@ public interface IScaffold : IScaffoldProvider
 
     Task DisplayAlert(string title, string message, string cancel);
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
+    Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons);
 }
 
 public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
@@ -513,6 +514,19 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return await alert.GetResult();
+    }
+
+    public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons)
+    {
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
+        if (alert == null)
+            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult
+            {
+                IsNoItems = true,
+            });
+
+        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        return alert.GetResult();
     }
 
     public void OnAppear(bool isComplete)

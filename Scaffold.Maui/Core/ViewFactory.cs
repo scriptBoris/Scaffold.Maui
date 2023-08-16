@@ -55,4 +55,12 @@ public class ViewFactory
     {
         return new Material.CollapsedMenuItemLayer(view);
     }
+
+    public virtual IDisplayActionSheet? CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string[] buttons)
+    {
+        if (buttons.Count() == 0)
+            return null;
+
+        return new Material.DisplayActionSheetLayer(title, cancel, destruction, buttons);
+    }
 }
