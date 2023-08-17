@@ -63,4 +63,9 @@ public class ViewFactory
 
         return new Material.DisplayActionSheetLayer(title, cancel, destruction, buttons);
     }
+
+    public virtual IToast? CreateToast(string? title, string message, TimeSpan showTime)
+    {
+        return new Material.ToastLayer(title, message, showTime);
+    }
 }

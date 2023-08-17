@@ -5,6 +5,7 @@
              x:Class="ScaffoldLib.Maui.Containers.Material.DisplayActionSheetLayer"
              x:Name="root"
              BackgroundColor="#88000000">
+
     <Border Padding="0"
             BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
             HorizontalOptions="Center"

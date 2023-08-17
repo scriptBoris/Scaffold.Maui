@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Containers;
+using System.Threading.Channels;
 
 namespace ScaffoldLib.Maui;
 
@@ -25,6 +26,7 @@ public interface IScaffold : IScaffoldProvider
     Task DisplayAlert(string title, string message, string cancel);
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
     Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons);
+    Task Toast(string? title, string message, TimeSpan showTime);
 }
 
 public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
@@ -527,6 +529,16 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
+    }
+
+    public Task Toast(string? title, string message, TimeSpan showTime)
+    {
+        var toast = ViewFactory.CreateToast(title, message, showTime);
+        if (toast == null)
+            return Task.CompletedTask;
+
+        _zBufer.AddLayer(toast, IScaffold.AlertIndexZ);
+        return toast.GetResult();
     }
 
     public void OnAppear(bool isComplete)

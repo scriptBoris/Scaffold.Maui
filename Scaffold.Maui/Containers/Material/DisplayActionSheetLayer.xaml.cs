@@ -61,6 +61,18 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             }
         });
 
+        this.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() =>
+            {
+                if (!IsBusy)
+                {
+                    isCanceled = true;
+                    _ = Close();
+                }
+            }),
+        });
+
         if (destruction == null && cancel == null)
             rootStackLayout.Padding = new Thickness(0, 10, 0, 0);
     }

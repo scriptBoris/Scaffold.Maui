@@ -44,6 +44,9 @@
 	  <MauiXaml Update="Containers\Material\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Containers\Material\ToastLayer.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
