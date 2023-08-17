@@ -24,9 +24,11 @@
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
 
             <ScrollView MaximumHeightRequest="200"
+                        VerticalOptions="Center"
                         VerticalScrollBarVisibility="Always">
                 <StackLayout x:Name="itemList"
-                             Spacing="0">
+                             Spacing="0"
+                             VerticalOptions="Center">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <sam:Button Margin="0"
