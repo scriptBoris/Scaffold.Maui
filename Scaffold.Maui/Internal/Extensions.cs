@@ -135,6 +135,53 @@ namespace ScaffoldLib.Maui.Internal
             return byteArray;
         }
 
+        public static async Task AwaitReady(this View view)
+        {
+#if ANDROID
+            var readyLayout = new TaskCompletionSource<bool>();
+            var readyDraw = new TaskCompletionSource<bool>();
+            var readyGlobalDraw = new TaskCompletionSource<bool>();
+            var h = await AwaitHandler(view);
+            var av = (Android.Views.View)h.PlatformView!;
+            var vto = av.ViewTreeObserver;
+            var time = DateTime.Now;
+
+            void Change(object? o, Android.Views.View.LayoutChangeEventArgs e)
+            {
+                if (av.MeasuredHeight > 0 || av.MeasuredWidth > 0)
+                {
+                    av.LayoutChange -= Change;
+                    readyLayout.TrySetResult(true);
+                }
+            }
+            void Draw(object? o, EventArgs e)
+            {
+                vto.PreDraw -= Draw;
+                readyDraw.TrySetResult(true);
+            }
+            void GlobalDraw(object? o, EventArgs e)
+            {
+                vto.GlobalLayout -= GlobalDraw;
+                readyGlobalDraw.TrySetResult(true);
+            }
+
+            vto.PreDraw += Draw;
+            vto.GlobalLayout += GlobalDraw;
+            av.LayoutChange += Change;
+
+            await Task.WhenAll(readyLayout.Task, readyDraw.Task, readyGlobalDraw.Task);
+
+            var lat = DateTime.Now - time;
+            if (lat > TimeSpan.FromMilliseconds(45))
+            {
+                if (view is IHardView hard)
+                    await hard.ReadyToPush;
+                else
+                    await Task.Delay(250);
+            }
+#endif
+        }
+
         public static async Task<IViewHandler> AwaitHandler(this View view)
         {
             if (view.Handler != null)

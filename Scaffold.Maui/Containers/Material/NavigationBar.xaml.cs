@@ -94,8 +94,14 @@ public partial class NavigationBar : INavigationBar, IDisposable
         {
             case NavigatingTypes.Push:
                 this.Opacity = 0;
-                await e.NewContent.AwaitHandler();
-                await this.FadeTo(1, Scaffold.AnimationTime);
+                await this.Dispatcher.DispatchAsync(async () =>
+                {
+                    Parallel.Invoke(() =>
+                    {
+                        this.FadeTo(1, Scaffold.AnimationTime);
+                    });
+                    await Task.Delay(Scaffold.AnimationTime);
+                });
                 break;
             case NavigatingTypes.Pop:
                 await this.FadeTo(0, Scaffold.AnimationTime);

@@ -21,10 +21,10 @@ namespace ScaffoldLib.Maui.Containers
         }
 
         public View View { get; private set; }
-        public View? Overlay 
+        public View? Overlay
         {
             get => _overlay;
-            set 
+            set
             {
                 if (_overlay != null)
                 {
@@ -37,7 +37,7 @@ namespace ScaffoldLib.Maui.Containers
                 {
                     Children.Add(value);
                 }
-            } 
+            }
         }
 
         protected override ILayoutManager CreateLayoutManager()
@@ -75,11 +75,14 @@ namespace ScaffoldLib.Maui.Containers
                 case NavigatingTypes.Push:
                     Opacity = 0;
                     TranslationX = 100;
-                    await e.NewContent.AwaitHandler();
-                    await Task.WhenAll(
-                        this.FadeTo(1, Scaffold.AnimationTime),
-                        this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)
-                    );
+                    await e.NewContent.AwaitReady();
+                    await Task.Run(async () =>
+                    {
+                        await Task.WhenAll(
+                            this.FadeTo(1, Scaffold.AnimationTime),
+                            this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut)
+                        );
+                    });
                     break;
                 case NavigatingTypes.Pop:
                     await Task.WhenAll(
