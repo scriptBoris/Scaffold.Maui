@@ -55,7 +55,7 @@ internal class ZBuffer : Layout, ILayoutManager, IDisposable
 
     public bool Pop()
     {
-        var last = items.LastOrDefault();
+        var last = items.LastOrDefault(x => x.View is IModalLayout);
         if (last == null)
             return false;
 

@@ -47,16 +47,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
     }
 
-    protected override void OnHandlerChanged()
-    {
-        base.OnHandlerChanged();
-
-#if ANDROID
-        if (this.Handler?.PlatformView is global::Android.Views.View aview)
-            aview.Elevation = 4;
-#endif
-    }
-
     private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         UpdateMenuItems(_view);

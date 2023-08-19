@@ -1,14 +1,8 @@
 ﻿using ScaffoldLib.Maui.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Containers
+namespace ScaffoldLib.Maui.Containers;
+
+public interface IDisplayAlert : IModalLayout
 {
-    public interface IDisplayAlert : IZBufferLayout
-    {
-        Task<bool> GetResult();
-    }
+    Task<bool> GetResult();
 }

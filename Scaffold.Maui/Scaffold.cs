@@ -15,6 +15,7 @@ public interface IScaffold : IScaffoldProvider
 
     ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
+    ViewFactory ViewFactory { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
     Task<bool> PopAsync(bool isAnimated = true);
@@ -25,8 +26,14 @@ public interface IScaffold : IScaffoldProvider
 
     Task DisplayAlert(string title, string message, string cancel);
     Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
+    Task DisplayAlert(string title, string message, string cancel, View parentView);
+    Task<bool> DisplayAlert(string title, string message, string ok, string cancel, View parentView);
+
     Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons);
+    Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons);
     Task Toast(string? title, string message, TimeSpan showTime);
+    void AddCustomLayer(IZBufferLayout layer, int zIndex);
+    void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView);
 }
 
 public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
@@ -377,11 +384,14 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (current == null)
             return true;
 
+        if (_navigationController.CurrentFrame!.ZBufferInternal.Pop())
+            return true;
+
         bool canPop = await BackButtonListener.OnBackButton();
         if (canPop)
             return await RemoveView(current, true);
         else
-            return false;
+            return true;
     }
 
     internal void SoftwareBackButtonInternal()
@@ -504,6 +514,20 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         return _navigationController.InsertView(view, index, isAnimated);
     }
 
+    public void AddCustomLayer(IZBufferLayout layer, int zIndex)
+    {
+        _zBufer.AddLayer(layer, zIndex);
+    }
+
+    public void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView)
+    {
+        var frame = FindFrame(parentView);
+        if (frame == null)
+            return;
+
+        frame.ZBufferInternal.AddLayer(layer, zIndex);
+    }
+
     public async Task DisplayAlert(string title, string message, string cancel)
     {
         var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
@@ -518,16 +542,46 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         return await alert.GetResult();
     }
 
+    public Task DisplayAlert(string title, string message, string cancel, View parentView)
+    {
+        var frame = FindFrame(parentView);
+        if (frame == null)
+            return Task.CompletedTask;
+
+        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
+        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
+        return alert.GetResult();
+    }
+
+    public Task<bool> DisplayAlert(string title, string message, string ok, string cancel, View parentView)
+    {
+        var frame = FindFrame(parentView);
+        if (frame == null)
+            return Task.FromResult(false);
+
+        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
+        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
+        return alert.GetResult();
+    }
+
     public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons)
     {
         var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
-        if (alert == null)
-            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult
+        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        return alert.GetResult();
+    }
+
+    public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons)
+    {
+        var frame = FindFrame(parentView);
+        if (frame == null)
+            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult 
             {
-                IsNoItems = true,
+                IsCanceled = true,
             });
 
-        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
+        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
@@ -587,6 +641,15 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     {
         PlatformSpec.SetStatusBarColorScheme(colorType);
     }
+
+    protected IFrame? FindFrame(View view)
+    {
+        var context = view.GetContext() as Scaffold;
+        if (context == null)
+            return null;
+
+        return context._navigationController.Frames.FirstOrDefault(x => x.ViewWrapper.View == view);
+    }
 }
 
 public static class ScaffoldExtensions
@@ -596,8 +659,21 @@ public static class ScaffoldExtensions
         return Scaffold.GetScaffoldContext(view);
     }
 
-    internal static Scaffold GetContextScaffold(this View view)
+    public static View? GetPage(this View view)
     {
-        return (Scaffold)Scaffold.GetScaffoldContext(view)!;
+        if (view.GetContext() != null)
+            return view;
+
+        View? parent = view.Parent as View;
+        while (true)
+        {
+            parent = parent?.Parent as View;
+            if (parent?.GetContext() != null)
+            {
+                break;
+            }
+        }
+
+        return parent;
     }
 }

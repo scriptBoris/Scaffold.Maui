@@ -12,7 +12,6 @@ namespace ScaffoldLib.Maui.Core
         public bool IsDestruction { get; set; }
         public string? ItemText { get; set; }
         public int? ItemId { get; set; }
-        public bool IsNoItems { get; set; }
         public bool HasSelectedItem => ItemText != null || ItemId != null;
     }
 
@@ -22,6 +21,5 @@ namespace ScaffoldLib.Maui.Core
         public bool IsDestruction { get; set; }
         public string? ItemText { get; set; }
         public int? ItemId { get; set; }
-        public bool IsNoItems { get; set; }
     }
 }

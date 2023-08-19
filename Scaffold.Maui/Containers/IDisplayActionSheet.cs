@@ -2,7 +2,7 @@
 
 namespace ScaffoldLib.Maui.Containers
 {
-    public interface IDisplayActionSheet : IZBufferLayout
+    public interface IDisplayActionSheet : IModalLayout
     {
         Task<IDisplayActionSheetResult> GetResult();
     }

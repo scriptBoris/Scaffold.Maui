@@ -41,6 +41,11 @@ public class ViewFactory
 #endif
     }
 
+    public virtual IZBufferLayout CreateCollapsedMenuItemsLayer(View view, IScaffold context)
+    {
+        return new Material.CollapsedMenuItemLayer(view);
+    }
+
     public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, IScaffold context)
     {
         return new Material.DisplayAlertLayer(title, message, ok);
@@ -51,16 +56,8 @@ public class ViewFactory
         return new Material.DisplayAlertLayer(title, message, ok, cancel);
     }
 
-    public virtual IZBufferLayout CreateCollapsedMenuItemsLayer(View view, IScaffold context)
+    public virtual IDisplayActionSheet CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string[] buttons)
     {
-        return new Material.CollapsedMenuItemLayer(view);
-    }
-
-    public virtual IDisplayActionSheet? CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string[] buttons)
-    {
-        if (buttons.Count() == 0)
-            return null;
-
         return new Material.DisplayActionSheetLayer(title, cancel, destruction, buttons);
     }
 

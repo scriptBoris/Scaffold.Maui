@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Layouts;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,47 +15,76 @@ namespace ScaffoldLib.Maui.Containers;
 public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisappear, IRemovedFromNavigation
 {
     private readonly View _view;
-    private View? _overlay;
+    private readonly ZBuffer _zbuffer;
+    private readonly IScaffold _scaffold;
+    private INavigationBar? _navigationBar;
 
     public Frame(View view, IScaffold context)
     {
+        _scaffold = context;
         _view = view;
         ViewWrapper = ((Scaffold)context).ViewFactory.CreateViewWrapper(view, context);
         Children.Add((View)ViewWrapper);
+
+        _zbuffer = new ZBuffer();
+        Children.Add((View)_zbuffer);
     }
 
     internal string ViewType => _view.GetType().Name;
     public bool IsAppear { get; set; }
-    public INavigationBar? NavigationBar { get; private set; }
     public IViewWrapper ViewWrapper { get; private set; }
-    public View? Overlay
-    {
-        get => _overlay;
-        set
+    public INavigationBar? NavigationBar 
+    { 
+        get => _navigationBar;
+        private set
         {
-            if (_overlay != null)
+            if (_navigationBar != null)
             {
-                _overlay.HandlerChanged -= Value_HandlerChanged;
-                Children.Remove(_overlay);
+                Children.Remove((IView)_navigationBar);
             }
 
-            _overlay = value;
+            _navigationBar = value;
 
-            if (_overlay != null)
+            if (_navigationBar != null)
             {
-                _overlay.HandlerChanged += Value_HandlerChanged;
-                Children.Add(value);
+                if (Children.Count == 0)
+                    Children.Add((IView)_navigationBar);
+                else
+                    Children.Insert(1, (IView)_navigationBar);
             }
         }
     }
+    //public View? Overlay
+    //{
+    //    get => _overlay;
+    //    set
+    //    {
+    //        if (_overlay != null)
+    //        {
+    //            _overlay.HandlerChanged -= Value_HandlerChanged;
+    //            Children.Remove(_overlay);
+    //        }
 
-    private void Value_HandlerChanged(object? sender, EventArgs e)
-    {
-#if ANDROID
-        if (_overlay?.Handler?.PlatformView is Android.Views.View aview)
-            aview.Elevation = 5;
-#endif
-    }
+    //        _overlay = value;
+
+    //        if (_overlay != null)
+    //        {
+    //            _overlay.HandlerChanged += Value_HandlerChanged;
+    //            Children.Add(value);
+    //        }
+    //    }
+    //}
+
+    public View ZBuffer => _zbuffer;
+    ZBuffer IFrame.ZBufferInternal => _zbuffer;
+
+    //    private void Value_HandlerChanged(object? sender, EventArgs e)
+    //    {
+    //#if ANDROID
+    //        if (_overlay?.Handler?.PlatformView is Android.Views.View aview)
+    //            aview.Elevation = 5;
+    //#endif
+    //    }
 
     public virtual Size ArrangeChildren(Rect bounds)
     {
@@ -71,9 +101,9 @@ public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisa
             view.Arrange(new Rect(0, offsetY, bounds.Width, h));
         }
 
-        if (Overlay is IView overlay)
+        if (ZBuffer is IView zbuffer)
         {
-            overlay.Arrange(bounds);
+            zbuffer.Arrange(bounds);
         }
 
         return bounds.Size;
@@ -94,9 +124,9 @@ public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisa
             view.Measure(widthConstraint, freeH);
         }
 
-        if (Overlay is IView overlay)
+        if (ZBuffer is IView zbuffer)
         {
-            overlay.Measure(widthConstraint, heightConstraint);
+            zbuffer.Measure(widthConstraint, heightConstraint);
         }
 
         return new Size(widthConstraint, heightConstraint);
@@ -113,18 +143,7 @@ public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisa
         bool isVisible = Scaffold.GetHasNavigationBar(_view);
         if (oldIsVisible != isVisible)
         {
-            if (isVisible)
-            {
-                var context = _view.GetContextScaffold();
-                NavigationBar = context.ViewFactory.CreateNavigationBar(_view, context);
-                if (NavigationBar != null)
-                    Children.Add((View)NavigationBar);
-            }
-            else
-            {
-                Children.Remove(NavigationBar as View);
-                NavigationBar = null;
-            }
+            NavigationBar = isVisible ? _scaffold.ViewFactory.CreateNavigationBar(_view, _scaffold) : null;
         }
     }
 
@@ -191,7 +210,7 @@ public class Frame : Layout, ILayoutManager, IFrame, IDisposable, IAppear, IDisa
         if (ViewWrapper is IDisposable viewWrapper)
             viewWrapper.Dispose();
 
-        Overlay = null;
+        _zbuffer.Dispose();
     }
 
     public virtual void OnAppear(bool isComplete)

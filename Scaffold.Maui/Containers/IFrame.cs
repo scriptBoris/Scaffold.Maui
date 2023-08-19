@@ -1,4 +1,5 @@
 ﻿using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace ScaffoldLib.Maui.Containers
         bool IsAppear { get; set; }
         INavigationBar? NavigationBar { get; }
         IViewWrapper ViewWrapper { get; }
-        View? Overlay { get; set; }
+        View ZBuffer { get; }
+        internal ZBuffer ZBufferInternal { get; }
 
         void DrawLayout();
         void UpdateSafeArea(Thickness safeArea);

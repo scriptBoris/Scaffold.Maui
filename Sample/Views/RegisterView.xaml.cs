@@ -9,12 +9,18 @@ public partial class RegisterView
         InitializeComponent();
     }
 
-    private void Button_Clicked(object sender, EventArgs e)
+    private void Accept(object sender, EventArgs e)
     {
         this.GetContext()?.PushAsync(new ConfirmEmailView());
     }
 
-    private async void Button_Clicked_1(object sender, EventArgs e)
+    private async void AcceptLatency(object sender, EventArgs e)
+    {
+        await Task.Delay(5000);
+        Accept(sender, e);
+    }
+
+    private async void SelectLanguage(object sender, EventArgs e)
     {
         var context = this.GetContext();
         if (sender is Button button && context != null)
@@ -37,5 +43,16 @@ public partial class RegisterView
             if (res.IsDestruction)
                 button.Text = "Select language";
         }
+    }
+
+    private void ShowDialog(object sender, EventArgs e)
+    {
+        this.GetContext()?.DisplayAlert("Hello", "Message", "Cancel", this);
+    }
+
+    private async void BackLatency(object sender, EventArgs e)
+    {
+        await Task.Delay(5000);
+        this.GetContext()?.PopAsync();
     }
 }

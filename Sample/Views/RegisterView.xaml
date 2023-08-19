@@ -38,11 +38,21 @@
 
             <Button Grid.Row="4"
                     Grid.Column="1"
-                    Clicked="Button_Clicked_1"
+                    Clicked="SelectLanguage"
                     Text="Select language" />
         </Grid>
 
-        <Button Clicked="Button_Clicked"
+        <Button Clicked="ShowDialog"
+                Text="Show dialog for this page" />
+
+        <Button 
+            Clicked="BackLatency"
+            Text="Back (latency)"/>
+        
+        <Button Text="Accept (latency)"
+                Clicked="AcceptLatency"/>
+
+        <Button Clicked="Accept"
                 Text="Accept" />
     </StackLayout>
 </Grid>

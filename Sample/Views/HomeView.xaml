@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
              x:Class="Sample.Views.HomeView"
-             scaffold:Scaffold.Title="Home"
-             Padding="10">
+             Padding="10"
+             scaffold:Scaffold.Title="Home">
     <StackLayout Spacing="10">
-        <Button Text="Open node"
-                Clicked="Button_Clicked"/>
+        <Button Clicked="Button_Clicked"
+                Text="Open node" />
     </StackLayout>
 </ContentView>
