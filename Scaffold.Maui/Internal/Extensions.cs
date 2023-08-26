@@ -135,14 +135,122 @@ namespace ScaffoldLib.Maui.Internal
             return byteArray;
         }
 
-        public static async Task AwaitReady(this View view, CancellationToken? cancellation = null)
+        public static Task AwaitReady(this IAgent agent, CancellationToken? cancellationToken = null)
+        {
+            return AwaitReady((View)agent, cancellationToken);
+        }
+
+        public static Task AwaitReady(this View view, CancellationToken? cancellation = null)
         {
             var cancel = cancellation ?? CancellationToken.None;
 #if ANDROID
+            return AwaitReadyDroid(view, cancel);
+#elif IOS
+            return AwaitReadyIOS(view, cancel);
+#else
+            return Task.CompletedTask;
+#endif
+        }
+
+#if IOS
+        public class CustomView : UIKit.UIView
+        {
+            private readonly Action<UIKit.UIView> act;
+
+            public CustomView(Action<UIKit.UIView> act)
+            {
+                this.act = act;
+                Bounds = new CoreGraphics.CGRect(0, 0, 1, 1);
+            }
+
+            public override void MovedToWindow()
+            {
+                base.MovedToWindow();
+            }
+
+            public override void Draw(CoreGraphics.CGRect rect)
+            {
+                base.Draw(rect);
+                act.Invoke(this);
+            }
+
+            public override bool DrawViewHierarchy(CoreGraphics.CGRect rect, bool afterScreenUpdates)
+            {
+                var result = base.DrawViewHierarchy(rect, afterScreenUpdates);
+                act.Invoke(this);
+                return result;
+            }
+        }
+
+        private class VK : UIKit.UIViewController
+        {
+            private readonly Action act;
+
+            public VK(Action act)
+            {
+                this.act = act;
+            }
+
+            public override void ViewDidLoad()
+            {
+                base.ViewDidLoad();
+                act.Invoke();
+            }
+        }
+
+        private static async Task AwaitReadyIOS(View view, CancellationToken cancellation)
+        {
+            var h = await AwaitHandler(view, cancellation);
+            if (h == null)
+                return;
+
+            var v = h.PlatformView as UIKit.UIView;
+            if (v == null)
+                return;
+
+            if (h.PlatformView is Platforms.iOS.UIAgentView agent)
+            {
+                var tsc = new TaskCompletionSource<bool>();
+                int hard = view.GetVisualTreeDescendants().Count;
+                int addLife = agent.CalculateHard(hard);
+                void drawed(object? sender, int newAddLife)
+                {
+                    addLife += newAddLife;
+                }
+                agent.ViewIsDrawed += drawed;
+
+                view.Dispatcher.StartTimer(TimeSpan.FromMilliseconds(5), () =>
+                {
+                    addLife -= 5;
+
+                    bool result = addLife > 0;
+                    if (!result)
+                        tsc.TrySetResult(true);
+
+                    return result;
+                });
+
+                await tsc.Task.WithCancelation(cancellation);
+                agent.ViewIsDrawed -= drawed;
+            }
+
+            //var tsc = new TaskCompletionSource<bool>();
+            //var c = new CustomView((x) =>
+            //{
+            //    tsc.TrySetResult(true);
+            //});
+            //v.AddSubview(c);
+            //await tsc.Task.WithCancelation(cancellation);
+        }
+#endif
+
+#if ANDROID
+        private static async Task AwaitReadyDroid(View view, CancellationToken cancel)
+        {
             var readyLayout = new TaskCompletionSource<bool>();
             var readyDraw = new TaskCompletionSource<bool>();
             var readyGlobalDraw = new TaskCompletionSource<bool>();
-            var h = await AwaitHandler(view, cancellation);
+            var h = await AwaitHandler(view, cancel);
             if (h == null)
                 return;
 
@@ -194,8 +302,8 @@ namespace ScaffoldLib.Maui.Internal
                 else
                     await Task.Delay(250).WithCancelation(cancel);
             }
-#endif
         }
+#endif
 
         public static async Task<IViewHandler?> AwaitHandler(this View view, CancellationToken? cancel = null)
         {
@@ -231,7 +339,7 @@ namespace ScaffoldLib.Maui.Internal
                 //if (c.Content is Scaffold cv)
                 //    return cv;
                 //else
-                    return FindScaffold(c.Content) as Scaffold;
+                return FindScaffold(c.Content) as Scaffold;
             }
             return null;
         }

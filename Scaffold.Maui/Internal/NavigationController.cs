@@ -68,7 +68,7 @@ internal class NavigationController : IDisposable
 
             oldAgent?.PrepareAnimate(NavigatingTypes.UnderPush);
             newAgent.PrepareAnimate(NavigatingTypes.Push);
-            await view.AwaitReady(cancel);
+            await newAgent.AwaitReady(cancel);
             var t1 = oldAgent?.Animate(NavigatingTypes.UnderPush, cancel) ?? Task.CompletedTask;
             var t2 = newAgent.Animate(NavigatingTypes.Push, cancel);
             await Task.WhenAll(t1, t2);
@@ -145,7 +145,7 @@ internal class NavigationController : IDisposable
 
             oldAgent.PrepareAnimate(NavigatingTypes.UnderReplace);
             newAgent.PrepareAnimate(NavigatingTypes.Replace);
-            await view.AwaitReady(cancel);
+            await newAgent.AwaitReady(cancel);
             var t1 = oldAgent.Animate(NavigatingTypes.UnderReplace, cancel);
             var t2 = newAgent.Animate(NavigatingTypes.Replace, cancel);
             await Task.WhenAll(t1, t2);

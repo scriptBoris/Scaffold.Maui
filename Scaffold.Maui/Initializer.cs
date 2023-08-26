@@ -1,4 +1,5 @@
 ﻿using ButtonSam.Maui;
+using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,10 @@ public static class Initializer
         builder.ConfigureMauiHandlers(h =>
         {
             h.AddHandler(typeof(ImageTint), typeof(ImageTintHandler));
+
+#if IOS
+            h.AddHandler(typeof(Agent), typeof(Platforms.iOS.AgentHandler));
+#endif
         });
 
         builder.UseButtonSam();
