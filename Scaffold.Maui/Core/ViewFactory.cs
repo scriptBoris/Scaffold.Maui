@@ -1,12 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using ScaffoldLib.Maui.Containers;
-using ScaffoldLib.Maui.Containers.WinUI;
-using ScaffoldLib.Maui.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ScaffoldLib.Maui.Containers;
 using Material = ScaffoldLib.Maui.Containers.Material;
 using WinUI = ScaffoldLib.Maui.Containers.WinUI;
 
@@ -14,21 +6,21 @@ namespace ScaffoldLib.Maui.Core;
 
 public class ViewFactory
 {
-    public virtual IFrame CreateFrame(View view, IScaffold context)
+    public virtual IAgent CreateAgent(AgentArgs args, IScaffold context)
     {
 #if WINDOWS
-        return new WinUI.FrameWinUI(view, context);
+        return new WinUI.AgentWinUI(args, context);
 #else
-        return new Containers.Frame(view, context);
+        return new Containers.DefaultAgent(args, context);
 #endif
     }
 
-    public virtual INavigationBar? CreateNavigationBar(View view, IScaffold context)
+    public virtual INavigationBar? CreateNavigationBar(View view, IAgent agent)
     {
 #if WINDOWS
-        return new WinUI.NavigationBar(view);
+        return new WinUI.NavigationBar(view, agent);
 #else
-        return new Material.NavigationBar(view);
+        return new Material.NavigationBar(view, agent);
 #endif
     }
 
@@ -43,7 +35,11 @@ public class ViewFactory
 
     public virtual IZBufferLayout CreateCollapsedMenuItemsLayer(View view, IScaffold context)
     {
+#if WINDOWS
+        return new WinUI.CollapsedMenuItemLayer(view);
+#else
         return new Material.CollapsedMenuItemLayer(view);
+#endif
     }
 
     public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, IScaffold context)

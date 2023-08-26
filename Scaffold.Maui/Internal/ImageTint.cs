@@ -12,15 +12,15 @@ public partial class ImageTintHandler : ImageHandler
 {
 }
 
-public class ImageTint : Image
+public class ImageTint : Image, IDisposable
 {
     // tint color
     public static readonly BindableProperty TintColorProperty = BindableProperty.Create(
         nameof(TintColor),
-        typeof(Color), 
+        typeof(Color),
         typeof(ImageTint),
         null,
-        propertyChanged: (b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
 #if WINDOWS
             if (b is ImageTint self) self.UpdateSource();
@@ -40,7 +40,7 @@ public class ImageTint : Image
         typeof(ImageSource),
         typeof(ImageTint),
         null,
-        propertyChanged:(b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
 #if WINDOWS
             if (b is ImageTint self) self.UpdateSource();
@@ -53,6 +53,11 @@ public class ImageTint : Image
     {
         get => GetValue(SourceProperty) as ImageSource;
         set => SetValue(SourceProperty, value);
+    }
+
+    public void Dispose()
+    {
+        Handler = null;
     }
 
 #if WINDOWS

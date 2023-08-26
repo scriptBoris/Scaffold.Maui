@@ -20,7 +20,10 @@ namespace ScaffoldLib.Maui.Core
     public enum NavigatingTypes
     {
         Push,
+        UnderPush,
         Pop,
+        UnderPop,
         Replace,
+        UnderReplace,
     }
 }

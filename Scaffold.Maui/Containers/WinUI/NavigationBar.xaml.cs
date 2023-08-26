@@ -1,29 +1,56 @@
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
+using System.Collections;
 
 namespace ScaffoldLib.Maui.Containers.WinUI;
 
 public partial class NavigationBar : INavigationBar, IWindowsBehavior
 {
     private readonly View _view;
+    private readonly IAgent _agent;
     private readonly IScaffold _context;
     private IBackButtonBehavior? backButtonBehavior;
+    private Color? foregroundColor;
+    private bool isVisibleButtonMoreMenu;
 
-    public NavigationBar(View view)
-	{
+    public NavigationBar(View view, IAgent agent)
+    {
         _view = view;
-        _context = view.GetContext() ?? throw new Exception();
+        _agent = agent;
+        _context = agent.Context;
 
         InitializeComponent();
 
         buttonBack.TapCommand = new Command(() =>
         {
-            if (view.GetContext() is Scaffold scaffold)
-                scaffold.SoftwareBackButtonInternal();
+            agent.OnBackButton();
         });
 
-        UpdateTitle(Scaffold.GetTitle(view));
-        UpdateMenuItems(view);
+        buttonMenu.TapCommand = new Command(() =>
+        {
+            agent.OnMenuButton();
+        });
+    }
+
+    public Color? ForegroundColor
+    {
+        get => foregroundColor;
+        set
+        {
+            foregroundColor = value;
+            OnPropertyChanged(nameof(ForegroundColor));
+        }
+    }
+
+    public bool IsVisibleButtonMoreMenu
+    {
+        get => isVisibleButtonMoreMenu;
+        set
+        {
+            isVisibleButtonMoreMenu = value;
+            OnPropertyChanged(nameof(IsVisibleButtonMoreMenu));
+        }
     }
 
     public Rect[] UndragArea
@@ -33,37 +60,15 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
             var rects = new List<Rect>();
 
             if (buttonBack.IsVisible)
-                rects.Add(buttonBack.Frame);
+                rects.Add(buttonBack.AbsRect());
+
+            if (buttonMenu.IsVisible)
+                rects.Add(buttonMenu.AbsRect());
+
+            foreach (View item in stackMenu)
+                rects.Add(item.AbsRect());
 
             return rects.ToArray();
-        }
-    }
-
-    public async Task UpdateVisual(NavigatingArgs e)
-    {
-        if (e.NavigationType == NavigatingTypes.Push)
-        {
-            buttonBack.IsVisible = e.HasBackButton;
-            UpdateSafeArea(Scaffold.SafeArea);
-            UpdateNavigationBarBackgroundColor(e.NavigationBarBackgroundColor);
-            UpdateNavigationBarForegroundColor(e.NavigationBarForegroundColor);
-        }
-
-        if (!e.IsAnimating)
-            return;
-
-        switch (e.NavigationType)
-        {
-            case NavigatingTypes.Push:
-                this.Opacity = 0;
-                //await e.NewContent.AwaitHandler();
-                await this.FadeTo(1, Scaffold.AnimationTime);
-                break;
-            case NavigatingTypes.Pop:
-                await this.FadeTo(0, Scaffold.AnimationTime);
-                break;
-            default:
-                break;
         }
     }
 
@@ -77,8 +82,16 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
         backButtonBehavior = behavior;
     }
 
-    public void UpdateMenuItems(View view)
+    public void UpdateMenuItems(Core.MenuItemCollection menu)
     {
+        BindableLayout.SetItemsSource(stackMenu, menu.VisibleItems);
+        menu.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
+        IsVisibleButtonMoreMenu = menu.CollapsedItems.Count > 0;
+    }
+
+    private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        IsVisibleButtonMoreMenu = ((IList)sender!).Count > 0;
     }
 
     public void UpdateNavigationBarBackgroundColor(Color color)
@@ -90,6 +103,7 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     {
         labelTitle.TextColor = color;
         imageBackButton.TintColor = color;
+        ForegroundColor = color;
     }
 
     public void UpdateNavigationBarVisible(bool visible)
@@ -100,5 +114,10 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     public void UpdateSafeArea(Thickness safeArea)
     {
         HeightRequest = safeArea.Top;
+    }
+
+    public void UpdateBackButtonVisibility(bool isVisible)
+    {
+        buttonBack.IsVisible = isVisible;
     }
 }

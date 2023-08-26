@@ -4,6 +4,7 @@
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
       x:Class="Sample.Views.RegisterView"
       Padding="10"
+      scaffold:Scaffold.HasNavigationBar="True"
       scaffold:Scaffold.Title="Registration">
     <StackLayout Spacing="10">
         <Grid ColumnDefinitions="2*,5*"
@@ -45,12 +46,11 @@
         <Button Clicked="ShowDialog"
                 Text="Show dialog for this page" />
 
-        <Button 
-            Clicked="BackLatency"
-            Text="Back (latency)"/>
-        
-        <Button Text="Accept (latency)"
-                Clicked="AcceptLatency"/>
+        <Button Clicked="BackLatency"
+                Text="Back (latency)" />
+
+        <Button Clicked="AcceptLatency"
+                Text="Accept (latency)" />
 
         <Button Clicked="Accept"
                 Text="Accept" />

@@ -1,4 +1,7 @@
-﻿using ScaffoldLib.Maui.Containers;
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
+using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
@@ -12,123 +15,188 @@ namespace ScaffoldLib.Maui.Internal;
 internal class NavigationController : IDisposable
 {
     private readonly Scaffold _scaffold;
-    private readonly ObservableCollection<IFrame> _frames = new();
+    private readonly ObservableCollection<IAgent> _agents = new();
     private readonly ObservableCollection<View> _navigationStack = new();
 
-    public NavigationController(Scaffold layout)
+    public NavigationController(Scaffold scaffold)
     {
-        _scaffold = layout;
+        _scaffold = scaffold;
         NavigationStack = new(_navigationStack);
-        Frames = new (_frames);
+        Agents = new (_agents);
     }
 
+    private CancellationTokenSource cancelAnim = new();
     private AppearingStates AppearingStl => _scaffold.AppearingState;
     public ReadOnlyObservableCollection<View> NavigationStack { get; private set; }
-    public ReadOnlyObservableCollection<IFrame> Frames { get; private set; }
-    public IFrame? CurrentFrame => Frames.LastOrDefault();
+    public ReadOnlyObservableCollection<IAgent> Agents { get; private set; }
+    public IAgent? CurrentAgent => Agents.LastOrDefault();
 
-    internal async Task<IFrame> PushAsync(View view, bool isAnimated, IFrame? currentFrame = null, NavigatingTypes? intentType = null)
+    internal async Task PushAsync(View view, bool isAnimated, Agent? currentAgent = null, NavigatingTypes? intentType = null)
     {
-        var oldFrame = currentFrame ?? CurrentFrame;
-        if (oldFrame == null)
+        var oldAgent = currentAgent ?? CurrentAgent;
+        if (oldAgent == null)
             isAnimated = false;
 
-        var frame = _scaffold.ViewFactory.CreateFrame(view, _scaffold);
-        frame.DrawLayout();
-        frame.NavigationBar?.UpdateBackButtonBehavior(_scaffold.BackButtonBehavior);
+        var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
+        var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
 
-        _frames.Add(frame);
-        _navigationStack.Add(view);
-        _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)frame);
-
-
-        var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor;
-        var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
-
-        TryHideKeyboard();
-        oldFrame?.TryDisappearing(false, AppearingStl);
-        frame.TryAppearing(false, AppearingStl, bgColor);
-
-        await frame.UpdateVisual(new NavigatingArgs
+        var args = new AgentArgs
         {
-            NavigationType = intentType ?? NavigatingTypes.Push,
-            NewContent = view,
-            OldContent = oldFrame?.ViewWrapper.View,
-            IsAnimating = isAnimated,
-            HasBackButton = NavigationStack.Count > 1,
+            View = view,
             NavigationBarBackgroundColor = bgColor,
             NavigationBarForegroundColor = fgColor,
-        });
+            IndexInStack = NavigationStack.Count,
+            SafeArea = Scaffold.SafeArea,
+            BackButtonBehavior = _scaffold.BackButtonBehavior,
+            Behaviors = _scaffold.ExternalBevahiors.ToArray(),
+        };
 
-        if (oldFrame is View oldFrameView)
-            oldFrameView.IsVisible = false;
+        var newAgent = _scaffold.ViewFactory.CreateAgent(args, _scaffold);
+        _agents.Add(newAgent);
+        _navigationStack.Add(view);
+        _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)newAgent);
 
-        oldFrame?.TryDisappearing(true, AppearingStl);
-        frame.TryAppearing(true, AppearingStl);
+        Scaffold.TryHideKeyboard();
+        oldAgent?.TryDisappearing(false, AppearingStl);
+        newAgent.TryAppearing(false, AppearingStl, bgColor);
 
-        return frame;
+        if (isAnimated)
+        {
+            cancelAnim.Cancel();
+            cancelAnim = new();
+            var cancel = cancelAnim.Token;
+
+            oldAgent?.PrepareAnimate(NavigatingTypes.UnderPush);
+            newAgent.PrepareAnimate(NavigatingTypes.Push);
+            await view.AwaitReady(cancel);
+            var t1 = oldAgent?.Animate(NavigatingTypes.UnderPush, cancel) ?? Task.CompletedTask;
+            var t2 = newAgent.Animate(NavigatingTypes.Push, cancel);
+            await Task.WhenAll(t1, t2);
+
+            if (cancel.IsCancellationRequested)
+                return;
+        }
+
+        if (oldAgent is View oldAgentView)
+            oldAgentView.IsVisible = false;
+
+        oldAgent?.TryDisappearing(true, AppearingStl);
+        newAgent.TryAppearing(true, AppearingStl);
+    }
+
+    internal void InsertView(View view, int index)
+    {
+        var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
+        var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
+
+        var args = new AgentArgs
+        {
+            IndexInStack = index,
+            View = view,
+            NavigationBarBackgroundColor = bgColor,
+            NavigationBarForegroundColor = fgColor,
+            SafeArea = Scaffold.SafeArea,
+            BackButtonBehavior = _scaffold.BackButtonBehavior,
+            Behaviors = _scaffold.ExternalBevahiors.ToArray(),
+        };
+        var newAgent = _scaffold.ViewFactory.CreateAgent(args, _scaffold);
+        var newAgentView = (View)newAgent;
+        newAgentView.IsVisible = false;
+
+        _navigationStack.Insert(index, view);
+        _agents.Insert(index, newAgent);
+        _scaffold.Children.Insert(index, newAgentView);
+    }
+
+    internal async Task ReplaceView(View view, bool isAnimated)
+    {
+        var oldAgent = CurrentAgent!;
+        var oldView = oldAgent.ViewWrapper.View;
+        var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
+        var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
+
+        var args = new AgentArgs
+        {
+            View = view,
+            NavigationBarBackgroundColor = bgColor,
+            NavigationBarForegroundColor = fgColor,
+            IndexInStack = NavigationStack.Count,
+            SafeArea = Scaffold.SafeArea,
+            BackButtonBehavior = _scaffold.BackButtonBehavior,
+            Behaviors = _scaffold.ExternalBevahiors.ToArray(),
+        };
+
+        var newAgent = _scaffold.ViewFactory.CreateAgent(args, _scaffold);
+        _agents.Add(newAgent);
+        _navigationStack.Add(view);
+        _scaffold.Children.Insert(_scaffold.Children.Count - 1, (View)newAgent);
+        _navigationStack.Remove(oldView);
+        _agents.Remove(oldAgent);
+
+        Scaffold.TryHideKeyboard();
+        oldAgent.TryDisappearing(false, AppearingStl);
+        newAgent.TryAppearing(false, AppearingStl, bgColor);
+
+        if (isAnimated)
+        {
+            cancelAnim.Cancel();
+            cancelAnim = new();
+            var cancel = cancelAnim.Token;
+
+            oldAgent.PrepareAnimate(NavigatingTypes.UnderReplace);
+            newAgent.PrepareAnimate(NavigatingTypes.Replace);
+            await view.AwaitReady(cancel);
+            var t1 = oldAgent.Animate(NavigatingTypes.UnderReplace, cancel);
+            var t2 = newAgent.Animate(NavigatingTypes.Replace, cancel);
+            await Task.WhenAll(t1, t2);
+
+            if (cancel.IsCancellationRequested)
+                return;
+        }
+
+        _scaffold.Children.Remove((View)oldAgent);
+
+        oldAgent.TryDisappearing(true, AppearingStl);
+        newAgent.TryAppearing(true, AppearingStl);
+        oldAgent.Dispose();
     }
 
     internal async Task<bool> PopAsync(bool isAnimated)
     {
-        var currentFrame = CurrentFrame;
-        if (currentFrame == null)
+        var currentAgent = CurrentAgent;
+        if (currentAgent == null)
             return false;
 
         int count = NavigationStack.Count;
-        bool hasBackButton = count > 2;
-        var prevFrame = Frames.ItemOrDefault(count - 2);
-        if (prevFrame == null)
+        var previosAgent = Agents.ItemOrDefault(count - 2);
+        if (previosAgent == null)
             return false;
 
-        if (prevFrame is View prevFrameView)
-            prevFrameView.IsVisible = true;
+        if (previosAgent is View prevView)
+            prevView.IsVisible = true;
 
-        _navigationStack.Remove(currentFrame.ViewWrapper.View);
-        _frames.Remove(currentFrame);
+        _navigationStack.Remove(currentAgent.ViewWrapper.View);
+        _agents.Remove(currentAgent);
 
-        var bgColor = Scaffold.GetNavigationBarBackgroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.defaultNavigationBarBackgroundColor;
-        var fgColor = Scaffold.GetNavigationBarForegroundColor(prevFrame.ViewWrapper.View) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.defaultNavigationBarForegroundColor;
-        
-        TryHideKeyboard();
-        currentFrame.TryDisappearing(false, AppearingStl);
-        prevFrame.TryAppearing(false, AppearingStl, bgColor);
+        Scaffold.TryHideKeyboard();
+        currentAgent.TryDisappearing(false, AppearingStl);
+        previosAgent.TryAppearing(false, AppearingStl, previosAgent.NavigationBarBackgroundColor);
 
-        await currentFrame.UpdateVisual(new NavigatingArgs
+        if (isAnimated)
         {
-            NavigationType = NavigatingTypes.Pop,
-            NewContent = prevFrame.ViewWrapper.View,
-            OldContent = currentFrame.ViewWrapper.View,
-            IsAnimating = isAnimated,
-            HasBackButton = hasBackButton,
-            NavigationBarBackgroundColor = bgColor,
-            NavigationBarForegroundColor = fgColor,
-        });
+            cancelAnim.Cancel();
+            cancelAnim = new();
+            previosAgent.PrepareAnimate(NavigatingTypes.UnderPop);
+            currentAgent.PrepareAnimate(NavigatingTypes.Pop);
+            var t1 = previosAgent.Animate(NavigatingTypes.UnderPop, CancellationToken.None);
+            var t2 = currentAgent.Animate(NavigatingTypes.Pop, CancellationToken.None);
+            await Task.WhenAll(t1, t2);
+        }
 
-        _scaffold.Children.Remove((View)currentFrame);
-
-        currentFrame.TryDisappearing(true, AppearingStl);
-        prevFrame.TryAppearing(true, AppearingStl);
-
-        return true;
-    }
-
-    internal async Task<bool> ReplaceAsync(View oldView, View newView, bool isAnimated)
-    {
-        var oldIndex = NavigationStack.IndexOf(oldView);
-        if (oldIndex < 0)
-            return false;
-
-        TryHideKeyboard();
-
-        var oldFrame = Frames[oldIndex];
-        _frames.RemoveAt(oldIndex);
-        _navigationStack.RemoveAt(oldIndex);
-        oldFrame.TryDisappearing(false, AppearingStl);
-
-        await PushAsync(newView, isAnimated, oldFrame, NavigatingTypes.Replace);
-        _scaffold.Children.Remove((View)oldFrame);
-        oldFrame.TryDisappearing(true, AppearingStl);
+        _scaffold.Children.Remove((View)currentAgent);
+        currentAgent.TryDisappearing(true, AppearingStl);
+        previosAgent.TryAppearing(true, AppearingStl);
+        currentAgent.Dispose();
 
         return true;
     }
@@ -138,64 +206,19 @@ internal class NavigationController : IDisposable
         if (index < 0 || index >= NavigationStack.Count)
             return false;
 
-        var frame = Frames[index];
+        var agent = Agents[index];
         _navigationStack.RemoveAt(index);
-        _frames.RemoveAt(index);
-        _scaffold.Children.Remove((View)frame);
+        _agents.RemoveAt(index);
+        _scaffold.Children.Remove((View)agent);
+        agent.Dispose();
         return true;
-    }
-
-    internal async Task<bool> InsertView(View view, int index, bool isAnimated)
-    {
-        if (index < 0)
-            return false;
-
-        int count = NavigationStack.Count;
-        if (count == 0 || index >= count)
-        {
-            await PushAsync(view, isAnimated);
-            return true;
-        }
-        else
-        {
-            var frame = _scaffold.ViewFactory.CreateFrame(view, _scaffold);
-            frame.DrawLayout();
-            frame.NavigationBar?.UpdateBackButtonBehavior(_scaffold.BackButtonBehavior);
-
-            if (frame is View v)
-                v.IsVisible = false;
-
-            _navigationStack.Insert(index, view);
-            _frames.Insert(index, frame);
-            _scaffold.Children.Insert(index, (View)frame);
-
-            return true;
-        }
-    }
-
-    private void TryHideKeyboard()
-    {
-#if ANDROID
-        var context = Platform.AppContext;
-        if (context.GetSystemService(Android.Content.Context.InputMethodService) is Android.Views.InputMethods.InputMethodManager inputMethodManager)
-        {
-            var activity = Platform.CurrentActivity;
-            var token = activity?.CurrentFocus?.WindowToken;
-            inputMethodManager.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
-            activity?.Window?.DecorView.ClearFocus();
-        }
-#endif
     }
 
     public void Dispose()
     {
-        foreach (var frame in _frames.Reverse())
+        foreach (var agent in _agents.Reverse())
         {
-            if (frame.ViewWrapper.View is IRemovedFromNavigation v)
-                v.OnRemovedFromNavigation();
-
-            if (frame is IDisposable disposable) 
-                disposable.Dispose();
+            agent.Dispose();
         }
     }
 }

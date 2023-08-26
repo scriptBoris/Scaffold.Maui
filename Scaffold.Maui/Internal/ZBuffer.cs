@@ -8,7 +8,13 @@ using ScaffoldLib.Maui.Core;
 
 namespace ScaffoldLib.Maui.Internal;
 
-internal class ZBuffer : Layout, ILayoutManager, IDisposable
+public interface IZBuffer
+{
+    void AddLayer(IZBufferLayout overlay, int menuItemsIndexZ);
+    bool Pop();
+}
+
+internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 {
     private readonly List<LayerItem> items = new();
 

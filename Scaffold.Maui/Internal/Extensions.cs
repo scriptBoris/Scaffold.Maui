@@ -30,7 +30,7 @@ namespace ScaffoldLib.Maui.Internal
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void TryAppearing(this IFrame frame, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
+        public static void TryAppearing(this IAgent frame, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
         {
             if (parentStl == AppearingStates.Disappear)
                 return;
@@ -58,7 +58,7 @@ namespace ScaffoldLib.Maui.Internal
                 ap.OnAppear(isComplete);
         }
 
-        public static void TryDisappearing(this IFrame frame, bool isComplete, AppearingStates parentStl)
+        public static void TryDisappearing(this IAgent frame, bool isComplete, AppearingStates parentStl)
         {
             if (parentStl == AppearingStates.Disappear)
                 return;
@@ -71,14 +71,14 @@ namespace ScaffoldLib.Maui.Internal
                 dis.OnDisappear(isComplete);
         }
 
-        public static void TryRemoveFromNavigation(this IFrame frame)
+        public static void TryRemoveFromNavigation(this IAgent frame)
         {
             frame.ViewWrapper.View.TryRemoveFromNavigation();
             if (frame is IRemovedFromNavigation rm)
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void ResolveStatusBarColor(this IFrame frame)
+        public static void ResolveStatusBarColor(this IAgent frame)
         {
             if (!frame.IsAppear)
                 return;
@@ -92,7 +92,7 @@ namespace ScaffoldLib.Maui.Internal
             {
                 var rbar = (frame.NavigationBar as View)?.BackgroundColor;
                 var vbar = Scaffold.GetNavigationBarBackgroundColor(frame.ViewWrapper.View);
-                var bgColor = vbar ?? rbar ?? Scaffold.defaultNavigationBarBackgroundColor;
+                var bgColor = vbar ?? rbar ?? Scaffold.DefaultNavigationBarBackgroundColor;
                 if (bgColor.IsDark())
                     Scaffold.SetupStatusBarColor(StatusBarColorTypes.Light);
                 else
@@ -135,33 +135,37 @@ namespace ScaffoldLib.Maui.Internal
             return byteArray;
         }
 
-        public static async Task AwaitReady(this View view)
+        public static async Task AwaitReady(this View view, CancellationToken? cancellation = null)
         {
+            var cancel = cancellation ?? CancellationToken.None;
 #if ANDROID
             var readyLayout = new TaskCompletionSource<bool>();
             var readyDraw = new TaskCompletionSource<bool>();
             var readyGlobalDraw = new TaskCompletionSource<bool>();
-            var h = await AwaitHandler(view);
+            var h = await AwaitHandler(view, cancellation);
+            if (h == null)
+                return;
+
             var av = (Android.Views.View)h.PlatformView!;
-            var vto = av.ViewTreeObserver;
+            var vto = av?.ViewTreeObserver;
+            if (vto == null)
+                return;
+
             var time = DateTime.Now;
 
             void Change(object? o, Android.Views.View.LayoutChangeEventArgs e)
             {
                 if (av.MeasuredHeight > 0 || av.MeasuredWidth > 0)
                 {
-                    av.LayoutChange -= Change;
                     readyLayout.TrySetResult(true);
                 }
             }
             void Draw(object? o, EventArgs e)
             {
-                vto.PreDraw -= Draw;
                 readyDraw.TrySetResult(true);
             }
             void GlobalDraw(object? o, EventArgs e)
             {
-                vto.GlobalLayout -= GlobalDraw;
                 readyGlobalDraw.TrySetResult(true);
             }
 
@@ -169,20 +173,31 @@ namespace ScaffoldLib.Maui.Internal
             vto.GlobalLayout += GlobalDraw;
             av.LayoutChange += Change;
 
-            await Task.WhenAll(readyLayout.Task, readyDraw.Task, readyGlobalDraw.Task);
+            await Task.WhenAll(readyLayout.Task, readyDraw.Task, readyGlobalDraw.Task).WithCancelation(cancel);
+
+            vto.PreDraw -= Draw;
+            vto.GlobalLayout -= GlobalDraw;
+            av.LayoutChange -= Change;
+
+            if (cancel.IsCancellationRequested)
+            {
+                readyLayout.TrySetCanceled();
+                readyDraw.TrySetCanceled();
+                readyGlobalDraw.TrySetCanceled();
+            }
 
             var lat = DateTime.Now - time;
             if (lat > TimeSpan.FromMilliseconds(45))
             {
                 if (view is IHardView hard)
-                    await hard.ReadyToPush;
+                    await hard.ReadyToPush.WithCancelation(cancel);
                 else
-                    await Task.Delay(250);
+                    await Task.Delay(250).WithCancelation(cancel);
             }
 #endif
         }
 
-        public static async Task<IViewHandler> AwaitHandler(this View view)
+        public static async Task<IViewHandler?> AwaitHandler(this View view, CancellationToken? cancel = null)
         {
             if (view.Handler != null)
                 return view.Handler;
@@ -194,25 +209,8 @@ namespace ScaffoldLib.Maui.Internal
             }
 
             view.HandlerChanged += eventDelegate;
-            var handler = await tsc.Task;
+            var handler = await tsc.Task.WithCancelation(cancel ?? CancellationToken.None);
             view.HandlerChanged -= eventDelegate;
-
-            //if (view.IsLoaded)
-            //{
-            //    return handler;
-            //}
-            //else
-            //{
-            //    var tscLoaded = new TaskCompletionSource<bool>();
-            //    void eventLoaded(object? sender, EventArgs e)
-            //    {
-            //        tscLoaded.TrySetResult(true);
-            //    }
-
-            //    view.Loaded += eventLoaded;
-            //    await tscLoaded.Task;
-            //    view.Loaded -= eventLoaded;
-            //}
 
             return handler;
         }
@@ -220,16 +218,13 @@ namespace ScaffoldLib.Maui.Internal
         public static bool IsDark(this Color col)
         {
             double Y = 0.299 * col.Red + 0.587 * col.Green + 0.114 * col.Blue;
-            //var I = 0.596 * col.Red - 0.274 * col.Green - 0.322 * col.Blue;
-            //var Q = 0.211 * col.Red - 0.523 * col.Green + 0.312 * col.Blue;
-            //if (Y > 0.5d)
             if (Y > 0.5d)
                 return false;
             else
                 return true;
         }
 
-        public static Scaffold? GetRootScaffold(this Page page)
+        public static Scaffold? GetRootScaffold(this Microsoft.Maui.Controls.Page page)
         {
             if (page is ContentPage c)
             {
@@ -266,6 +261,63 @@ namespace ScaffoldLib.Maui.Internal
         internal static INotifyCollectionChanged AsNotifyObs<T>(this ReadOnlyObservableCollection<T> obs)
         {
             return obs;
+        }
+
+        internal static Rect AbsRect(this View view)
+        {
+            var rect = view.Frame;
+            var parent = view.Parent as View;
+            while (parent != null)
+            {
+                rect = rect.Offset(parent.X, parent.Y);
+                parent = parent.Parent as View;
+            }
+            return rect;
+        }
+
+        internal static IEnumerable<View> GetDeepAllChildren(this View view)
+        {
+            var list = new List<View>();
+            switch (view)
+            {
+                case Layout l:
+                    foreach (View item in l.Children)
+                    {
+                        list.Add(item);
+                        list.AddRange(item.GetDeepAllChildren());
+                    }
+                    break;
+                case ContentView c:
+                    list.Add(c.Content);
+                    list.AddRange(c.Content.GetDeepAllChildren());
+                    break;
+                default:
+                    break;
+            }
+            return list;
+        }
+
+        internal static async Task<T?> WithCancelation<T>(this Task<T> task, CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await task.WaitAsync(cancellationToken);
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        internal static async Task WithCancelation(this Task task, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await task.WaitAsync(cancellationToken);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

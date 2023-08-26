@@ -20,7 +20,7 @@ internal static class WinImageTools
 
     public static async Task<ImgResult> ProcessImage(ImageSource? source, Color? tintColor, CancellationToken cancel)
     {
-        if (source == null || tintColor == null)
+        if (source == null)
             return ImgResult.Result(source);
 
         var serviceProvider = Application.Current?
@@ -48,11 +48,19 @@ internal static class WinImageTools
 
                 using var surface = SKSurface.Create(new SKImageInfo(w,h));
                 using var canvas = surface.Canvas;
-                using var tintPaint = new SKPaint
+
+                if (tintColor != null)
                 {
-                    ColorFilter = SKColorFilter.CreateBlendMode(tintColor.ToSkia(), SKBlendMode.SrcIn),
-                };
-                canvas.DrawBitmap(bmp, 0, 0, tintPaint);
+                    using var tintPaint = new SKPaint
+                    {
+                        ColorFilter = SKColorFilter.CreateBlendMode(tintColor.ToSkia(), SKBlendMode.SrcIn),
+                    };
+                    canvas.DrawBitmap(bmp, 0, 0, tintPaint);
+                }
+                else
+                {
+                    canvas.DrawBitmap(bmp, 0, 0);
+                }
 
                 var bin = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
 

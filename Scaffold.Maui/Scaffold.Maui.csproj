@@ -47,6 +47,9 @@
 	  <MauiXaml Update="Containers\Material\ToastLayer.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Containers\WinUI\CollapsedMenuItemLayer.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -82,6 +85,9 @@
 	<ItemGroup>
 	  <Compile Update="Containers\Material\CollapsedMenuItemLayer.xaml.cs">
 	    <DependentUpon>CollapsedMenuItemLayer.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Containers\WinUI\CollapsedMenuItemLayer.xaml.cs">
+	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

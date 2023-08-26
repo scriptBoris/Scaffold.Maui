@@ -1,13 +1,14 @@
+using Sample.Controls;
 using ScaffoldLib.Maui;
 using System.Windows.Input;
 
-namespace Sample.Views;
+namespace Sample.Views.Pizza;
 
 public partial class MasterView
 {
 	private List<Scaffold> navigations = new();
-
-	public MasterView()
+	private MenuButton? selectedMenuButton;
+    public MasterView()
 	{
 		InitializeComponent();
 		BindingContext = this;
@@ -34,6 +35,18 @@ public partial class MasterView
 				case 0:
 					view = new HomeView();
 					break;
+				case 1:
+					view = new AccountView();
+					break;
+				case 2:
+					view = new InfoView();
+					break;
+				case 3:
+					view = new SupportView();
+					break;
+				case 4:
+					view = new SettingsView();
+					break;
 				default:
 					throw new ArgumentException();
 			}
@@ -42,6 +55,14 @@ public partial class MasterView
 			nav.PushAsync(view).ConfigureAwait(false);
 			navigations.Add(nav);
 		}
+
+		if (selectedMenuButton != null)
+			selectedMenuButton.IsSelected = false;
+
+        var selected = stackMenu[menuId] as MenuButton;
+        selected!.IsSelected = true;
+
+		selectedMenuButton = selected;
 		Detail = nav;
     }
 }

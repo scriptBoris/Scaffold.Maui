@@ -1,47 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<toolkit:FlyoutViewBase
-    x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewWinUI"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:buttonsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-    xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-    xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
-    VerticalOptions="Fill"
-    HorizontalOptions="Fill">
+<toolkit:FlyoutViewBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                        xmlns:buttonsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+                        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+                        xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
+                        x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewWinUI"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Fill">
     <toolkit:FlyoutViewBase.Children>
-        <Grid
-            x:Name="gridRoot"
-            ColumnDefinitions="Auto, *"
-            RowDefinitions="*">
+        <Grid x:Name="gridRoot"
+              ColumnDefinitions="Auto, *"
+              ColumnSpacing="0"
+              RowDefinitions="40, *"
+              RowSpacing="0">
 
-            <!--detail-->
-            <Grid
-                x:Name="panelDetail"
-                Grid.Column="1"
-                VerticalOptions="Fill"
-                HorizontalOptions="Fill" />
+            <!--  flyout  -->
+            <ContentView x:Name="panelFlyout"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         HorizontalOptions="Start"
+                         WidthRequest="30" />
 
-            <!--flyout-->
-            <StackLayout
-                x:Name="leftPanel"
-                Grid.Column="0"
-                WidthRequest="40"
-                HorizontalOptions="Start"
-                Orientation="Vertical">
-                <buttonsam:Button
-                    x:Name="buttonMenu"
-                    Margin="5"
-                    Padding="6"
-                    HorizontalOptions="Start"
-                    BackgroundColor="Transparent"
-                    CornerRadius="5" />
-
-                <ContentView
-                    x:Name="_panelFlyout"
-                    VerticalOptions="FillAndExpand"
-                    BackgroundColor="Transparent" />
-            </StackLayout>
-
+            <!--  detail  -->
+            <Grid x:Name="panelDetail"
+                  Grid.Row="0"
+                  Grid.RowSpan="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                  HorizontalOptions="Fill"
+                  VerticalOptions="Fill" />
 
         </Grid>
     </toolkit:FlyoutViewBase.Children>

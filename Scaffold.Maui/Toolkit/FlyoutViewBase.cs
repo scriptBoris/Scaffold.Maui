@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Toolkit;
@@ -11,6 +12,7 @@ namespace ScaffoldLib.Maui.Toolkit;
 public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDisappear, IRemovedFromNavigation
 {
     private bool isInitialized = true;
+    private CancellationTokenSource cancellationTokenSource = new();
 
     private bool? initialIsPresented;
     private View? initialFlyout;
@@ -75,7 +77,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
         {
             if (b is not FlyoutViewBase self)
                 return;
-         
+
             if (self.isInitialized)
                 self.UpdateDetail(n as View, o as View);
             else
@@ -94,7 +96,8 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
     protected abstract IBackButtonBehavior? BackButtonBehaviorFactory();
     protected abstract void AttachDetail(View detail);
     protected abstract void DeattachDetail(View detail);
-    protected abstract Task AnimateSetupDetail(View detail);
+    protected abstract void PrepareAnimateSetupDetail(View newDetail, View oldDetail);
+    protected abstract Task AnimateSetupDetail(View newDetail, View oldDetail, CancellationToken cancellationToken);
     protected abstract void AttachFlyout(View? flyout);
     protected abstract void UpdateFlyoutMenuPresented(bool isPresented);
 
@@ -114,25 +117,28 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
 
     private async void UpdateDetail(View? view, View? oldDetail)
     {
-        //if (view is Scaffold scaffold)
-        //    scaffold.BackButtonBehavior ??= new FlyoutBackButtonBehavior(this);
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource = new();
+        var cancel = cancellationTokenSource.Token;
 
         if (view is Scaffold scaffold)
             scaffold.BackButtonBehavior ??= BackButtonBehaviorFactory();
 
         bool isAnimate = oldDetail != null;
-
         oldDetail?.TryDisappearing();
 
         if (view != null)
         {
-            view.Opacity = isAnimate ? 0 : 1;
             AttachDetail(view);
-
             view.TryAppearing();
 
             if (isAnimate)
-                await AnimateSetupDetail(view);
+            {
+                await view.AwaitReady(cancel);
+                PrepareAnimateSetupDetail(view, oldDetail!);
+                var task = AnimateSetupDetail(view, oldDetail!, cancel);
+                await task.WithCancelation(cancel);
+            }
 
             view.TryAppearing(true);
         }

@@ -2,9 +2,9 @@
 
 public interface IBackButtonBehavior
 {
-    bool? OverrideSoftwareBackButtonAction(IScaffold context);
-    bool? OverrideHardwareBackButtonAction(IScaffold context);
+    bool? OverrideSoftwareBackButtonAction(IAgent agent, IScaffold context);
+    bool? OverrideHardwareBackButtonAction(IAgent agent, IScaffold context);
 
-    bool? OverrideBackButtonVisibility(IScaffold context);
-    ImageSource? OverrideBackButtonIcon(IScaffold context);
+    bool? OverrideBackButtonVisibility(IAgent agent, IScaffold context);
+    ImageSource? OverrideBackButtonIcon(IAgent agent, IScaffold context);
 }

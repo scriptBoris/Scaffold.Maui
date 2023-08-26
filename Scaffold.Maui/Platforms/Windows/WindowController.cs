@@ -239,16 +239,11 @@ internal class WindowController
             if (minmaxclose.Contains(point))
                 return;
 
-            var isc = _scaffold.ProvideScaffold ?? _scaffold;
-            var sc = (Scaffold)isc;
-            if (sc.CurrentFrame?.NavigationBar is IWindowsBehavior behavior)
+            var pointMaui = new Point(p.Position.X, p.Position.Y);
+            foreach (var item in _scaffold.UndragArea)
             {
-                var pointMaui = new Point(p.Position.X, p.Position.Y);
-                foreach (var item in behavior.UndragArea)
-                {
-                    if (item.Contains(pointMaui))
-                        return;
-                }
+                if (item.Contains(pointMaui))
+                    return;
             }
 
             isDrag = true;

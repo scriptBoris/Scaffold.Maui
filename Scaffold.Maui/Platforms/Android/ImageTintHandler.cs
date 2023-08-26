@@ -1,5 +1,7 @@
-﻿using Android.Graphics;
+﻿using Android.Content;
+using Android.Graphics;
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,6 @@ namespace ScaffoldLib.Maui.Internal
     public partial class ImageTintHandler
     {
         private bool hasHandler;
-
         private ImageTint Proxy => (ImageTint)VirtualView;
 
         public override void SetVirtualView(IView view)
@@ -23,8 +24,11 @@ namespace ScaffoldLib.Maui.Internal
 
         public void SetTint(Microsoft.Maui.Graphics.Color? color)
         {
+            Console.WriteLine($"START FUNCTION: ImageTint SetTint");
             if (!hasHandler)
                 return;
+
+            Console.WriteLine($"BODY FUNCTION: ImageTint SetTint");
 
             if (color != null)
             {
@@ -40,8 +44,8 @@ namespace ScaffoldLib.Maui.Internal
 
         protected override void ConnectHandler(ImageView platformView)
         {
-            hasHandler = true;
             base.ConnectHandler(platformView);
+            hasHandler = true;
         }
 
         protected override void DisconnectHandler(ImageView platformView)

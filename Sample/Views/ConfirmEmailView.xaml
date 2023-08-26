@@ -12,14 +12,14 @@
     <scaffold:Scaffold.MenuItems>
         <scaffold:MenuItem Command="{Binding CommandRetry}"
                            ImageSource="refresh.png"
-                           Text="Retry" />
+                           Text="Retry 1" />
         <scaffold:MenuItem Command="{Binding CommandRetry}"
                            ImageSource="refresh.png"
-                           Text="Retry (green)"
+                           Text="Retry (green) 2"
                            Color="Green" />
         <scaffold:MenuItem Command="{Binding CommandToast}"
                            ImageSource="chrome.png"
-                           Text="Toast"
+                           Text="Toast 3"
                            UseOriginalColor="True" />
 
         <scaffold:MenuItem Command="{Binding CommandRetry}"
@@ -29,12 +29,12 @@
         <scaffold:MenuItem Command="{Binding CommandRetry}"
                            ImageSource="refresh.png"
                            IsCollapsed="True"
-                           Text="Retry (green)"
+                           Text="Retry 5 (green)"
                            Color="Green" />
         <scaffold:MenuItem Command="{Binding CommandRetry}"
                            ImageSource="chrome.png"
                            IsCollapsed="True"
-                           Text="Chrome"
+                           Text="Chrome 6"
                            UseOriginalColor="True" />
     </scaffold:Scaffold.MenuItems>
 

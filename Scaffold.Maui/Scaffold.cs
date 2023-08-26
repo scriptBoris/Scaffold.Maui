@@ -5,10 +5,11 @@ using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Containers;
 using System.Threading.Channels;
+using Microsoft.Maui.Controls;
 
 namespace ScaffoldLib.Maui;
 
-public interface IScaffold : IScaffoldProvider
+public interface IScaffold : IScaffoldProvider, IWindowsBehavior
 {
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
@@ -62,15 +63,15 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     public Scaffold()
     {
         ExternalBevahiors = new(_externalBevahiors);
+        ExternalBevahiors.AsNotifyObs().CollectionChanged += Scaffold_CollectionChanged; ;
 
         _navigationController = new(this);
-        ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged += FramesStackChanged;
-
         _zBufer = new();
         Children.Add(_zBufer);
 
         SafeAreaChanged += OnSafeAreaChanged;
     }
+
 
     #region bindable props
     // scaffold context
@@ -91,20 +92,20 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         typeof(string),
         typeof(Scaffold),
         null,
-        propertyChanged:(b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
             if (GetScaffoldContext(b) is Scaffold scaffold)
                 scaffold
                     ._navigationController
-                    .Frames
+                    .Agents
                     .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
                     .UpdateTitle(n as string);
         }
     );
-    public static void SetTitle(BindableObject b, string? value) => 
+    public static void SetTitle(BindableObject b, string? value) =>
         b.SetValue(TitleProperty, value);
-    public static string? GetTitle(BindableObject b) => 
+    public static string? GetTitle(BindableObject b) =>
         b.GetValue(TitleProperty) as string;
 
     // has navigation bar
@@ -113,16 +114,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         typeof(bool),
         typeof(Scaffold),
         true,
-        propertyChanged:(b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
-            if (GetScaffoldContext(b) is Scaffold scaffold)
-            {
-                scaffold
-                    ._navigationController
-                    .Frames
-                    .LastOrDefault(x => x.ViewWrapper.View == b)?
-                    .DrawLayout();
-            }
+            var agent = FindAgent(b);
+            if (agent != null)
+                agent.HasNavigationBar = (bool)n;
         }
     );
     public static void SetHasNavigationBar(BindableObject b, bool value) =>
@@ -136,27 +132,27 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         typeof(Color),
         typeof(Scaffold),
         null,
-        propertyChanged:(b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
             if (b is Scaffold scaffold && scaffold._navigationController != null)
             {
-                foreach (var frame in scaffold._navigationController.Frames)
+                foreach (var agent in scaffold._navigationController.Agents)
                 {
-                    var color = GetNavigationBarBackgroundColor(frame.ViewWrapper.View) ?? n as Color ?? defaultNavigationBarBackgroundColor;
-                    frame.NavigationBar?.UpdateNavigationBarBackgroundColor(color);
-                    frame.ResolveStatusBarColor();
+                    var color = GetNavigationBarBackgroundColor(agent.ViewWrapper.View) ?? n as Color ?? DefaultNavigationBarBackgroundColor;
+                    agent.NavigationBarBackgroundColor = color;
+                    agent.ResolveStatusBarColor();
                 }
             }
-            else if (GetScaffoldContext(b) is Scaffold context)
+            else
             {
-                var color = n as Color ?? context.NavigationBarBackgroundColor ?? defaultNavigationBarBackgroundColor;
-                var frame = context
-                    ._navigationController
-                    .Frames
-                    .LastOrDefault(x => x.ViewWrapper.View == b);
+                var agent = FindAgent(b);
+                if (agent == null)
+                    return;
 
-                frame?.NavigationBar?.UpdateNavigationBarBackgroundColor(color);
-                frame?.ResolveStatusBarColor();
+                var context = (Scaffold)agent.Context;
+                var color = n as Color ?? context.NavigationBarBackgroundColor ?? DefaultNavigationBarBackgroundColor;
+                agent.NavigationBarBackgroundColor = color;
+                agent.ResolveStatusBarColor();
             }
         }
     );
@@ -181,21 +177,21 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         {
             if (b is Scaffold scaffold && scaffold._navigationController != null)
             {
-                foreach (var frame in scaffold._navigationController.Frames)
+                foreach (var agent in scaffold._navigationController.Agents)
                 {
-                    var color = GetNavigationBarForegroundColor(frame.ViewWrapper.View) ?? n as Color ?? defaultNavigationBarForegroundColor;
-                    frame.NavigationBar?.UpdateNavigationBarForegroundColor(color);
+                    var color = GetNavigationBarForegroundColor(agent.ViewWrapper.View) ?? n as Color ?? DefaultNavigationBarForegroundColor;
+                    agent.NavigationBar?.UpdateNavigationBarForegroundColor(color);
                 }
             }
-            else if (GetScaffoldContext(b) is Scaffold context)
+            else
             {
-                var color = n as Color ?? context.NavigationBarForegroundColor ?? defaultNavigationBarForegroundColor;
-                context
-                    ._navigationController
-                    .Frames
-                    .LastOrDefault(x => x.ViewWrapper.View == b)?
-                    .NavigationBar?
-                    .UpdateNavigationBarForegroundColor(color);
+                var agent = FindAgent(b);
+                if (agent == null)
+                    return;
+
+                var context = (Scaffold)agent.Context;
+                var color = n as Color ?? context.NavigationBarForegroundColor ?? DefaultNavigationBarForegroundColor;
+                agent.NavigationBarForegroundColor = color;
             }
         }
     );
@@ -219,16 +215,16 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         {
             return new Core.MenuItemCollection(b);
         },
-        propertyChanged: (b,o,n) =>
+        propertyChanged: (b, o, n) =>
         {
             if (GetScaffoldContext(b) is Scaffold context)
             {
                 context
                     ._navigationController
-                    .Frames
+                    .Agents
                     .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
-                    .UpdateMenuItems((View)b);
+                    .UpdateMenuItems(n as Core.MenuItemCollection);
             }
         }
     );
@@ -248,7 +244,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             if (GetScaffoldContext(b) is Scaffold context)
                 context
                     ._navigationController
-                    .Frames
+                    .Agents
                     .LastOrDefault(x => x.ViewWrapper.View == b && x.IsAppear)?
                     .ResolveStatusBarColor();
         }
@@ -257,6 +253,30 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         b.SetValue(StatusBarForegroundColorProperty, value);
     public static StatusBarColorTypes GetStatusBarForegroundColor(BindableObject b) =>
         (StatusBarColorTypes)b.GetValue(StatusBarForegroundColorProperty);
+
+    // is content under navigation bar
+    public static readonly BindableProperty IsContentUnderNavigationBarProperty = BindableProperty.CreateAttached(
+        "IsContentUnderNavigationBar",
+        typeof(bool),
+        typeof(Scaffold),
+        false,
+        propertyChanged: (b, o, n) =>
+        {
+            if (GetScaffoldContext(b) is Scaffold context)
+            {
+                var agent = context
+                    ._navigationController
+                    .Agents
+                    .LastOrDefault(x => x.ViewWrapper.View == b && x.IsAppear);
+                if (agent is IView v)
+                    v.InvalidateMeasure();
+            }
+        }
+    );
+    public static void SetIsContentUnderNavigationBar(BindableObject b, bool value) =>
+        b.SetValue(IsContentUnderNavigationBarProperty, value);
+    public static bool GetIsContentUnderNavigationBar(BindableObject b) =>
+        (bool)b.GetValue(IsContentUnderNavigationBarProperty);
 
     // view factory
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
@@ -267,7 +287,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     );
     public ViewFactory ViewFactory
     {
-        get => (ViewFactory)GetValue(ViewFactoryProperty);  
+        get => (ViewFactory)GetValue(ViewFactoryProperty);
         set => SetValue(ViewFactoryProperty, value);
     }
     #endregion bindable props
@@ -277,9 +297,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     internal AppearingStates AppearingState { get; private set; } = AppearingStates.None;
 
-    public static Thickness SafeArea 
+    public static Thickness SafeArea
     {
-        get => _safeArea; 
+        get => _safeArea;
         internal set
         {
             if (_safeArea != value)
@@ -290,77 +310,97 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         }
     }
 
+    public Rect[] UndragArea
+    {
+        get
+        {
+            var list = new List<Rect>();
+            if (CurrentAgent is IWindowsBehavior windowsBehavior)
+                list.AddRange(windowsBehavior.UndragArea);
+
+            if (ProvideScaffold is IWindowsBehavior sw)
+                list.AddRange(sw.UndragArea);
+
+            return list.ToArray();
+        }
+    }
+
     public ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     public ReadOnlyObservableCollection<View> NavigationStack => _navigationController.NavigationStack;
-    
+
     public IScaffold? ProvideScaffold
     {
-        get 
+        get
         {
-            if (_navigationController.CurrentFrame?.ViewWrapper.View is IScaffold sc)
+            if (_navigationController.CurrentAgent?.ViewWrapper.View is IScaffold sc)
                 return sc;
 
-            if (_navigationController.CurrentFrame?.ViewWrapper.View is IScaffoldProvider provider)
+            if (_navigationController.CurrentAgent?.ViewWrapper.View is IScaffoldProvider provider)
                 return provider.ProvideScaffold;
 
             return null;
         }
     }
 
-    public IBackButtonBehavior? BackButtonBehavior 
+    public IBackButtonBehavior? BackButtonBehavior
     {
         get => _backButtonBehavior;
         set
         {
             _backButtonBehavior = value;
-            foreach (var item in _navigationController.Frames)
-                item.NavigationBar?.UpdateBackButtonBehavior(value);
-        } 
+            foreach (var agent in _navigationController.Agents)
+                agent.BackButtonBehavior = value;
+        }
     }
 
     internal ZBuffer ZBuffer => _zBufer;
-    internal IFrame? CurrentFrame => _navigationController.CurrentFrame;
-    internal static Color defaultNavigationBarBackgroundColor => Color.FromArgb("#6200EE");
-    internal static Color defaultNavigationBarForegroundColor => Colors.White;
+    internal IAgent? CurrentAgent => _navigationController.CurrentAgent;
+    internal static Color DefaultNavigationBarBackgroundColor => Color.FromArgb("#6200EE");
+    internal static Color DefaultNavigationBarForegroundColor => Colors.White;
 
     private IBackButtonListener BackButtonListener
     {
-        get 
+        get
         {
-            var last = _navigationController.CurrentFrame?.ViewWrapper.View;
+            var last = _navigationController.CurrentAgent?.ViewWrapper.View;
             if (last is IBackButtonListener v)
                 return v;
             else if (last?.BindingContext is IBackButtonListener vm)
                 return vm;
 
-            return this; 
+            return this;
         }
     }
     #endregion props
 
-    private void FramesStackChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void Scaffold_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
         {
+            case NotifyCollectionChangedAction.Add:
+                foreach (var item in _navigationController.Agents)
+                    item.OnBehaiorAdded((IBehavior)e.NewItems![0]!);
+                break;
             case NotifyCollectionChangedAction.Remove:
-                var frame = e.OldItems![0] as Containers.IFrame;
-
-                frame?.TryRemoveFromNavigation();
-
-                if (frame is IDisposable dis)
-                    dis.Dispose();
-
+                foreach (var item in _navigationController.Agents)
+                    item.OnBehaiorRemoved((IBehavior)e.OldItems![0]!);
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                foreach (var item in _navigationController.Agents)
+                    foreach (IBehavior behavior in e.OldItems!)
+                        item.OnBehaiorRemoved(behavior);
                 break;
             default:
                 break;
         }
+
     }
 
     private void OnSafeAreaChanged(object? sender, Thickness e)
     {
         if (_navigationController != null)
-            foreach (var frame in _navigationController.Frames)
-                frame.UpdateSafeArea(e);
+            foreach (var frame in _navigationController.Agents)
+                frame.SafeArea = e;
     }
 
     internal IScaffold[] GetScafoldNested()
@@ -380,11 +420,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     internal async Task<bool> HardwareBackButtonInternal()
     {
-        var current = _navigationController.CurrentFrame?.ViewWrapper.View;
+        var current = _navigationController.CurrentAgent?.ViewWrapper.View;
         if (current == null)
             return true;
 
-        if (_navigationController.CurrentFrame!.ZBufferInternal.Pop())
+        if (_navigationController.CurrentAgent!.ZBuffer.Pop())
             return true;
 
         bool canPop = await BackButtonListener.OnBackButton();
@@ -392,23 +432,6 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             return await RemoveView(current, true);
         else
             return true;
-    }
-
-    internal void SoftwareBackButtonInternal()
-    {
-        this.Dispatcher.Dispatch(async () => {
-            bool canPop = await BackButtonListener.OnBackButton();
-            if (canPop)
-                await PopAsync().ConfigureAwait(false);
-        });
-    }
-
-    internal void ShowCollapsedMenusInternal(View view)
-    {
-        this.Dispatcher.Dispatch(() => {
-            var overlay = ViewFactory.CreateCollapsedMenuItemsLayer(view, this);
-            _zBufer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
-        });
     }
 
     public void AddBehavior(IBehavior behavior)
@@ -433,7 +456,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Size ArrangeChildren(Rect bounds)
     {
-        if (_navigationController.CurrentFrame is IView frame)
+        if (_navigationController.CurrentAgent is IView frame)
             frame.Arrange(bounds);
 
         ((IView)_zBufer).Arrange(bounds);
@@ -444,7 +467,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     public Size Measure(double widthConstraint, double heightConstraint)
     {
         // new
-        if (_navigationController.CurrentFrame is IView frame)
+        if (_navigationController.CurrentAgent is IView frame)
             frame.Measure(widthConstraint, heightConstraint);
 
         ((IView)_zBufer).Measure(widthConstraint, heightConstraint);
@@ -456,6 +479,40 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     {
         Scaffold.SetScaffoldContext(view, this);
         await _navigationController.PushAsync(view, isAnimated);
+    }
+
+    public async Task<bool> InsertView(View view, int index, bool isAnimated = true)
+    {
+        if (index < 0)
+            return false;
+
+        int count = NavigationStack.Count;
+        if (count == 0 || index >= count)
+            await PushAsync(view, isAnimated);
+
+        Scaffold.SetScaffoldContext(view, this);
+        _navigationController.InsertView(view, index);
+        return true;
+    }
+
+    public async Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true)
+    {
+        var oldIndex = NavigationStack.IndexOf(oldView);
+        if (oldIndex < 0)
+            return false;
+
+        if (NavigationStack.Count == 0)
+            return false;
+
+        if (oldIndex == NavigationStack.Count - 1)
+        {
+            await _navigationController.ReplaceView(newView, isAnimated);
+            return true;
+        }
+        else
+        {
+            return await InsertView(oldView, oldIndex, isAnimated);
+        }
     }
 
     public Task<bool> PopAsync(bool isAnimated = true)
@@ -501,19 +558,6 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         }
     }
 
-    public async Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true)
-    {
-        if (_navigationController.NavigationStack.Count == 0)
-            return false;
-
-        return await _navigationController.ReplaceAsync(oldView, newView, isAnimated);
-    }
-
-    public Task<bool> InsertView(View view, int index, bool isAnimated = true)
-    {
-        return _navigationController.InsertView(view, index, isAnimated);
-    }
-
     public void AddCustomLayer(IZBufferLayout layer, int zIndex)
     {
         _zBufer.AddLayer(layer, zIndex);
@@ -521,11 +565,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView)
     {
-        var frame = FindFrame(parentView);
-        if (frame == null)
+        var agent = FindAgent(parentView);
+        if (agent == null)
             return;
 
-        frame.ZBufferInternal.AddLayer(layer, zIndex);
+        agent.ZBuffer.AddLayer(layer, zIndex);
     }
 
     public async Task DisplayAlert(string title, string message, string cancel)
@@ -544,23 +588,23 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Task DisplayAlert(string title, string message, string cancel, View parentView)
     {
-        var frame = FindFrame(parentView);
-        if (frame == null)
+        var agent = FindAgent(parentView);
+        if (agent == null)
             return Task.CompletedTask;
 
         var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
-        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
+        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
     public Task<bool> DisplayAlert(string title, string message, string ok, string cancel, View parentView)
     {
-        var frame = FindFrame(parentView);
-        if (frame == null)
+        var agent = FindAgent(parentView);
+        if (agent == null)
             return Task.FromResult(false);
 
         var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
-        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
+        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
@@ -573,15 +617,15 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons)
     {
-        var frame = FindFrame(parentView);
-        if (frame == null)
-            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult 
+        var agent = FindAgent(parentView);
+        if (agent == null)
+            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult
             {
                 IsCanceled = true,
             });
 
         var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
-        frame.ZBufferInternal.AddLayer(alert, IScaffold.AlertIndexZ);
+        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
@@ -602,11 +646,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (stl == AppearingState)
             return;
 
-        var f = _navigationController.Frames.LastOrDefault();
+        var f = _navigationController.Agents.LastOrDefault();
         if (f != null)
         {
             var view = f.ViewWrapper.View;
-            var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? NavigationBarBackgroundColor ?? defaultNavigationBarBackgroundColor;
+            var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? NavigationBarBackgroundColor ?? DefaultNavigationBarBackgroundColor;
             f.TryAppearing(isComplete, AppearingState, bgColor);
         }
     }
@@ -618,22 +662,22 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (stl == AppearingState)
             return;
 
-        var f = _navigationController.Frames.LastOrDefault();
+        var f = _navigationController.Agents.LastOrDefault();
         f?.TryDisappearing(isComplete, stl);
     }
 
     public void OnRemovedFromNavigation()
     {
-        foreach (var frame in _navigationController.Frames.Reverse())
+        foreach (var frame in _navigationController.Agents.Reverse())
             frame.TryRemoveFromNavigation();
     }
 
     public void Dispose()
     {
         OnRemovedFromNavigation();
-        ((INotifyCollectionChanged)_navigationController.Frames).CollectionChanged -= FramesStackChanged;
         SafeAreaChanged -= OnSafeAreaChanged;
         _navigationController.Dispose();
+        ExternalBevahiors.AsNotifyObs().CollectionChanged -= Scaffold_CollectionChanged;
         _zBufer.Dispose();
     }
 
@@ -642,13 +686,26 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         PlatformSpec.SetStatusBarColorScheme(colorType);
     }
 
-    protected IFrame? FindFrame(View view)
+    public static void TryHideKeyboard()
     {
-        var context = view.GetContext() as Scaffold;
-        if (context == null)
+#if ANDROID
+        var context = Platform.AppContext;
+        if (context.GetSystemService(Android.Content.Context.InputMethodService) is Android.Views.InputMethods.InputMethodManager inputMethodManager)
+        {
+            var activity = Platform.CurrentActivity;
+            var token = activity?.CurrentFocus?.WindowToken;
+            inputMethodManager.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
+            activity?.Window?.DecorView.ClearFocus();
+        }
+#endif
+    }
+
+    public static IAgent? FindAgent(BindableObject bindable)
+    {
+        if (Scaffold.GetScaffoldContext(bindable) is not Scaffold context)
             return null;
 
-        return context._navigationController.Frames.FirstOrDefault(x => x.ViewWrapper.View == view);
+        return context._navigationController.Agents.FirstOrDefault(x => x.ViewWrapper.View == bindable);
     }
 }
 

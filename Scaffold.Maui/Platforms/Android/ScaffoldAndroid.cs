@@ -93,7 +93,8 @@ public static class ScaffoldAndroid
                     if (item is not Scaffold scaffold)
                         continue;
 
-                    if (scaffold.BackButtonBehavior?.OverrideHardwareBackButtonAction(item) == true)
+                    var agent = scaffold.CurrentAgent;
+                    if (scaffold.BackButtonBehavior?.OverrideHardwareBackButtonAction(agent, item) == true)
                         return;
 
                     if (await scaffold.HardwareBackButtonInternal())

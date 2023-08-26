@@ -14,6 +14,7 @@ public class MenuItem : BindableObject
 {
     private MenuItemCollection? parent;
 
+    #region bindable props
     // text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
         nameof(Text),
@@ -88,7 +89,7 @@ public class MenuItem : BindableObject
         propertyChanged: (b, o, n) =>
         {
             if (b is MenuItem self)
-                self.Update();
+                self.parent?.ResolveItem(self, self.IsVisible, (bool)o);
         }
     );
     public bool IsCollapsed
@@ -106,7 +107,7 @@ public class MenuItem : BindableObject
         propertyChanged: (b, o, n) =>
         {
             if (b is MenuItem self)
-                self.Update();
+                self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
         }
     );
     public bool IsVisible
@@ -114,23 +115,10 @@ public class MenuItem : BindableObject
         get => (bool)GetValue(IsVisibleProperty);
         set => SetValue(IsVisibleProperty, value);
     }
+    #endregion bindable props
 
-    internal void SetupParent(MenuItemCollection? parent)
+    internal void SetParent(MenuItemCollection? parent)
     {
         this.parent = parent;
     }
-
-    private void Update()
-    {
-        if (parent == null)
-            return;
-
-        parent.Update();
-    }
-}
-
-// todo delete?
-internal class MenuItemProxy : INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

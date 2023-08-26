@@ -33,10 +33,14 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
         return base.Measure(widthConstraint, heightConstraint);
     }
 
-    protected override async Task AnimateSetupDetail(View detail)
+    protected override void PrepareAnimateSetupDetail(View newDetail, View oldDetail)
     {
-        await detail.AwaitHandler();
-        await detail.FadeTo(1, 180);
+        newDetail.Opacity = 0;
+    }
+
+    protected override Task AnimateSetupDetail(View detail, View oldDetail, CancellationToken cancellationToken)
+    {
+        return detail.FadeTo(1, 180);
     }
 
     protected override void AttachDetail(View detail)
@@ -95,22 +99,22 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
             _parent = parent;
         }
 
-        public ImageSource? OverrideBackButtonIcon(IScaffold context)
+        public ImageSource? OverrideBackButtonIcon(IAgent agent, IScaffold context)
         {
-            if (context.NavigationStack.Count <= 1)
+            if (agent.IndexInNavigationStack == 0)
                 return ImageSource.FromFile("ic_scaffold_menu.png");
 
             return null;
         }
 
-        public bool? OverrideBackButtonVisibility(IScaffold context)
+        public bool? OverrideBackButtonVisibility(IAgent agent, IScaffold context)
         {
             return true;
         }
 
-        public bool? OverrideSoftwareBackButtonAction(IScaffold context)
+        public bool? OverrideSoftwareBackButtonAction(IAgent agent, IScaffold context)
         {
-            if (context.NavigationStack.Count <= 1)
+            if (agent.IndexInNavigationStack == 0)
             {
                 _parent.IsPresented = !_parent.IsPresented;
                 return true;
@@ -119,9 +123,9 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
             return null;
         }
 
-        public bool? OverrideHardwareBackButtonAction(IScaffold context)
+        public bool? OverrideHardwareBackButtonAction(IAgent agent, IScaffold context)
         {
-            if (context.NavigationStack.Count <= 1 && _parent.IsPresented)
+            if (agent.IndexInNavigationStack == 0 && _parent.IsPresented)
             {
                 _parent.IsPresented = false;
                 return true;
@@ -130,5 +134,4 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
             return null;
         }
     }
-
 }

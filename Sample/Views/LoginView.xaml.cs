@@ -11,7 +11,7 @@ public partial class LoginView
 
     private void Button_Clicked(object sender, EventArgs e)
     {
-		this.GetContext()?.ReplaceView(this, new MasterView());
+		this.GetContext()?.ReplaceView(this, new Pizza.MasterView());
     }
 
     private void Button_Clicked_1(object sender, EventArgs e)
