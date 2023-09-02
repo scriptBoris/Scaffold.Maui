@@ -59,14 +59,19 @@
                                    Text="{Binding Price, StringFormat='${0:0.00}'}"
                                    TextColor="Orange" />
 
-                            <Button Grid.Row="3"
-                                    Grid.Column="1"
-                                    Padding="0"
-                                    BackgroundColor="{StaticResource Primary}"
-                                    CornerRadius="0"
-                                    HorizontalOptions="End"
-                                    Text="+"
-                                    TextColor="White" />
+                            <sbutton:Button Grid.Row="3"
+                                            Grid.Column="1"
+                                            CornerRadius="20,0,0,0"
+                                            Padding="0"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            HorizontalOptions="EndAndExpand"
+                                            WidthRequest="50">
+                                <Label FontAttributes="Bold"
+                                       FontSize="20"
+                                       HorizontalTextAlignment="Center"
+                                       Text="+"
+                                       VerticalTextAlignment="Center" />
+                            </sbutton:Button>
                         </Grid>
                     </sbutton:Button>
                 </ContentView>
