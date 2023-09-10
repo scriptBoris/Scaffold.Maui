@@ -17,12 +17,6 @@ namespace ScaffoldLib.Maui.Internal;
 public partial class WindowsMinMaxClose
 {
 #if WINDOWS
-    private bool isMaxed;
-    private double lastX;
-    private double lastY;
-    private double lastWidth;
-    private double lastHeight;
-
     public WindowsMinMaxClose(MauiWinUIWindow window, 
         Action actionButtonCollapse,
         Action actionButtonMinMax,
@@ -30,44 +24,26 @@ public partial class WindowsMinMaxClose
 	{
 		InitializeComponent();
 
-        var sizes = new List<Microsoft.Maui.Graphics.Size>()
-        {
-            buttonCollapse.Measure(500, 500),
-            buttonMax.Measure(500, 500),
-            buttonClose.Measure(500, 500),
-        };
-        Area = new System.Drawing.Size((int)sizes.Sum(x => x.Width), (int)sizes.Max(x => x.Height));
-
         buttonCollapse.TapCommand = new Command(actionButtonCollapse);
         buttonMax.TapCommand = new Command(actionButtonMinMax);
         buttonClose.TapCommand = new Command(actionClose);
 	}
 
-    public System.Drawing.Rectangle CalcSize(int windowWidth, int windowHeight)
+    public System.Drawing.Rectangle GetSelfClickZone(int windowWidth, int windowHeight)
     {
-        var sizes = new List<Microsoft.Maui.Graphics.Size>()
-        {
-            buttonCollapse.Measure(500, 500),
-            buttonMax.Measure(500, 500),
-            buttonClose.Measure(500, 500),
-        };
-        var area = new System.Drawing.Size((int)sizes.Sum(x => x.Width), (int)sizes.Max(x => x.Height));
-        return new Rectangle(windowWidth - area.Width, 0, area.Width, area.Height);
+        int buttonWidths = 
+            (int)buttonCollapse.WidthRequest +
+            (int)buttonMax.WidthRequest + 
+            (int)buttonClose.WidthRequest;
+
+        int x = windowWidth - buttonWidths;
+        int y = 0;
+        int w = buttonWidths;
+        int h = 40;
+
+        var res = new Rectangle(x, y, w, h);
+        return res;
     }
-
-    protected override void OnSizeAllocated(double width, double height)
-    {
-        base.OnSizeAllocated(width, height);
-
-        if (buttonClose == null || buttonMax == null || buttonClose == null)
-            return;
-
-        double w = buttonCollapse.Width + buttonMax.Width + buttonClose.Width;
-        ClickArea = new Rectangle((int)(width - w), 0, (int)w, 40);
-    }
-
-    public Rectangle ClickArea { get; private set; }
-    public System.Drawing.Size Area { get; private set; }
 
     // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
     // Copied from dwmapi.h

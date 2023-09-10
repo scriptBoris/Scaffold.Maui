@@ -46,7 +46,7 @@ internal class WindowController
         _scaffold = scaffold;
 
         var rootPanel = (Microsoft.UI.Xaml.Controls.Panel)window.Content;
-        var context = Microsoft.Maui.Controls.Application.Current!.Handler.MauiContext;
+        var context = Microsoft.Maui.Controls.Application.Current!.Handler.MauiContext!;
         _minMaxClose = new WindowsMinMaxClose(window, OnWindowsCollapsed, OnWindowMinMax, OnWindowClose);
         _minMaxClose.SetupColorScheme(initialColorScheme);
         var winbuttons = _minMaxClose.ToPlatform(context);
@@ -235,7 +235,7 @@ internal class WindowController
             var point = new System.Drawing.Point((int)p.Position.X, (int)p.Position.Y);
             var window = Microsoft.Maui.Controls.Application.Current!.Windows.First();
 
-            var minmaxclose = _minMaxClose.CalcSize((int)window.Width, (int)window.Height);
+            var minmaxclose = _minMaxClose.GetSelfClickZone((int)window.Width, (int)window.Height);
             if (minmaxclose.Contains(point))
                 return;
 

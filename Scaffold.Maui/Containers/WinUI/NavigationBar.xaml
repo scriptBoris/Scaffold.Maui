@@ -6,7 +6,7 @@
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
       x:Class="ScaffoldLib.Maui.Containers.WinUI.NavigationBar"
       x:Name="navBar"
-      Padding="0,0,140,0"
+      Padding="0,0,150,0"
       MinimumWidthRequest="100">
     <StackLayout Orientation="Horizontal"
                  Spacing="0">
