@@ -427,5 +427,10 @@ namespace ScaffoldLib.Maui.Internal
             {
             }
         }
+
+        internal static Size WithPadding(this Size size, Thickness padding)
+        {
+            return new Size(size.Width + padding.HorizontalThickness, size.Height + padding.VerticalThickness);
+        }
     }
 }

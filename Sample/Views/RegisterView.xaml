@@ -6,7 +6,8 @@
       Padding="10"
       scaffold:Scaffold.HasNavigationBar="True"
       scaffold:Scaffold.Title="Registration">
-    <StackLayout Spacing="10">
+    <StackLayout Spacing="10"
+                 VerticalOptions="FillAndExpand">
         <Grid ColumnDefinitions="2*,5*"
               RowDefinitions="Auto, Auto, Auto, Auto, Auto"
               RowSpacing="10">
@@ -53,6 +54,7 @@
                 Text="Accept (latency)" />
 
         <Button Clicked="Accept"
-                Text="Accept" />
+                Text="Accept"
+                VerticalOptions="EndAndExpand" />
     </StackLayout>
 </Grid>

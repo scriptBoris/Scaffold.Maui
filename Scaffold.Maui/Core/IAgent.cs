@@ -174,7 +174,8 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
 
         if (ViewWrapper is IView view)
         {
-            double h = bounds.Height - offsetY;
+            //double h = bounds.Height - offsetY;
+            double h = view.DesiredSize.Height;
             view.Arrange(new Rect(0, offsetY, bounds.Width, h));
         }
 

@@ -42,12 +42,24 @@ internal static class ScaffoldIOS
                 });
             });
         });
+
+        builder.ConfigureMauiHandlers(x =>
+        {
+            x.AddHandler(typeof(GlassView), typeof(GlassHandler));
+        });
+
+        Microsoft.Maui.Handlers.LayoutHandler.ElementMapper.Add(nameof(View.Handler), (h, e) =>
+        {
+            if (e is Layout layout)
+            {
+                layout.IgnoreSafeArea = true;
+            }
+        });
     }
 
     private static bool OnFinishedLaunching(UIApplication a, NSDictionary e)
     {
-        var safe = Scaffold.PlatformSpec.GetSafeArea();
-        Scaffold.SafeArea = safe;
+        UpdateSafeArea();
 
         var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
         if (page != null)
@@ -56,8 +68,6 @@ internal static class ScaffoldIOS
             {
                 UpdateSafeArea();
             };
-            page.OnThisPlatform().SetUseSafeArea(false);
-            page.Padding = new Thickness(0, -safe.Top, 0, -safe.Bottom);
         }
 
         return true;
@@ -65,13 +75,10 @@ internal static class ScaffoldIOS
 
     private static void UpdateSafeArea()
     {
+        var safe = Scaffold.PlatformSpec.GetSafeArea();
+        Scaffold.SafeArea = safe;
         var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
         if (page != null)
-        {
-            var safe = Scaffold.PlatformSpec.GetSafeArea();
-            Scaffold.SafeArea = safe;
             page.OnThisPlatform().SetUseSafeArea(false);
-            page.Padding = new Thickness(-safe.Left, -safe.Top, -safe.Right, -safe.Bottom);
-        }
     }
 }

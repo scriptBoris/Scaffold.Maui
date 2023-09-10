@@ -19,7 +19,8 @@
     </scaffold:Scaffold.MenuItems>
 
     <CollectionView ItemSizingStrategy="MeasureFirstItem"
-                    ItemsSource="{Binding PizzaItems}">
+                    ItemsSource="{Binding PizzaItems}"
+                    VerticalOptions="FillAndExpand">
         <CollectionView.Header>
             <ContentView HeightRequest="50" />
         </CollectionView.Header>
@@ -61,9 +62,9 @@
 
                             <sbutton:Button Grid.Row="3"
                                             Grid.Column="1"
-                                            CornerRadius="20,0,0,0"
                                             Padding="0"
                                             BackgroundColor="{StaticResource Primary}"
+                                            CornerRadius="20,0,0,0"
                                             HorizontalOptions="EndAndExpand"
                                             WidthRequest="50">
                                 <Label FontAttributes="Bold"

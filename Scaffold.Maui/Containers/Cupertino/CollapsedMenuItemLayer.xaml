@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+      xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+      xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Cupertino"
+      xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+      x:Class="ScaffoldLib.Maui.Containers.Cupertino.CollapsedMenuItemLayer"
+      x:Name="root"
+      BackgroundColor="Transparent">
+
+    <Border x:Name="border"
+            Margin="0,35,10,0"
+            Padding="0"
+            HorizontalOptions="End"
+            StrokeShape="RoundRectangle 13"
+            StrokeThickness="0"
+            VerticalOptions="Start">
+        <internal:GlassView Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
+                            MinimumWidthRequest="170">
+            <StackLayout x:Name="stackMenu"
+                         Spacing="0">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="scaffold:MenuItem">
+                        <local:ButtonCollapsedMenu Padding="15"
+                                                   BackgroundColor="Transparent"
+                                                   CornerRadius="0"
+                                                   ForegroundColor="{AppThemeBinding Light=#333, Dark=#FFF}"
+                                                   Icon="{Binding ImageSource}"
+                                                   TapCommand="{Binding CommandSelectedMenu, Source={Reference root}}"
+                                                   TapCommandParameter="{Binding .}"
+                                                   Text="{Binding Text}"
+                                                   UseOriginalColor="{Binding UseOriginalColor}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </internal:GlassView>
+    </Border>
+</Grid>

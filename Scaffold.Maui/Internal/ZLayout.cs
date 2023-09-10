@@ -17,7 +17,8 @@ namespace ScaffoldLib.Maui.Internal
         {
             foreach (var item in Children)
             {
-                if (item.Visibility != Visibility.Visible)
+                bool visible = ((View)item).IsVisible;
+                if (!visible)
                     continue;
 
                 double x = 0;
@@ -67,7 +68,8 @@ namespace ScaffoldLib.Maui.Internal
 
         public virtual Size Measure(double widthConstraint, double heightConstraint)
         {
-            var def = new Size(0,0);
+            double w = 0;
+            double h = 0;
             foreach (var item in Children)
             {
                 var view = (View)item;
@@ -75,10 +77,14 @@ namespace ScaffoldLib.Maui.Internal
                     continue;
 
                 var s = item.Measure(widthConstraint, heightConstraint);
-                if (s.Width > def.Width || s.Height > def.Height)
-                    def = s;
+                
+                if (s.Width > w)
+                    w = s.Width;
+
+                if (s.Height > h)
+                    h = s.Height;
             }
-            return def;
+            return new Size(widthConstraint, heightConstraint);
         }
 
         protected override ILayoutManager CreateLayoutManager()
