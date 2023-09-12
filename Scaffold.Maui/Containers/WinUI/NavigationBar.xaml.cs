@@ -120,4 +120,11 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     {
         buttonBack.IsVisible = isVisible;
     }
+
+    protected override Size ArrangeOverride(Rect bounds)
+    {
+        var res = base.ArrangeOverride(bounds);
+        Scaffold.PlatformSpec.UpdateDesktopDragArea();
+        return res;
+    }
 }

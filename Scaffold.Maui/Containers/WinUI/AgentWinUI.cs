@@ -111,6 +111,8 @@ public class AgentWinUI : Agent, IWindowsBehavior
             zbuffer.Arrange(bounds);
         }
 
+        Scaffold.PlatformSpec.UpdateDesktopDragArea();
+
         return bounds.Size;
     }
 

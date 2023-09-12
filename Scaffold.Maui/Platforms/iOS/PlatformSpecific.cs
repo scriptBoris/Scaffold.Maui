@@ -50,5 +50,9 @@ namespace ScaffoldLib.Maui.Platforms.iOS
                     break;
             }
         }
+
+        public void UpdateDesktopDragArea()
+        {
+        }
     }
 }

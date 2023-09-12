@@ -11,5 +11,6 @@ namespace ScaffoldLib.Maui.Internal
     {
         Thickness GetSafeArea();
         void SetStatusBarColorScheme(StatusBarColorTypes scheme);
+        void UpdateDesktopDragArea();
     }
 }

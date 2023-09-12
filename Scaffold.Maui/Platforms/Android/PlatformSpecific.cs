@@ -90,5 +90,9 @@ namespace ScaffoldLib.Maui.Platforms.Android
             }
             return statusBarHeight;
         }
+
+        public void UpdateDesktopDragArea()
+        {
+        }
     }
 }
