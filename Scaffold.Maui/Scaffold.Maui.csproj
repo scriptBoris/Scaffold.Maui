@@ -62,9 +62,6 @@
 	  <MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Internal\WindowsMinMaxClose.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewMaterial.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

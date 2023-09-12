@@ -8,7 +8,6 @@ namespace ScaffoldLib.Maui.Platforms.Windows;
 
 internal static class ScaffoldWindows
 {
-    internal static WindowController? WindowController;
     private static StatusBarColorTypes initialColorScheme = StatusBarColorTypes.Dark;
     private static Microsoft.UI.Windowing.AppWindowTitleBar? titleBar;
     private static Scaffold? rootScaffold;
