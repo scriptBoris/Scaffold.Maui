@@ -67,7 +67,11 @@ public class ViewFactory
 
     public virtual IDisplayActionSheet CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string[] buttons)
     {
+#if IOS
+        return new Cupertino.DisplayActionSheetLayer(title, cancel, destruction, buttons);
+#else
         return new Material.DisplayActionSheetLayer(title, cancel, destruction, buttons);
+#endif
     }
 
     public virtual IToast? CreateToast(string? title, string message, TimeSpan showTime)

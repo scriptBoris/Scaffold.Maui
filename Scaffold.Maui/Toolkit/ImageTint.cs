@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Internal;
+namespace ScaffoldLib.Maui.Toolkit;
 
 public partial class ImageTintHandler : ImageHandler
 {

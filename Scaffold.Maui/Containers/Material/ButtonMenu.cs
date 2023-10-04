@@ -1,5 +1,5 @@
 ﻿using ButtonSam.Maui.Core;
-using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 using System;
 using System.Collections.Generic;
 using System.Linq;

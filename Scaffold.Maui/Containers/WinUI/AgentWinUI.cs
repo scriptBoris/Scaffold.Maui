@@ -1,5 +1,5 @@
 ﻿using ScaffoldLib.Maui.Core;
-using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 using System;
 using System.Collections.Generic;

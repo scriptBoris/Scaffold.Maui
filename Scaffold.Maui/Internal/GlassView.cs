@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 namespace ScaffoldLib.Maui.Internal;
 
 [ContentProperty(nameof(Content))]
-internal class GlassView : View, IVisualTreeElement, IPadding
+internal class GlassView : View, IContentView, IVisualTreeElement
 {
+    private readonly List<IVisualTreeElement> _children = new();
+
     #region bindable props
     // appearance 
     public static readonly BindableProperty AppearanceProperty = BindableProperty.Create(
         nameof(Appearance),
         typeof(AppTheme),
         typeof(GlassView),
-        AppTheme.Light
+        AppTheme.Dark
     );
     public AppTheme Appearance
     {
@@ -34,21 +36,19 @@ internal class GlassView : View, IVisualTreeElement, IPadding
         {
             if (b is GlassView self)
             {
-                if (o is View old)
+                if (o is Element old)
                 {
-                    old.Parent = null;
-                    old.MeasureInvalidated -= self.ContentMeasureInvalidated;
-                    old.SizeChanged -= self.Newest_SizeChanged;
+                    self._children.Remove(old);
                     self.OnChildRemoved(old, 0);
                 }
 
-                if (n is View newest)
+                if (n is Element newest)
                 {
-                    newest.Parent = self;
-                    newest.MeasureInvalidated += self.ContentMeasureInvalidated;
-                    newest.SizeChanged += self.Newest_SizeChanged;
+                    self._children.Add(newest);
                     self.OnChildAdded(newest);
                 }
+
+                self.InvalidateMeasureHardcore();
             }
         }
     );
@@ -67,7 +67,7 @@ internal class GlassView : View, IVisualTreeElement, IPadding
         propertyChanged: (b, o, n) =>
         {
             if (b is GlassView self)
-                self.InvalidateMeasure();
+                self.InvalidateMeasureHardcore();
         }
     );
     public Thickness Padding
@@ -90,95 +90,22 @@ internal class GlassView : View, IVisualTreeElement, IPadding
     }
     #endregion bindable props
 
-    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+    object? IContentView.Content => Content;
+    public IView? PresentedContent => Content;
+
+    public Size CrossPlatformMeasure(double widthConstraint, double heightConstraint)
     {
-        double w = widthConstraint;
-        double h = heightConstraint;
-
-        if (WidthRequest >= 0)
-            w = WidthRequest;
-
-        if (HeightRequest >= 0)
-            h = HeightRequest;
-
-        if (MinimumWidthRequest >= 0 && w > MinimumWidthRequest)
-            w = MinimumWidthRequest;
-
-        if (MinimumHeightRequest >= 0 && h > MinimumHeightRequest)
-            h = MinimumHeightRequest;
-
-        var size = new Size(w, h);
-        if (Content is IView content)
-        {
-            size = content.Measure(
-                w - Padding.HorizontalThickness,
-                h - Padding.VerticalThickness
-            );
-
-            size = size.WithPadding(Padding);
-        }
-
-        if (WidthRequest >= 0)
-            size = new(WidthRequest, size.Height);
-
-        if (HeightRequest >= 0)
-            size = new(size.Width, HeightRequest);
-
-        if (MinimumWidthRequest >= 0 && size.Width > MinimumWidthRequest)
-            size = new Size(MinimumWidthRequest, size.Height);
-
-        if (MinimumHeightRequest >= 0 && size.Height > MinimumHeightRequest)
-            size = new Size(size.Width, MinimumHeightRequest);
-
-        DesiredSize = size;
-        return size;
+        return this.MeasureContent(widthConstraint, heightConstraint);
     }
 
-    protected override Size ArrangeOverride(Rect bounds)
+    public Size CrossPlatformArrange(Rect bounds)
     {
-        var baseSize = base.ArrangeOverride(bounds);
-
-        double x = bounds.X;
-        double y = bounds.Y;
-        double w = baseSize.Width;
-        double h = baseSize.Height;
-
-        if (Content is IView content)
-        {
-            var contentBounds = new Rect(
-                x + Padding.Left,
-                y + Padding.Top,
-                w - Padding.HorizontalThickness,
-                h - Padding.VerticalThickness
-            );
-
-            content.Arrange(contentBounds);
-        }
-
-        return baseSize;
-    }
-
-    protected override void InvalidateMeasureOverride()
-    {
-        base.InvalidateMeasureOverride();
+        this.ArrangeContent(bounds);
+        return bounds.Size;
     }
 
     IReadOnlyList<IVisualTreeElement> IVisualTreeElement.GetVisualChildren()
     {
-        var list = new List<IVisualTreeElement>();
-        if (Content != null)
-            list.Add(Content);
-
-        return list;
-    }
-
-    private void ContentMeasureInvalidated(object? sender, EventArgs e)
-    {
-        //InvalidateMeasure();
-    }
-
-    private void Newest_SizeChanged(object? sender, EventArgs e)
-    {
-        //InvalidateMeasure();
+        return _children;
     }
 }

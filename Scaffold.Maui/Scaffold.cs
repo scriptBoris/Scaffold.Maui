@@ -506,12 +506,17 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
         if (oldIndex == NavigationStack.Count - 1)
         {
+            Scaffold.SetScaffoldContext(newView, this);
             await _navigationController.ReplaceView(newView, isAnimated);
             return true;
         }
         else
         {
-            return await InsertView(oldView, oldIndex, isAnimated);
+            bool success = await InsertView(newView, oldIndex, isAnimated);
+            if (success)
+                await RemoveView(oldView, false);
+
+            return success;
         }
     }
 

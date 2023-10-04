@@ -64,5 +64,9 @@ public partial class MasterView
 
 		selectedMenuButton = selected;
 		Detail = nav;
-    }
+
+#if !WINDOWS
+		IsPresented = false;
+#endif
+	}
 }

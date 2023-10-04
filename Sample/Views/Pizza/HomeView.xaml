@@ -71,6 +71,7 @@
                                        FontSize="20"
                                        HorizontalTextAlignment="Center"
                                        Text="+"
+                                       TextColor="#FFF"
                                        VerticalTextAlignment="Center" />
                             </sbutton:Button>
                         </Grid>

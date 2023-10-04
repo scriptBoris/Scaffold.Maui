@@ -1,7 +1,7 @@
 using ButtonSam.Maui;
 using ButtonSam.Maui.Core;
 using ScaffoldLib.Maui.Core;
-using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 using System.Threading.Tasks;
 using System.Windows.Input;
 

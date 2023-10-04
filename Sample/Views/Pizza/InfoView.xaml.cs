@@ -6,4 +6,10 @@ public partial class InfoView
 	{
 		InitializeComponent();
 	}
+
+    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    {
+		var label = sender as Label;
+		Browser.OpenAsync(label.Text);
+    }
 }

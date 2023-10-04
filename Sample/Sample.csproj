@@ -52,6 +52,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\Images\chrome.svg" />
 	  <None Remove="Resources\Images\refresh.svg" />
+	  <None Remove="Resources\Images\scaffold_icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>

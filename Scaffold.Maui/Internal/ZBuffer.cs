@@ -45,6 +45,10 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         Children.Add(layer);
 
         layer.TryAppearing();
+
+        if (layer is View v)
+            await v.AwaitReady();
+
         await layer.Show();
         layer.TryAppearing(true);
     }

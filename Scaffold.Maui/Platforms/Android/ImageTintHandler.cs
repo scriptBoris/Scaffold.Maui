@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Internal
+namespace ScaffoldLib.Maui.Toolkit
 {
     public partial class ImageTintHandler
     {
@@ -24,11 +24,8 @@ namespace ScaffoldLib.Maui.Internal
 
         public void SetTint(Microsoft.Maui.Graphics.Color? color)
         {
-            Console.WriteLine($"START FUNCTION: ImageTint SetTint");
             if (!hasHandler)
                 return;
-
-            Console.WriteLine($"BODY FUNCTION: ImageTint SetTint");
 
             if (color != null)
             {

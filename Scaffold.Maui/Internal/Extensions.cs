@@ -30,16 +30,16 @@ namespace ScaffoldLib.Maui.Internal
                 rm.OnRemovedFromNavigation();
         }
 
-        public static void TryAppearing(this IAgent frame, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
+        public static void TryAppearing(this IAgent agent, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
         {
             if (parentStl == AppearingStates.Disappear)
                 return;
 
             if (isComplete == false)
             {
-                frame.IsAppear = true;
+                agent.IsAppear = true;
 
-                var statusBarStyle = Scaffold.GetStatusBarForegroundColor(frame.ViewWrapper.View);
+                var statusBarStyle = Scaffold.GetStatusBarForegroundColor(agent.ViewWrapper.View);
                 if (statusBarStyle != StatusBarColorTypes.DependsByNavigationBarColor)
                 {
                     Scaffold.SetupStatusBarColor(statusBarStyle);
@@ -53,21 +53,21 @@ namespace ScaffoldLib.Maui.Internal
                 }
             }
 
-            frame.ViewWrapper.View.TryAppearing(isComplete);
-            if (frame is IAppear ap)
+            agent.ViewWrapper.View.TryAppearing(isComplete);
+            if (agent is IAppear ap)
                 ap.OnAppear(isComplete);
         }
 
-        public static void TryDisappearing(this IAgent frame, bool isComplete, AppearingStates parentStl)
+        public static void TryDisappearing(this IAgent agent, bool isComplete, AppearingStates parentStl)
         {
             if (parentStl == AppearingStates.Disappear)
                 return;
 
             if (isComplete == false)
-                frame.IsAppear = false;
+                agent.IsAppear = false;
 
-            frame.ViewWrapper.View.TryDisappearing(isComplete);
-            if (frame is IDisappear dis)
+            agent.ViewWrapper.View.TryDisappearing(isComplete);
+            if (agent is IDisappear dis)
                 dis.OnDisappear(isComplete);
         }
 
@@ -153,94 +153,25 @@ namespace ScaffoldLib.Maui.Internal
         }
 
 #if IOS
-        public class CustomView : UIKit.UIView
-        {
-            private readonly Action<UIKit.UIView> act;
-
-            public CustomView(Action<UIKit.UIView> act)
-            {
-                this.act = act;
-                Bounds = new CoreGraphics.CGRect(0, 0, 1, 1);
-            }
-
-            public override void MovedToWindow()
-            {
-                base.MovedToWindow();
-            }
-
-            public override void Draw(CoreGraphics.CGRect rect)
-            {
-                base.Draw(rect);
-                act.Invoke(this);
-            }
-
-            public override bool DrawViewHierarchy(CoreGraphics.CGRect rect, bool afterScreenUpdates)
-            {
-                var result = base.DrawViewHierarchy(rect, afterScreenUpdates);
-                act.Invoke(this);
-                return result;
-            }
-        }
-
-        private class VK : UIKit.UIViewController
-        {
-            private readonly Action act;
-
-            public VK(Action act)
-            {
-                this.act = act;
-            }
-
-            public override void ViewDidLoad()
-            {
-                base.ViewDidLoad();
-                act.Invoke();
-            }
-        }
-
         private static async Task AwaitReadyIOS(View view, CancellationToken cancellation)
         {
-            var h = await AwaitHandler(view, cancellation);
-            if (h == null)
+            var handler = await AwaitHandler(view, cancellation);
+            if (handler == null)
                 return;
 
-            var v = h.PlatformView as UIKit.UIView;
-            if (v == null)
-                return;
-
-            if (h.PlatformView is Platforms.iOS.UIAgentView agent)
-            {
-                var tsc = new TaskCompletionSource<bool>();
-                int hard = view.GetVisualTreeDescendants().Count;
-                int addLife = agent.CalculateHard(hard);
-                void drawed(object? sender, int newAddLife)
+            var tsc = new TaskCompletionSource<bool>();
+            view.Animate("checkisload", 
+                callback: (x) => {}, 
+                rate: 1, 
+                length: 10, 
+                easing: null, 
+                finished: async (x, isFail) => 
                 {
-                    addLife += newAddLife;
+                    await Task.Delay(25);
+                    tsc.SetResult(true); 
                 }
-                agent.ViewIsDrawed += drawed;
-
-                view.Dispatcher.StartTimer(TimeSpan.FromMilliseconds(5), () =>
-                {
-                    addLife -= 5;
-
-                    bool result = addLife > 0;
-                    if (!result)
-                        tsc.TrySetResult(true);
-
-                    return result;
-                });
-
-                await tsc.Task.WithCancelation(cancellation);
-                agent.ViewIsDrawed -= drawed;
-            }
-
-            //var tsc = new TaskCompletionSource<bool>();
-            //var c = new CustomView((x) =>
-            //{
-            //    tsc.TrySetResult(true);
-            //});
-            //v.AddSubview(c);
-            //await tsc.Task.WithCancelation(cancellation);
+            );
+            await tsc.Task.WithCancelation(cancellation);
         }
 #endif
 
@@ -431,6 +362,11 @@ namespace ScaffoldLib.Maui.Internal
         internal static Size WithPadding(this Size size, Thickness padding)
         {
             return new Size(size.Width + padding.HorizontalThickness, size.Height + padding.VerticalThickness);
+        }
+
+        internal static void InvalidateMeasureHardcore(this View view)
+        {
+            ((IView)view).InvalidateMeasure();
         }
     }
 }
