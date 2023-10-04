@@ -11,52 +11,29 @@ namespace ScaffoldLib.Maui.Toolkit;
 
 public partial class ImageTintHandler
 {
-    private bool hasHandler;
-    private ImageTint Proxy => (ImageTint)VirtualView;
-    private UIImageTint? Native => PlatformView as UIImageTint;
-
-    public override void SetVirtualView(IView view)
+    public ImageTintHandler() : base(ImageTintHandlerMapper)
     {
-        base.SetVirtualView(view);
-        SetTint(Proxy.TintColor);
     }
 
-    public void SetTint(Microsoft.Maui.Graphics.Color? color)
+    public static PropertyMapper<ImageTint, ImageTintHandler> ImageTintHandlerMapper = new(Mapper)
     {
-        if (!hasHandler)
-            return;
+        [nameof(ImageTint.TintColor)] = MapTintColor,
+    };
 
-        if (Native == null)
-            return;
+    public static void MapTintColor(ImageTintHandler h, ImageTint v)
+    {
+        var native = h.PlatformView as UIImageTint;
+        var proxy = h.VirtualView as ImageTint;
 
-        Native.ColorFilter = color?.ToPlatform();
-
-        //if (color != null)
-        //{
-        //    PlatformView.Image = PlatformView.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-        //    PlatformView.TintColor = color.ToPlatform();
-        //}
-        //else
-        //{
-        //    PlatformView.Image = PlatformView.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
-        //}
+        if (native != null && proxy != null)
+        {
+            native.ColorFilter = proxy.TintColor?.ToPlatform();
+        }
     }
 
     protected override UIImageView CreatePlatformView()
     {
         return new UIImageTint();
-    }
-
-    protected override void ConnectHandler(UIImageView platformView)
-    {
-        base.ConnectHandler(platformView);
-        hasHandler = true;
-    }
-
-    protected override void DisconnectHandler(UIImageView platformView)
-    {
-        hasHandler = false;
-        base.DisconnectHandler(platformView);
     }
 
     public class UIImageTint : MauiImageView

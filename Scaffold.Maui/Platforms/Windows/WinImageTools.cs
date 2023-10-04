@@ -1,10 +1,13 @@
-﻿using SkiaSharp;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
+using WinImageSource = Microsoft.UI.Xaml.Media.ImageSource;
 
 namespace ScaffoldLib.Maui.Platforms.Windows;
 
@@ -12,33 +15,24 @@ internal static class WinImageTools
 {
     public class ImgResult
     {
-        public ImageSource? Source { get; set; }
+        public WinImageSource? Source { get; set; }
         public bool IsCanceled { get; set; }
 
-        public static ImgResult Result(ImageSource? result) => new ImgResult { Source = result };
+        public static ImgResult Result(WinImageSource? result) => new ImgResult { Source = result };
+        public static ImgResult Cancel() => new ImgResult { IsCanceled = true };
     }
 
-    public static async Task<ImgResult> ProcessImage(ImageSource? source, Color? tintColor, CancellationToken cancel)
+    public static async Task<ImgResult> ProcessImage(WinImageSource? source, Color? tintColor, CancellationToken cancel)
     {
         if (source == null)
             return ImgResult.Result(source);
 
-        var serviceProvider = Application.Current?
-            .Handler?
-            .MauiContext?
-            .Services
-            .GetService<IImageSourceServiceProvider>()?
-            .GetImageSourceService(source);
-
-        if (serviceProvider == null)
-            return ImgResult.Result(null);
-
-        var imageSourceValue = await serviceProvider.GetImageSourceAsync(source);
-        var winImageSource = imageSourceValue?.Value;
-
-        if (winImageSource is Microsoft.UI.Xaml.Media.Imaging.BitmapImage img)
+        if (source is Microsoft.UI.Xaml.Media.Imaging.BitmapImage img)
         {
             var ff = await StorageFile.GetFileFromApplicationUriAsync(img.UriSource);
+            if (cancel.IsCancellationRequested)
+                return ImgResult.Cancel();
+
             if (ff != null)
             {
                 using var stream = await ff.OpenStreamForReadAsync();
@@ -63,19 +57,19 @@ internal static class WinImageTools
                 }
 
                 var bin = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
-
                 if (cancel.IsCancellationRequested)
-                    return new ImgResult { IsCanceled = true };
+                    return ImgResult.Cancel();
 
-                return new ImgResult
-                {
-                    Source = ImageSource.FromStream(() => new MemoryStream(bin)),
-                };
+                IRandomAccessStream streamResult = new MemoryStream(bin).AsRandomAccessStream();
+                var sourceResult = new WriteableBitmap(w, h);
+                sourceResult.SetSource(streamResult);
+
+                return ImgResult.Result(sourceResult);
             }
         }
 
         if (cancel.IsCancellationRequested)
-            return new ImgResult { IsCanceled = true };
+            return ImgResult.Cancel();
 
         return ImgResult.Result(null);
     }
@@ -87,7 +81,6 @@ internal static class WinImageTools
         byte blue = (byte)(mauiColor.Blue * 255f);
         byte alpha = (byte)(mauiColor.Alpha * 255f);
 
-        // Создайте экземпляр SKColor из компонентов цвета
         var skiaColor = new SKColor(red, green, blue, alpha);
         return skiaColor;
     }
