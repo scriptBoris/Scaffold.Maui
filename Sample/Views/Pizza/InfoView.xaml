@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
              x:Class="Sample.Views.Pizza.InfoView"
-             Padding="10"
+             Padding="20"
              scaffold:Scaffold.Title="About app"
              VerticalOptions="CenterAndExpand">
     <Image Margin="0,0,0,20"
@@ -19,12 +19,14 @@
            HorizontalTextAlignment="Center"
            Text="This is sample app for demonstration drawing on whole display" />
 
-    <Label Margin="0,10,0,0"
-           Text="Repo" />
-    <Label Text="https://github.com/scriptboris/scaffold.maui"
-           TextColor="BlueViolet">
-        <Label.GestureRecognizers>
-            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
-        </Label.GestureRecognizers>
-    </Label>
+    <StackLayout HorizontalOptions="Center">
+        <Label Margin="0,15,0,0"
+               Text="Source Repository" />
+        <Label Text="https://github.com/scriptboris/scaffold.maui"
+               TextColor="BlueViolet">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+            </Label.GestureRecognizers>
+        </Label>
+    </StackLayout>
 </StackLayout>

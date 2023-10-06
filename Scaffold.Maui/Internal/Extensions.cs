@@ -16,12 +16,18 @@ namespace ScaffoldLib.Maui.Internal
         {
             if (iview is IAppear v)
                 v.OnAppear(isComplete);
+
+            if (iview is View view && view.BindingContext is IAppear data && data != iview)
+                data.OnAppear(isComplete);
         }
 
         public static void TryDisappearing(this IView iview, bool isComplete = false)
         {
             if (iview is IDisappear v)
                 v.OnDisappear(isComplete);
+
+            if (iview is View view && view.BindingContext is IDisappear data && data != iview)
+                data.OnDisappear(isComplete);
         }
 
         public static void TryRemoveFromNavigation(this IView iview)
@@ -53,9 +59,10 @@ namespace ScaffoldLib.Maui.Internal
                 }
             }
 
-            agent.ViewWrapper.View.TryAppearing(isComplete);
             if (agent is IAppear ap)
                 ap.OnAppear(isComplete);
+
+            agent.ViewWrapper.View.TryAppearing(isComplete);
         }
 
         public static void TryDisappearing(this IAgent agent, bool isComplete, AppearingStates parentStl)
@@ -66,9 +73,10 @@ namespace ScaffoldLib.Maui.Internal
             if (isComplete == false)
                 agent.IsAppear = false;
 
-            agent.ViewWrapper.View.TryDisappearing(isComplete);
             if (agent is IDisappear dis)
                 dis.OnDisappear(isComplete);
+
+            agent.ViewWrapper.View.TryDisappearing(isComplete);
         }
 
         public static void TryRemoveFromNavigation(this IAgent frame)

@@ -62,7 +62,6 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
     );
     public View? Flyout
     {
-
         get => GetValue(FlyoutProperty) as View;
         set => SetValue(FlyoutProperty, value);
     }
@@ -129,6 +128,12 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
 
         if (view != null)
         {
+            // Very important!
+            // if detail just view (without binding context) then
+            // disable pass current binding context to detail
+            if (view.BindingContext == default(object))
+                view.BindingContext = null;
+
             AttachDetail(view);
             view.TryAppearing();
 

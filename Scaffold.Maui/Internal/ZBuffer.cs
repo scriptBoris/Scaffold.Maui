@@ -21,6 +21,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
     public ZBuffer()
     {
         IsVisible = false;
+        BindingContext = null;
     }
 
     public int LayersCount => items.Count;

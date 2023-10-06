@@ -14,6 +14,7 @@ namespace ScaffoldLib.Maui.Containers
         public DefaultAgent(AgentArgs args, IScaffold context) : base(args, context)
         {
             this._context = context;
+            BindingContext = null;
         }
 
         public override void PrepareAnimate(NavigatingTypes type)

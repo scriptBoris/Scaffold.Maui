@@ -62,6 +62,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Scaffold()
     {
+        BindingContext = null;
         ExternalBevahiors = new(_externalBevahiors);
         ExternalBevahiors.AsNotifyObs().CollectionChanged += Scaffold_CollectionChanged; ;
 
