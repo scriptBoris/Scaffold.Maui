@@ -65,12 +65,12 @@ public class ViewFactory
 #endif
     }
 
-    public virtual IDisplayActionSheet CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string[] buttons)
+    public virtual IDisplayActionSheet CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string? itemDisplayBinding, object[] items)
     {
 #if IOS
-        return new Cupertino.DisplayActionSheetLayer(title, cancel, destruction, buttons);
+        return new Cupertino.DisplayActionSheetLayer(title, cancel, destruction, itemDisplayBinding, items);
 #else
-        return new Material.DisplayActionSheetLayer(title, cancel, destruction, buttons);
+        return new Material.DisplayActionSheetLayer(title, cancel, destruction, itemDisplayBinding, items);
 #endif
     }
 

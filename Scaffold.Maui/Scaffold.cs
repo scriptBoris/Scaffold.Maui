@@ -6,6 +6,7 @@ using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Containers;
 using System.Threading.Channels;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Animations;
 
 namespace ScaffoldLib.Maui;
 
@@ -21,6 +22,7 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
     Task PushAsync(View view, bool isAnimating = true);
     Task<bool> PopAsync(bool isAnimated = true);
     Task<bool> PopToRootAsync(bool isAnimated = true);
+    Task<bool> PopToRootAndSetRootAsync(View newRootView, bool isAnimated = true);
     Task<bool> RemoveView(View view, bool isAnimated = true);
     Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true);
     Task<bool> InsertView(View view, int index, bool isAnimated = true);
@@ -32,6 +34,9 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
 
     Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons);
     Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons);
+    Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, params T[] items);
+    Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, View parentView, params T[] items);
+    
     Task Toast(string? title, string message, TimeSpan showTime);
     void AddCustomLayer(IZBufferLayout layer, int zIndex);
     void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView);
@@ -62,6 +67,13 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Scaffold()
     {
+        if (!Initializer.IsInitialized)
+        {
+            const string error = "ScaffoldLib.Maui.Scaffold not initialized. Please use UseScaffold() in MauiProgram.cs";
+            Console.WriteLine(error);
+            throw new Exception(error);
+        }
+
         BindingContext = null;
         ExternalBevahiors = new(_externalBevahiors);
         ExternalBevahiors.AsNotifyObs().CollectionChanged += Scaffold_CollectionChanged; ;
@@ -544,6 +556,24 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         return await PopAsync(isAnimated);
     }
 
+    public async Task<bool> PopToRootAndSetRootAsync(View newRootView, bool isAnimated = true)
+    {
+        int count = _navigationController.NavigationStack.Count;
+        if (count == 0)
+            return false;
+
+        var oldView = _navigationController.NavigationStack.Last();
+        if (count == 1)
+            return await ReplaceView(oldView, newRootView, isAnimated);
+
+        for (int i = count - 2; i >= 0; i--)
+        {
+            _navigationController.RemoveView(i);
+        }
+
+        return await ReplaceView(oldView, newRootView, isAnimated);
+    }
+
     public async Task<bool> RemoveView(View view, bool isAnimated)
     {
         int count = _navigationController.NavigationStack.Count;
@@ -616,7 +646,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons)
     {
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, null, buttons);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
@@ -630,10 +660,56 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 IsCanceled = true,
             });
 
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, buttons);
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, null, buttons);
         agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
+
+    public async Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, params T[] items)
+    {
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, displayProperty, items.Cast<object>().ToArray());
+        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
+        var result = await alert.GetResult();
+        
+        T? selectedItem = default;
+        if (result.SelectedItem is T tresult)
+            selectedItem = tresult;
+
+        return new DisplayActionSheetResult<T> 
+        {
+            IsCanceled = result.IsCanceled,
+            IsDestruction = result.IsDestruction,
+            SelectedItemId = result.SelectedItemId,
+            SelectedItem = selectedItem,
+        };
+    }
+
+    public async Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, View parentView, params T[] items)
+    {
+        var agent = FindAgent(parentView);
+        if (agent == null)
+            return new DisplayActionSheetResult<T>
+            {
+                IsCanceled = true,
+            };
+
+        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, displayProperty, items.Cast<object>().ToArray());
+        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
+        var result = await alert.GetResult();
+
+        T? selectedItem = default;
+        if (result.SelectedItem is T tresult)
+            selectedItem = tresult;
+
+        return new DisplayActionSheetResult<T>
+        {
+            IsCanceled = result.IsCanceled,
+            IsDestruction = result.IsDestruction,
+            SelectedItemId = result.SelectedItemId,
+            SelectedItem = selectedItem,
+        };
+    }
+
 
     public Task Toast(string? title, string message, TimeSpan showTime)
     {
@@ -712,6 +788,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             return null;
 
         return context._navigationController.Agents.FirstOrDefault(x => x.ViewWrapper.View == bindable);
+    }
+
+    public static IScaffold? GetRootScaffold()
+    {
+        return Application.Current?.MainPage?.GetRootScaffold();
     }
 }
 

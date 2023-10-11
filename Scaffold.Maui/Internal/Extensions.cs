@@ -119,17 +119,6 @@ namespace ScaffoldLib.Maui.Internal
             return self[index];
         }
 
-        public static Task<bool> EasyAnimate(this View v, string name, double start, double end, ushort length, Action<double> callback)
-        {
-            var tsc = new TaskCompletionSource<bool>();
-            var anim = new Animation(callback, start, end);
-            anim.Commit(v, "Anim", length: length, finished: (v, b) =>
-            {
-                tsc.TrySetResult(b);
-            });
-            return tsc.Task;
-        }
-
         public static byte[] ToBytes(this Stream str)
         {
             byte[] byteArray;

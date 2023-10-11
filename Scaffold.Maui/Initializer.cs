@@ -11,6 +11,8 @@ namespace ScaffoldLib.Maui;
 
 public static class Initializer
 {
+    internal static bool IsInitialized;
+
     public static MauiAppBuilder UseScaffold(this MauiAppBuilder builder)
     {
 #if ANDROID
@@ -27,6 +29,8 @@ public static class Initializer
         });
 
         builder.UseButtonSam();
+
+        IsInitialized = true;
         return builder;
     }
 }

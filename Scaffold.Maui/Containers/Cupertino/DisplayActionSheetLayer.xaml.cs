@@ -1,4 +1,6 @@
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -7,24 +9,26 @@ namespace ScaffoldLib.Maui.Containers.Cupertino;
 public partial class DisplayActionSheetLayer : IDisplayActionSheet
 {
     private readonly TaskCompletionSource<IDisplayActionSheetResult> _tsc = new();
+    private readonly object[] _originalItems;
     private bool isAnimatingClose;
     private bool isAnimatingShow;
 
     private bool isCanceled;
     private bool isDestruction;
-    private string? prepareString;
     private int? prepareInt;
+    private object? prepareSelectedItem;
 
     private bool IsBusy => isAnimatingClose || isAnimatingShow;
 
-    public DisplayActionSheetLayer(string? title, string? cancel, string? destruction, string[] buttons)
+    public DisplayActionSheetLayer(string? title, string? cancel, string? destruction, string? displayProperty, object[] buttons)
     {
+        _originalItems = buttons;
         CommandTapItem = new Command((param) =>
         {
             if (!IsBusy && param is KeyValuePair<int, string> kvp)
             {
                 prepareInt = kvp.Key;
-                prepareString = kvp.Value;
+                prepareSelectedItem = _originalItems[kvp.Key];
                 _ = Close();
             }
         });
@@ -33,7 +37,7 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         itemList.BindingContext = this;
         var items = new Dictionary<int, string>();
         for (int i = 0; i < buttons.Length; i++)
-            items.Add(i, buttons[i]);
+            items.Add(i, buttons[i].GetDisplayItemText(displayProperty));
         BindableLayout.SetItemsSource(itemList, items);
 
         // label
@@ -117,12 +121,13 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             this.FadeTo(0, 120),
             rootStackLayout.TranslateTo(0, Height, 120, Easing.SinInOut)
         );
+
         _tsc.TrySetResult(new DisplayActionSheetResult
         {
             IsCanceled = isCanceled,
             IsDestruction = isDestruction,
-            ItemId = prepareInt,
-            ItemText = prepareString,
+            SelectedItemId = prepareInt,
+            SelectedItem = prepareSelectedItem,
         });
         DeatachLayer?.Invoke();
     }
