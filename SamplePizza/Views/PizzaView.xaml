@@ -35,7 +35,8 @@
             StrokeShape="RoundRectangle 40,40,0,0"
             StrokeThickness="0"
             VerticalOptions="FillAndExpand">
-        <StackLayout Padding="20">
+        <StackLayout Padding="10"
+                     VerticalOptions="FillAndExpand">
 
             <Label FontAttributes="Bold"
                    FontSize="24"
@@ -43,7 +44,7 @@
                    Text="{Binding PizzaItem.Name}" />
             <Label FontSize="18"
                    HorizontalTextAlignment="Center"
-                   Text="Description" />
+                   Text="{Binding PizzaItem.Description}" />
 
             <Grid Padding="20"
                   ColumnDefinitions="1*, 1, 1*, 1, 1*"
@@ -55,15 +56,15 @@
                        Text="Volume" />
                 <Label Grid.Column="4"
                        HorizontalTextAlignment="Center"
-                       Text="Distance" />
+                       Text="Weight" />
 
                 <ContentView Grid.Row="1"
                              Grid.Column="1"
-                             BackgroundColor="#333"
+                             BackgroundColor="{AppThemeBinding Light=#333, Dark=#555}"
                              TranslationY="-4" />
                 <ContentView Grid.Row="1"
                              Grid.Column="3"
-                             BackgroundColor="#333"
+                             BackgroundColor="{AppThemeBinding Light=#333, Dark=#555}"
                              TranslationY="-4" />
 
                 <Label Grid.Row="1"
@@ -82,13 +83,13 @@
                        FontAttributes="Bold"
                        FontSize="18"
                        HorizontalTextAlignment="Center"
-                       Text="2 km" />
+                       Text="890 g" />
             </Grid>
 
-            <Grid ColumnDefinitions="*,*,*"
-                  RowDefinitions="Auto, Auto"
-                  VerticalOptions="Center">
-                <Label Text="Order" />
+            <!--<Grid ColumnDefinitions="*,*,*"
+                  IsVisible="false"
+                  RowDefinitions="Auto, Auto">
+                <Label Text="Dough" />
 
                 <Label Grid.Column="1"
                        HorizontalTextAlignment="Center"
@@ -97,6 +98,12 @@
                 <Label Grid.Column="2"
                        HorizontalTextAlignment="End"
                        Text="Price" />
+
+                <Label Grid.Row="1"
+                       Grid.Column="0"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       Text="Slim" />
 
                 <Label Grid.Row="1"
                        Grid.Column="1"
@@ -113,15 +120,60 @@
                        HorizontalTextAlignment="End"
                        Text="{Binding PizzaItem.Price, StringFormat='${0:0.00}'}"
                        TextColor="OrangeRed" />
-            </Grid>
+            </Grid>-->
 
-            <sbutton:Button BackgroundColor="{StaticResource Primary}"
-                            VerticalOptions="EndAndExpand">
-                <Label FontSize="18"
-                       HorizontalOptions="CenterAndExpand"
-                       Text="Add to Cart"
-                       TextColor="White" />
-            </sbutton:Button>
+            <VerticalStackLayout VerticalOptions="EndAndExpand">
+                <Grid Margin="0,10"
+                      ColumnDefinitions="Auto, 50, Auto, *">
+                    <sbutton:Button BackgroundColor="{StaticResource Primary}"
+                                    TapCommand="{Binding CommandMinus}">
+                        <Label Margin="10,0"
+                               FontSize="20"
+                               Text="-"
+                               TextColor="White" />
+                    </sbutton:Button>
+
+                    <Label Grid.Column="1"
+                           FontSize="20"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding Count}"
+                           VerticalTextAlignment="Center" />
+
+                    <sbutton:Button Grid.Column="2"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    TapCommand="{Binding CommandPlus}">
+                        <Label Margin="10,0"
+                               FontSize="20"
+                               Text="+"
+                               TextColor="White" />
+                    </sbutton:Button>
+
+                    <Label Grid.Column="3"
+                           Margin="0,0,10,0"
+                           FontAttributes="Bold"
+                           FontSize="20"
+                           HorizontalTextAlignment="End"
+                           Text="{Binding Sum, StringFormat='Price ${0:0.00}'}"
+                           VerticalTextAlignment="Center" />
+                </Grid>
+
+                <sbutton:Button BackgroundColor="{StaticResource Primary}"
+                                TapCommand="{Binding CommandAddToCart}"
+                                VerticalOptions="EndAndExpand">
+                    <Label FontSize="18"
+                           HorizontalOptions="CenterAndExpand"
+                           Text="Add to Cart"
+                           TextColor="White">
+                        <Label.Triggers>
+                            <DataTrigger Binding="{Binding IsInCart}"
+                                         TargetType="Label"
+                                         Value="True">
+                                <Setter Property="Text" Value="In cart" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </sbutton:Button>
+            </VerticalStackLayout>
         </StackLayout>
     </Border>
 

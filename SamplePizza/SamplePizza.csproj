@@ -128,6 +128,9 @@
 	  <MauiXaml Update="Views\AccountView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\CartView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\ConfirmEmailView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

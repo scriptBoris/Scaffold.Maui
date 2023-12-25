@@ -10,7 +10,11 @@ using ScaffoldLib.Maui.Core;
 
 namespace SamplePizza.ViewModels;
 
-public class ConfirmEmailViewModel : BaseViewModel<Views.ConfirmEmailView>, IAppear
+public class ConfirmEmailViewModelKey
+{
+}
+
+public class ConfirmEmailViewModel : BaseViewModel<ConfirmEmailViewModelKey>, IAppear
 {
     private const string code = "618952";
     public string? ConfirmCode { get; set; }

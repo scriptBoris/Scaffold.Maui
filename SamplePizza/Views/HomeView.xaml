@@ -14,7 +14,8 @@
         <scaffold:MenuItem ImageSource="magnify.png"
                            Text="Search" />
 
-        <scaffold:MenuItem ImageSource="cart_outline.png"
+        <scaffold:MenuItem Command="{Binding CommandCart}"
+                           ImageSource="cart_outline.png"
                            Text="Cart" />
     </scaffold:Scaffold.MenuItems>
 
@@ -51,7 +52,8 @@
 
                             <Label Grid.Row="1"
                                    Grid.Column="1"
-                                   Text="Description" />
+                                   MaxLines="2"
+                                   Text="{Binding Description}" />
 
                             <Label Grid.Row="2"
                                    Grid.Column="1"

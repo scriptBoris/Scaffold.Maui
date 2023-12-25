@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace SamplePizza.ViewModels;
 
-public class SupportViewModel : BaseViewModel<Views.SupportView>
+public class SupportViewModelKey
+{
+}
+
+public class SupportViewModel : BaseViewModel<SupportViewModelKey>
 {
 }

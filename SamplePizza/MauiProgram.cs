@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SamplePizza.Controls;
+using SamplePizza.Services;
 using ScaffoldLib.Maui;
 
 namespace SamplePizza
@@ -12,6 +13,7 @@ namespace SamplePizza
             builder
                 .UseMauiApp<App>()
                 .UseScaffold()
+                .ConfigureServices()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,6 +31,21 @@ namespace SamplePizza
 #endif
 
             return builder.Build();
+        }
+
+        private static MauiAppBuilder ConfigureServices(this MauiAppBuilder builder)
+        {
+            var services = builder.Services;
+
+            // singletons
+            services.AddSingleton<IAuthService, AuthService>();
+
+            // scoped
+            services.AddScoped<INavigationMap, NavigationMap>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IWaresService, WaresService>();
+
+            return builder;
         }
     }
 }

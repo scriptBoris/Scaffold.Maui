@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/2021/maui", "ScaffoldLib.Maui")]
+
 namespace ScaffoldLib.Maui;
 
 public static class Initializer
@@ -22,6 +24,8 @@ public static class Initializer
 #elif IOS
         Platforms.iOS.ScaffoldIOS.Init(builder);
 #endif
+
+        Scaffold.Preserve();
 
         builder.ConfigureMauiHandlers(h =>
         {

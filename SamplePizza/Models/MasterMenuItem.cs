@@ -12,7 +12,8 @@ public class MasterMenuItem : BaseNotify
 {
     private IScaffold? scaffold;
 
-    public required BaseViewModel ViewModel { get; set; }
+    public required object ViewModelKey { get; set; }
+    public BaseViewModel? ViewModel { get; set; }
     public required string Title { get; set; }
     public required ImageSource ImageSource { get; set; }
     public LayoutOptions LayoutOptions { get; set; } = LayoutOptions.Start;

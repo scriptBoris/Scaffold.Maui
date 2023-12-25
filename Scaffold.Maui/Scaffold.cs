@@ -54,6 +54,10 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public static event EventHandler<Thickness>? SafeAreaChanged;
 
+    internal static void Preserve()
+    {
+    }
+
     static Scaffold()
     {
 #if ANDROID

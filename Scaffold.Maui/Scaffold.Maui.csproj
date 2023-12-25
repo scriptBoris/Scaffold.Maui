@@ -18,13 +18,14 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.9.34-beta</Version>
+		<Version>0.9.35-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 		<RootNamespace>ScaffoldLib.Maui</RootNamespace>
+		<Configurations>Debug;Release;Mock</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>

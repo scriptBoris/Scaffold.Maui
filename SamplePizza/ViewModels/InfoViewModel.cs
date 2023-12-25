@@ -8,7 +8,11 @@ using System.Windows.Input;
 
 namespace SamplePizza.ViewModels;
 
-public class InfoViewModel : BaseViewModel<Views.InfoView>
+public class InfoViewModelKey
+{
+}
+
+public class InfoViewModel : BaseViewModel<InfoViewModelKey>
 {
     public ICommand CommandGoRepo => new Command(() =>
     {

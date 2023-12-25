@@ -7,66 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SamplePizza.Models;
+using SamplePizza.Services;
 
 namespace SamplePizza.ViewModels;
 
-public class HomeViewModel : BaseViewModel<Views.HomeView>
+public class HomeViewModelKey
 {
-    public HomeViewModel()
+}
+
+public class HomeViewModel : BaseViewModel<HomeViewModelKey>
+{
+    public HomeViewModel(IWaresService waresService)
     {
         CommandSelectPizza = new Command<PizzaItem>(ActionSelectPizza);
-        
-        PizzaItems = new()
-        {
-            new PizzaItem
-            {
-                Image = "pizza_1.png",
-                Name = "Mixsik",
-                Price = 10,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_2.png",
-                Name = "Chirozo fresh",
-                Price = 12,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_3.png",
-                Name = "Burger pizza",
-                Price = 13,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_4.png",
-                Name = "Pepperoni fresh",
-                Price = 10,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_5.png",
-                Name = "Cheese chicken",
-                Price = 14,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_6.png",
-                Name = "Ham and cheese",
-                Price = 9,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_7.png",
-                Name = "Сheese",
-                Price = 8,
-            },
-            new PizzaItem
-            {
-                Image = "pizza_8.png",
-                Name = "Double chicken",
-                Price = 16.5,
-            },
-        };
+
+        PizzaItems = new ObservableCollection<PizzaItem>(waresService.GetAllWares());
 
         Filters = new()
         {
@@ -92,10 +47,15 @@ public class HomeViewModel : BaseViewModel<Views.HomeView>
     public ObservableCollection<PizzaItem> PizzaItems { get; set; }
     public ObservableCollection<HomeFilterItem> Filters { get; set; }
 
+    public ICommand CommandCart => new Command(() =>
+    {
+        GoTo(new CartViewModelKey());
+    });
+
     public ICommand CommandSelectPizza { get; set; }
     private void ActionSelectPizza(PizzaItem item)
     {
-        GoTo(new PizzaViewModel()
+        GoTo(new PizzaViewModelKey()
         {
             PizzaItem = item
         });

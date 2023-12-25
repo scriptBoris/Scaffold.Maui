@@ -1,5 +1,6 @@
 ﻿using SamplePizza.Core;
 using SamplePizza.Models;
+using SamplePizza.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,47 +11,54 @@ using System.Windows.Input;
 
 namespace SamplePizza.ViewModels;
 
-public class MasterViewModel : BaseViewModel<Views.MasterView>
+public class MasterViewModelKey
 {
-    public MasterViewModel()
+}
+
+public class MasterViewModel : BaseViewModel<MasterViewModelKey>
+{
+    private readonly INavigationMap _navigationMap;
+
+    public MasterViewModel(INavigationMap navigationMap)
     {
+        _navigationMap = navigationMap;
+
         Menus = new()
         {
             new MasterMenuItem
             {
                 Title = "Home",
                 ImageSource = "home.png",
-                ViewModel = new HomeViewModel(),
+                ViewModelKey = new HomeViewModelKey(),
             },
             new MasterMenuItem
             {
                 Title = "Account",
                 ImageSource = "account.png",
-                ViewModel = new AccountViewModel(),
+                ViewModelKey = new AccountViewModelKey(),
             },
             new MasterMenuItem
             {
                 Title = "About app",
                 ImageSource = "information_slab_circle.png",
-                ViewModel = new InfoViewModel(),
+                ViewModelKey = new InfoViewModelKey(),
             },
             new MasterMenuItem
             {
                 Title = "Technical support",
                 ImageSource = "headset.png",
-                ViewModel = new SupportViewModel(),
+                ViewModelKey = new SupportViewModelKey(),
             },
             new MasterMenuItem
             {
                 Title = "Settings",
                 ImageSource = "cog.png",
-                ViewModel = new SettingsViewModel(),
+                ViewModelKey = new SettingsViewModelKey(),
                 LayoutOptions = LayoutOptions.EndAndExpand,
             },
         };
 
-        SelectedMenuButton = Menus.First();
-        SelectMenu(SelectedMenuButton);
+        SelectedMenuButton = SelectMenu(Menus.First());
     }
 
     public ObservableCollection<MasterMenuItem> Menus { get; set; }
@@ -59,18 +67,22 @@ public class MasterViewModel : BaseViewModel<Views.MasterView>
 
     public ICommand CommandSelectMenu => new Command<MasterMenuItem>((param) =>
     {
-        SelectMenu(param);
+        SelectedMenuButton = SelectMenu(param);
     });
 
-    private void SelectMenu(MasterMenuItem item)
+    private MasterMenuItem SelectMenu(MasterMenuItem item)
     {
-        SelectedMenuButton.IsSelected = false;
+        item.ViewModel ??= _navigationMap.Resolve(item.ViewModelKey);
+
+        if (SelectedMenuButton != null)
+            SelectedMenuButton.IsSelected = false;
+        
         item.IsSelected = true;
 
 #if !WINDOWS
         IsPresented = false;
 #endif
 
-        SelectedMenuButton = item;
+        return item;
     }
 }

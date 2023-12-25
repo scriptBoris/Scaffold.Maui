@@ -10,7 +10,11 @@ using ScaffoldLib.Maui.Core;
 
 namespace SamplePizza.ViewModels;
 
-public class RegisterViewModel : BaseViewModel<Views.RegisterView>, IBackButtonListener
+public class RegisterViewModelKey
+{
+}
+
+public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButtonListener
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -34,7 +38,7 @@ public class RegisterViewModel : BaseViewModel<Views.RegisterView>, IBackButtonL
 
     public ICommand CommandAccept => new Command(() =>
     {
-        GoTo(new ConfirmEmailViewModel());
+        GoTo(new ConfirmEmailViewModelKey());
     });
 
     public async Task<bool> OnBackButton()

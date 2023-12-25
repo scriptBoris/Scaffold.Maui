@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace SamplePizza.ViewModels;
 
-public class SettingsViewModel : BaseViewModel<Views.SettingsView>
+public class SettingsViewModelKey
+{
+}
+
+public class SettingsViewModel : BaseViewModel<SettingsViewModelKey>
 {
     private AppTheme _selectedTheme;
 
