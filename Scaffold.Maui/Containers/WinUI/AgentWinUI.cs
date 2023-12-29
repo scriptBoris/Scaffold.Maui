@@ -15,9 +15,9 @@ public class AgentWinUI : Agent, IWindowsBehavior
     private readonly ButtonSam.Maui.Button _flytoutButton;
     private FlyoutViewWinUI.FlyoutBehavior? flyoutBehavior;
 
-    public AgentWinUI(AgentArgs args, IScaffold context) : base(args, context)
+    public AgentWinUI(AgentArgs args) : base(args)
     {
-        _context = context;
+        _context = args.Context;
         _flytoutButton = new ButtonSam.Maui.Button
         {
             Margin = 5,

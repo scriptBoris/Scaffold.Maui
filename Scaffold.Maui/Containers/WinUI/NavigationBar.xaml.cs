@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
@@ -14,22 +15,22 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     private Color? foregroundColor;
     private bool isVisibleButtonMoreMenu;
 
-    public NavigationBar(View view, IAgent agent)
+    public NavigationBar(CreateNavigationBarArgs args)
     {
-        _view = view;
-        _agent = agent;
-        _context = agent.Context;
+        _view = args.View;
+        _agent = args.Agent;
+        _context = args.Agent.Context;
 
         InitializeComponent();
 
         buttonBack.TapCommand = new Command(() =>
         {
-            agent.OnBackButton();
+            args.Agent.OnBackButton();
         });
 
         buttonMenu.TapCommand = new Command(() =>
         {
-            agent.OnMenuButton();
+            args.Agent.OnMenuButton();
         });
     }
 

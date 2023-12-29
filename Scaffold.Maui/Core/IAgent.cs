@@ -25,7 +25,12 @@ public interface IAgent : IDisposable
     Thickness SafeArea { get; internal set; }
 
     void PrepareAnimate(NavigatingTypes underPush);
+
+    [Obsolete("Use alt")]
     Task Animate(NavigatingTypes underPush, CancellationToken cancellationToken);
+
+    void AnimationFunction(double x, NavigatingTypes animType);
+
     void OnBackButton();
     void OnMenuButton();
 
@@ -35,6 +40,7 @@ public interface IAgent : IDisposable
 
 public class AgentArgs
 {
+    public required IScaffold Context { get; set; }
     public required View View { get; set; }
     public required int IndexInStack { get; set; }
     public required Color NavigationBarBackgroundColor { get; set; }
@@ -56,11 +62,15 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     private IBackButtonBehavior? _backButtonBehavior;
     private bool isBackButtonPressed;
 
-    public Agent(AgentArgs args, IScaffold context)
+    public Agent(AgentArgs args)
     {
         _view = args.View;
-        Context = context;
-        ViewWrapper = ((Scaffold)context).ViewFactory.CreateViewWrapper(_view, context);
+        Context = args.Context;
+        ViewWrapper = ((Scaffold)Context).ViewFactory.CreateViewWrapper(new Args.CreateViewWrapperArgs
+        {
+            View = _view,
+            Context = Context,
+        });
         Children.Add((View)ViewWrapper);
 
         _navigationBarBackgroundColor = args.NavigationBarBackgroundColor;
@@ -227,7 +237,11 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
         {
             if (isVisible)
             {
-                var navBar = Context.ViewFactory.CreateNavigationBar(_view, this);
+                var navBar = Context.ViewFactory.CreateNavigationBar(new Args.CreateNavigationBarArgs
+                {
+                    Agent = this,
+                    View  = _view,
+                });
                 if (navBar != null)
                 {
                     navBar.UpdateSafeArea(SafeArea);
@@ -251,6 +265,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     public virtual void OnBehaiorRemoved(IBehavior removedBehaior) { }
     public virtual void PrepareAnimate(NavigatingTypes type) { }
     public virtual Task Animate(NavigatingTypes type, CancellationToken cancellationToken) => Task.CompletedTask;
+    public virtual void AnimationFunction(double x, NavigatingTypes animType) { }
 
     public virtual async void OnBackButton()
     {
@@ -284,7 +299,11 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
 
     public virtual void OnMenuButton()
     {
-        var overlay = Context.ViewFactory.CreateCollapsedMenuItemsLayer(_view, Context);
+        var overlay = Context.ViewFactory.CreateCollapsedMenuItemsLayer(new Args.CreateCollapsedMenuArgs
+        {
+            Context = Context,
+            View = _view,
+        });
         ZBuffer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
     }
 

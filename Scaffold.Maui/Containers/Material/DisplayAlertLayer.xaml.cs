@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 
@@ -10,7 +11,7 @@ public partial class DisplayAlertLayer : IDisplayAlert
 	private bool isBusy;
 	private bool? prepareResult;
 
-    private DisplayAlertLayer()
+    public DisplayAlertLayer(CreateDisplayAlertArgs args)
     {
         InitializeComponent();
         Opacity = 0;
@@ -21,22 +22,21 @@ public partial class DisplayAlertLayer : IDisplayAlert
 
         buttonOk.TapCommand = new Command(() => Close(true));
         buttonCancel.TapCommand = new Command(() => Close(false));
-    }
 
-    public DisplayAlertLayer(string title, string description, string ok) : this()
-	{
-        labelTitle.Text = title;
-        labelDescription.Text = description;
-        labelButtonOk.Text = ok;
-        buttonCancel.IsVisible = false;
-	}
+        labelTitle.Text = args.Title;
+        labelDescription.Text = args.Description;
+        labelButtonOk.Text = args.Ok;
 
-    public DisplayAlertLayer(string title, string description, string ok, string cancel) : this()
-    {
-        labelTitle.Text = title;
-        labelDescription.Text = description;
-        labelButtonOk.Text = ok;
-        labelButtonCancel.Text = cancel;
+        // single button
+        if (args.Cancel == null)
+        {
+            buttonCancel.IsVisible = false;
+        }
+        // two button
+        else
+        {
+            labelButtonCancel.Text = args.Cancel;
+        }
     }
 
     private void Close(bool result)

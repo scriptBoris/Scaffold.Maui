@@ -1,3 +1,4 @@
+using ButtonSam.Maui.Core;
 using Microsoft.Maui.Controls;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
@@ -73,21 +74,38 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
 
     private void Show()
     {
+        this.BatchBegin();
         _panelFlyout.IsVisible = true;
         _panelFlyoutBackground.IsVisible = true;
-        _panelFlyout.TranslateTo(0, 0, 180, Easing.SinIn);
-        _panelFlyoutBackground.FadeTo(1, 180);
+        this.BatchCommit();
+
+        this.TransitAnimation("show", 0, 1, 180, Easing.SinIn, (x) =>
+        {
+            this.BatchBegin();
+            _panelFlyout.TranslationX *= 1 - x;
+            _panelFlyoutBackground.Opacity = x;
+            this.BatchCommit();
+        });
     }
 
     private async void Hide()
     {
-        await Task.WhenAll(
-            _panelFlyout.TranslateTo(-_panelFlyout.Width, 0, 180, Easing.SinOut),
-            _panelFlyoutBackground.FadeTo(0, 180)
-        );
+        bool success = await this.TransitAnimation("hide", 1, 0, 180, Easing.SinOut, (x) =>
+        {
+            this.BatchBegin();
+            double mod = 1 - x;
+            _panelFlyout.TranslationX = -(_panelFlyout.Width * mod);
+            _panelFlyoutBackground.Opacity = x;
+            this.BatchCommit();
+        });
 
-        _panelFlyoutBackground.IsVisible = false;
-        _panelFlyout.IsVisible = false;
+        if (success)
+        {
+            this.BatchBegin();
+            _panelFlyoutBackground.IsVisible = false;
+            _panelFlyout.IsVisible = false;
+            this.BatchCommit();
+        }
     }
 
     public class FlyoutBackButtonBehavior : IBackButtonBehavior

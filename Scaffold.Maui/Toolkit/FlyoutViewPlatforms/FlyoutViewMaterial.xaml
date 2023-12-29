@@ -23,10 +23,10 @@
         <!--  flyout background  -->
         <BoxView x:Name="_panelFlyoutBackground"
                  HorizontalOptions="Fill"
-                 IsVisible="False"
-                 Opacity="0"
                  VerticalOptions="Fill"
-                 Color="#60000000">
+                 BackgroundColor="#66666666"
+                 IsVisible="False"
+                 Opacity="0">
             <BoxView.GestureRecognizers>
                 <!--  WTF Event not worked, but command is fine  -->
                 <TapGestureRecognizer x:Name="gestureTap" />
@@ -35,9 +35,9 @@
 
         <!--  flyout  -->
         <ContentView x:Name="_panelFlyout"
-                     BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#000}"
                      HorizontalOptions="Start"
-                     IsVisible="False"
-                     VerticalOptions="Fill" />
+                     VerticalOptions="Fill"
+                     BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#000}"
+                     IsVisible="False" />
     </toolkit:FlyoutViewBase.Children>
 </toolkit:FlyoutViewBase>

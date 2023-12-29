@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
 		<UseMaui>true</UseMaui>
@@ -25,7 +25,6 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 		<RootNamespace>ScaffoldLib.Maui</RootNamespace>
-		<Configurations>Debug;Release;Mock</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -74,8 +73,8 @@
 	  </MauiXaml>
 	</ItemGroup>
 
-	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">
-	  <PackageReference Include="SkiaSharp" Version="2.88.3" />
+	<ItemGroup Condition="( '$(TargetFramework)' == 'net8.0-windows10.0.19041.0' )">
+	  <PackageReference Include="SkiaSharp" Version="2.88.6" />
 	</ItemGroup>
 
 	<ItemGroup>

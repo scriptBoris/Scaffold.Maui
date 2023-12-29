@@ -76,7 +76,7 @@ internal static class ScaffoldIOS
     private static void UpdateSafeArea()
     {
         var safe = Scaffold.PlatformSpec.GetSafeArea();
-        Scaffold.SafeArea = safe;
+        Scaffold.DeviceSafeArea = safe;
         var page = Microsoft.Maui.Controls.Application.Current?.MainPage;
         if (page != null)
             page.OnThisPlatform().SetUseSafeArea(false);

@@ -2,80 +2,130 @@
 using Material = ScaffoldLib.Maui.Containers.Material;
 using WinUI = ScaffoldLib.Maui.Containers.WinUI;
 using Cupertino = ScaffoldLib.Maui.Containers.Cupertino;
+using ScaffoldLib.Maui.Args;
 
 namespace ScaffoldLib.Maui.Core;
 
 public class ViewFactory
 {
-    public virtual IAgent CreateAgent(AgentArgs args, IScaffold context)
+    public Func<AgentArgs, IAgent>? OverrideAgent { get; set; }
+    public Func<CreateNavigationBarArgs, INavigationBar>? OverrideNavigationBar { get; set; }
+    public Func<CreateViewWrapperArgs, IViewWrapper>? OverrideViewWrapper { get; set; }
+    public Func<CreateCollapsedMenuArgs, IZBufferLayout>? OverrideCollapsedMenu { get; set; }
+    public Func<CreateDisplayAlertArgs, IDisplayAlert>? OverrideDisplayAlert { get; set; }
+    public Func<CreateDisplayActionSheet, IDisplayActionSheet>? OverrideDisplayActionSheet { get; set; }
+    public Func<CreateToastArgs, IToast>? OverrideToast { get; set; }
+
+    internal IAgent CreateAgent(AgentArgs args)
     {
+        var result = OverrideAgent?.Invoke(args);
+        if (result == null)
+        {
 #if WINDOWS
-        return new WinUI.AgentWinUI(args, context);
+            result = new WinUI.AgentWinUI(args);
 #else
-        return new Containers.DefaultAgent(args, context);
+            result = new Containers.DefaultAgent(args);
 #endif
+        }
+        OnAgentCreated(result);
+        return result;
     }
 
-    public virtual INavigationBar? CreateNavigationBar(View view, IAgent agent)
+    internal INavigationBar? CreateNavigationBar(CreateNavigationBarArgs args)
     {
+        var result = OverrideNavigationBar?.Invoke(args);
+        if (result == null)
+        {
 #if WINDOWS
-        return new WinUI.NavigationBar(view, agent);
+            result = new WinUI.NavigationBar(args);
 #elif IOS
-        return new Cupertino.NavigationBar(view, agent);
+            result = new Cupertino.NavigationBar(args);
 #else
-        return new Material.NavigationBar(view, agent);
+            result = new Material.NavigationBar(args);
 #endif
+        }
+        OnNavigationBarCreated(result);
+        return result;
     }
 
-    public virtual IViewWrapper CreateViewWrapper(View view, IScaffold context)
+    internal IViewWrapper CreateViewWrapper(CreateViewWrapperArgs args)
     {
+        var res = OverrideViewWrapper?.Invoke(args);
+        if (res == null)
+        {
 #if WINDOWS
-        return new WinUI.ViewWrapperWinUI(view);
+            res = new WinUI.ViewWrapperWinUI(args);
 #else
-        return new ViewWrapper(view);
+            res = new ViewWrapper(args);
 #endif
+        }
+        OnViewWrapperCreated(res);
+        return res;
     }
 
-    public virtual IZBufferLayout CreateCollapsedMenuItemsLayer(View view, IScaffold context)
+    internal IZBufferLayout CreateCollapsedMenuItemsLayer(CreateCollapsedMenuArgs args)
     {
+        var res = OverrideCollapsedMenu?.Invoke(args);
+        if (res == null)
+        {
 #if WINDOWS
-        return new WinUI.CollapsedMenuItemLayer(view);
+            res = new WinUI.CollapsedMenuItemLayer(args);
 #elif IOS
-        return new Cupertino.CollapsedMenuItemLayer(view);
+            res = new Cupertino.CollapsedMenuItemLayer(args);
 #else
-        return new Material.CollapsedMenuItemLayer(view);
+            res = new Material.CollapsedMenuItemLayer(args);
 #endif
+        }
+        OnCollapsedMenuCreated(res);
+        return res;
     }
 
-    public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, IScaffold context)
+    internal IDisplayAlert CreateDisplayAlert(CreateDisplayAlertArgs args)
     {
+        var res = OverrideDisplayAlert?.Invoke(args);
+        if (res == null)
+        {
 #if IOS
-        return new Cupertino.DisplayAlertLayer(title, message, ok);
+            res = new Cupertino.DisplayAlertLayer(args);
 #else
-        return new Material.DisplayAlertLayer(title, message, ok);
+            res = new Material.DisplayAlertLayer(args);
 #endif
+        }
+        OnDisplayAlertCreated(res);
+        return res;
     }
 
-    public virtual IDisplayAlert CreateDisplayAlert(string title, string message, string ok, string cancel, IScaffold context)
+    internal IDisplayActionSheet CreateDisplayActionSheet(CreateDisplayActionSheet args)
     {
+        var res = OverrideDisplayActionSheet?.Invoke(args);
+        if (res == null)
+        {
 #if IOS
-        return new Cupertino.DisplayAlertLayer(title, message, ok, cancel);
+            res = new Cupertino.DisplayActionSheetLayer(args);
 #else
-        return new Material.DisplayAlertLayer(title, message, ok, cancel);
+            res = new Material.DisplayActionSheetLayer(args);
 #endif
+        }
+        OnDisplayActionSheetCreated(res);
+        return res;
     }
 
-    public virtual IDisplayActionSheet CreateDisplayActionSheet(string? title, string? cancel, string? destruction, string? itemDisplayBinding, object[] items)
+    internal IToast? CreateToast(CreateToastArgs args)
     {
-#if IOS
-        return new Cupertino.DisplayActionSheetLayer(title, cancel, destruction, itemDisplayBinding, items);
-#else
-        return new Material.DisplayActionSheetLayer(title, cancel, destruction, itemDisplayBinding, items);
-#endif
+        var res = OverrideToast?.Invoke(args);
+        if (res == null)
+        {
+            res = new Material.ToastLayer(args);
+        }
+        OnToastCreated(res);
+        return res;
     }
 
-    public virtual IToast? CreateToast(string? title, string message, TimeSpan showTime)
-    {
-        return new Material.ToastLayer(title, message, showTime);
-    }
+    protected virtual void OnAgentCreated(IAgent agent) { }
+    protected virtual void OnNavigationBarCreated(INavigationBar navigationBar) { }
+    protected virtual void OnViewWrapperCreated(IViewWrapper viewWrapper) { }
+    protected virtual void OnCollapsedMenuCreated(IZBufferLayout layout) { }
+    protected virtual void OnDisplayAlertCreated(IDisplayAlert alert) { }
+    protected virtual void OnDisplayActionSheetCreated(IDisplayActionSheet actionSheet) { }
+    protected virtual void OnToastCreated(IToast toast) { }
 }

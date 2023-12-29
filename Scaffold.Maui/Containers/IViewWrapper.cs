@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Layouts;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using System;
@@ -21,11 +22,11 @@ namespace ScaffoldLib.Maui.Containers
     {
         private View? _overlay;
 
-        public ViewWrapper(View view)
+        public ViewWrapper(CreateViewWrapperArgs args)
         {
-            View = view;
+            View = args.View;
             this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#242424"));
-            Children.Add(view);
+            Children.Add(args.View);
         }
 
         public View View { get; private set; }

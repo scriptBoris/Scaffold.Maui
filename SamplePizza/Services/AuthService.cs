@@ -26,10 +26,32 @@ public class AuthService : IAuthService
     public AuthService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        //Task.Run(async () =>
+        //{
+        //    string? token = await SecureStorage.GetAsync("isUserLogin");
+        //    IsUserLoggin = token != null;
+        //});
 
-        var awaitToken = SecureStorage.GetAsync("isUserLogin");
-        while (!awaitToken.IsCompleted)
-            IsUserLoggin = awaitToken.Result != null;
+        bool isCompleted = false;
+        var thread = new Thread(async () =>
+        {
+            string? token = await SecureStorage.GetAsync("isUserLogin");
+            IsUserLoggin = token != null;
+
+            isCompleted = true;
+        });
+
+        thread.IsBackground = true;
+        thread.Priority = ThreadPriority.Highest;
+        thread.Start();
+        while(!isCompleted)
+        {
+            Console.WriteLine("SKIP");
+        }
+
+        //var awaitToken = SecureStorage.GetAsync("isUserLogin");
+        //while (!awaitToken.IsCompleted)
+        //IsUserLoggin = awaitToken.Result != null;
     }
 
     public bool IsUserLoggin { get; private set; }

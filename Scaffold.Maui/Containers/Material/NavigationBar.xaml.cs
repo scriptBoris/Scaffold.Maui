@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
@@ -16,11 +17,11 @@ public partial class NavigationBar : INavigationBar, IDisposable
     private Color _foregroundColor = Colors.Black;
     private Color _tapColor = Colors.Black;
 
-    public NavigationBar(View view, IAgent agent)
+    public NavigationBar(CreateNavigationBarArgs args)
     {
-        _view = view;
-        _agent = agent;
-        _context = agent.Context;
+        _view = args.View;
+        _agent = args.Agent;
+        _context = args.Agent.Context;
         InitializeComponent();
         backButton.TapCommand = new Command(OnBackButton);
         buttonMenu.TapCommand = new Command(OnMenuButton);

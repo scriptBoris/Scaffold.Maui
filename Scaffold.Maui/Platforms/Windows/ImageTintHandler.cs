@@ -26,24 +26,23 @@ public partial class ImageTintHandler
     {
         get
         {
-            _imageSourcePartLoader ??= new ImageSourcePartLoader(this, GetImagePart, SetImage);
+            //_imageSourcePartLoader ??= new ImageSourcePartLoader(this, GetImagePart, SetImage);
+            if (_imageSourcePartLoader == null)
+            {
+                var str = new SetterImg
+                {
+                    Parent = this,
+                    Handler = this,
+                    ImageSourcePart = VirtualView,
+                };
+                _imageSourcePartLoader = new ImageSourcePartLoader(str);
+            }
             return _imageSourcePartLoader;
         }
     }
 
-    protected virtual IImageSourcePart? GetImagePart()
-    {
-        return VirtualView;
-    }
-
     private CancellationTokenSource? cancelSource;
     private Microsoft.UI.Xaml.Media.ImageSource? originImageSource;
-
-    protected virtual void SetImage(Microsoft.UI.Xaml.Media.ImageSource? imageSource)
-    {
-        originImageSource = imageSource;
-        ProcessTintAndSetup(imageSource);
-    }
 
     protected virtual async void ProcessTintAndSetup(Microsoft.UI.Xaml.Media.ImageSource? imageSource)
     {
@@ -68,5 +67,18 @@ public partial class ImageTintHandler
     public static void MapTintColor(ImageTintHandler h, ImageTint v)
     {
         h.ProcessTintAndSetup(h.originImageSource);
+    }
+
+    private class SetterImg : IImageSourcePartSetter
+    {
+        public required ImageTintHandler Parent { get; set; }
+        public IElementHandler? Handler { get; set; }
+        public IImageSourcePart? ImageSourcePart { get; set; }
+
+        public void SetImageSource(Microsoft.UI.Xaml.Media.ImageSource? platformImage)
+        {
+            Parent.originImageSource = platformImage;
+            Parent.ProcessTintAndSetup(platformImage);
+        }
     }
 }

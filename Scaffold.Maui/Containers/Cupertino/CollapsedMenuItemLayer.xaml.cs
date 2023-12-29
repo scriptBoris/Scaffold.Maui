@@ -1,5 +1,6 @@
 using ButtonSam.Maui;
 using ButtonSam.Maui.Core;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Toolkit;
 using System.Threading.Tasks;
@@ -14,17 +15,17 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
     private bool isBusy;
     public event VoidDelegate? DeatachLayer;
 
-    public CollapsedMenuItemLayer(View view)
+    public CollapsedMenuItemLayer(CreateCollapsedMenuArgs args)
     {
         InitializeComponent();
-        Padding = Scaffold.SafeArea;
+        Padding = Scaffold.DeviceSafeArea;
         CommandSelectedMenu = new Command(ActionSelectedMenu);
         GestureRecognizers.Add(new TapGestureRecognizer
         {
             Command = new Command(() => Close().ConfigureAwait(false))
         });
 
-        var obs = Scaffold.GetMenuItems(view).CollapsedItems;
+        var obs = Scaffold.GetMenuItems(args.View).CollapsedItems;
         BindableLayout.SetItemsSource(stackMenu, obs);
     }
 

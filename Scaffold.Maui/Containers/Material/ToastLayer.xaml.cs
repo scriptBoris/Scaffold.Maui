@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 
@@ -9,13 +10,13 @@ public partial class ToastLayer : IToast
     private bool isAnimationClose;
     private bool isAnimationShow;
 
-	public ToastLayer(string? title, string message, TimeSpan showTime)
+	public ToastLayer(CreateToastArgs args)
 	{
 		InitializeComponent();
-        labelTitle.Text = title;
-        labelTitle.IsVisible = title != null;
-        labelMessage.Text = message;
-        this.Dispatcher.StartTimer(showTime, () =>
+        labelTitle.Text = args.Title;
+        labelTitle.IsVisible = args.Title != null;
+        labelMessage.Text = args.Message;
+        this.Dispatcher.StartTimer(args.ShowTime, () =>
         {
             _ = Close();
             return false;

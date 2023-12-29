@@ -7,6 +7,7 @@ using ScaffoldLib.Maui.Containers;
 using System.Threading.Channels;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Animations;
+using ScaffoldLib.Maui.Args;
 
 namespace ScaffoldLib.Maui;
 
@@ -14,6 +15,7 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
 {
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
+    public const int ToastIndexZ = 997;
 
     ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
@@ -27,17 +29,13 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
     Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true);
     Task<bool> InsertView(View view, int index, bool isAnimated = true);
 
-    Task DisplayAlert(string title, string message, string cancel);
-    Task<bool> DisplayAlert(string title, string message, string ok, string cancel);
-    Task DisplayAlert(string title, string message, string cancel, View parentView);
-    Task<bool> DisplayAlert(string title, string message, string ok, string cancel, View parentView);
+    Task<bool> DisplayAlert(CreateDisplayAlertArgs args);
+    Task<bool> DisplayAlert(CreateDisplayAlertArgs args, View parentView);
 
-    Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons);
-    Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons);
-    Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, params T[] items);
-    Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, View parentView, params T[] items);
+    Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args);
+    Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args, View parentView);
     
-    Task Toast(string? title, string message, TimeSpan showTime);
+    Task Toast(CreateToastArgs args);
     void AddCustomLayer(IZBufferLayout layer, int zIndex);
     void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView);
 }
@@ -50,9 +48,10 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     private readonly NavigationController _navigationController;
     private readonly ZBuffer _zBufer;
     private IBackButtonBehavior? _backButtonBehavior;
-    private static Thickness _safeArea;
+    private static Thickness _deviceSafeArea;
+    private Thickness _safeArea;
 
-    public static event EventHandler<Thickness>? SafeAreaChanged;
+    public static event EventHandler<Thickness>? DeviceSafeAreaChanged;
 
     internal static void Preserve()
     {
@@ -78,6 +77,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             throw new Exception(error);
         }
 
+        _safeArea = DeviceSafeArea;
         BindingContext = null;
         ExternalBevahiors = new(_externalBevahiors);
         ExternalBevahiors.AsNotifyObs().CollectionChanged += Scaffold_CollectionChanged; ;
@@ -86,7 +86,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         _zBufer = new();
         Children.Add(_zBufer);
 
-        SafeAreaChanged += OnSafeAreaChanged;
+        DeviceSafeAreaChanged += OnSafeAreaChanged;
     }
 
 
@@ -314,7 +314,20 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     internal AppearingStates AppearingState { get; private set; } = AppearingStates.None;
 
-    public static Thickness SafeArea
+    public static Thickness DeviceSafeArea
+    {
+        get => _deviceSafeArea;
+        internal set
+        {
+            if (_deviceSafeArea != value)
+            {
+                _deviceSafeArea = value;
+                DeviceSafeAreaChanged?.Invoke(null, value);
+            }
+        }
+    }
+
+    public Thickness SafeArea
     {
         get => _safeArea;
         internal set
@@ -322,7 +335,10 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             if (_safeArea != value)
             {
                 _safeArea = value;
-                SafeAreaChanged?.Invoke(null, value);
+
+                if (_navigationController != null)
+                    foreach (var frame in _navigationController.Agents)
+                        frame.SafeArea = value;
             }
         }
     }
@@ -410,14 +426,11 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             default:
                 break;
         }
-
     }
 
     private void OnSafeAreaChanged(object? sender, Thickness e)
     {
-        if (_navigationController != null)
-            foreach (var frame in _navigationController.Agents)
-                frame.SafeArea = e;
+        SafeArea = e;
     }
 
     internal IScaffold[] GetScafoldNested()
@@ -612,50 +625,32 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         agent.ZBuffer.AddLayer(layer, zIndex);
     }
 
-    public async Task DisplayAlert(string title, string message, string cancel)
+    public async Task<bool> DisplayAlert(CreateDisplayAlertArgs args)
     {
-        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
-        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
-        await alert.GetResult();
-    }
-
-    public async Task<bool> DisplayAlert(string title, string message, string ok, string cancel)
-    {
-        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
+        var alert = ViewFactory.CreateDisplayAlert(args);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return await alert.GetResult();
     }
 
-    public Task DisplayAlert(string title, string message, string cancel, View parentView)
-    {
-        var agent = FindAgent(parentView);
-        if (agent == null)
-            return Task.CompletedTask;
-
-        var alert = ViewFactory.CreateDisplayAlert(title, message, cancel, this);
-        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
-        return alert.GetResult();
-    }
-
-    public Task<bool> DisplayAlert(string title, string message, string ok, string cancel, View parentView)
+    public Task<bool> DisplayAlert(CreateDisplayAlertArgs args, View parentView)
     {
         var agent = FindAgent(parentView);
         if (agent == null)
             return Task.FromResult(false);
 
-        var alert = ViewFactory.CreateDisplayAlert(title, message, ok, cancel, this);
+        var alert = ViewFactory.CreateDisplayAlert(args);
         agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
-    public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, params string[] buttons)
+    public Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args)
     {
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, null, buttons);
+        var alert = ViewFactory.CreateDisplayActionSheet(args);
         _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
-    public Task<IDisplayActionSheetResult> DisplayActionSheet(string? title, string? cancel, string? destruction, View parentView, params string[] buttons)
+    public Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args, View parentView)
     {
         var agent = FindAgent(parentView);
         if (agent == null)
@@ -664,64 +659,18 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                 IsCanceled = true,
             });
 
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, null, buttons);
+        var alert = ViewFactory.CreateDisplayActionSheet(args);
         agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
         return alert.GetResult();
     }
 
-    public async Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, params T[] items)
+    public Task Toast(CreateToastArgs args)
     {
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, displayProperty, items.Cast<object>().ToArray());
-        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
-        var result = await alert.GetResult();
-        
-        T? selectedItem = default;
-        if (result.SelectedItem is T tresult)
-            selectedItem = tresult;
-
-        return new DisplayActionSheetResult<T> 
-        {
-            IsCanceled = result.IsCanceled,
-            IsDestruction = result.IsDestruction,
-            SelectedItemId = result.SelectedItemId,
-            SelectedItem = selectedItem,
-        };
-    }
-
-    public async Task<IDisplayActionSheetResult<T>> DisplayActionSheet<T>(string? title, string? cancel, string? destruction, string? displayProperty, View parentView, params T[] items)
-    {
-        var agent = FindAgent(parentView);
-        if (agent == null)
-            return new DisplayActionSheetResult<T>
-            {
-                IsCanceled = true,
-            };
-
-        var alert = ViewFactory.CreateDisplayActionSheet(title, cancel, destruction, displayProperty, items.Cast<object>().ToArray());
-        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
-        var result = await alert.GetResult();
-
-        T? selectedItem = default;
-        if (result.SelectedItem is T tresult)
-            selectedItem = tresult;
-
-        return new DisplayActionSheetResult<T>
-        {
-            IsCanceled = result.IsCanceled,
-            IsDestruction = result.IsDestruction,
-            SelectedItemId = result.SelectedItemId,
-            SelectedItem = selectedItem,
-        };
-    }
-
-
-    public Task Toast(string? title, string message, TimeSpan showTime)
-    {
-        var toast = ViewFactory.CreateToast(title, message, showTime);
+        var toast = ViewFactory.CreateToast(args);
         if (toast == null)
             return Task.CompletedTask;
 
-        _zBufer.AddLayer(toast, IScaffold.AlertIndexZ);
+        _zBufer.AddLayer(toast, IScaffold.ToastIndexZ);
         return toast.GetResult();
     }
 
@@ -761,7 +710,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     public void Dispose()
     {
         OnRemovedFromNavigation();
-        SafeAreaChanged -= OnSafeAreaChanged;
+        DeviceSafeAreaChanged -= OnSafeAreaChanged;
         _navigationController.Dispose();
         ExternalBevahiors.AsNotifyObs().CollectionChanged -= Scaffold_CollectionChanged;
         _zBufer.Dispose();

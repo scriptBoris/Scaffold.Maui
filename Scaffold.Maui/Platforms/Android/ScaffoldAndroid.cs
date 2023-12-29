@@ -56,15 +56,19 @@ public static class ScaffoldAndroid
         }
         AwaitActivity.TrySetResult(a);
 
-        var safe = Scaffold.PlatformSpec.GetSafeArea();
-        Scaffold.SafeArea = safe;
 
-        var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
-        if (scaffold != null)
+        Microsoft.Maui.Controls.Application.Current?.Dispatcher.Dispatch(() =>
         {
-            scaffold.OnAppear(false);
-            scaffold.OnAppear(true);
-        }
+            var safe = Scaffold.PlatformSpec.GetSafeArea();
+            Scaffold.DeviceSafeArea = safe;
+
+            var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
+            if (scaffold != null)
+            {
+                scaffold.OnAppear(false);
+                scaffold.OnAppear(true);
+            }
+        });
     }
 
     private static bool OnBackPressed(Activity a)

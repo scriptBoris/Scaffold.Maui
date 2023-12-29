@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -11,7 +12,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
 
     public event VoidDelegate? DeatachLayer;
 
-    public CollapsedMenuItemLayer(View view)
+    public CollapsedMenuItemLayer(CreateCollapsedMenuArgs args)
 	{
 		InitializeComponent();
         CommandSelectedMenu = new Command(ActionSelectedMenu);
@@ -21,7 +22,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
             Command = new Command(() => Close().ConfigureAwait(false))
         });
 
-        var obs = Scaffold.GetMenuItems(view).CollapsedItems;
+        var obs = Scaffold.GetMenuItems(args.View).CollapsedItems;
         BindableLayout.SetItemsSource(stackMenu, obs);
 	}
 

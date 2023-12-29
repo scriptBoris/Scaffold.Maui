@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
@@ -15,11 +16,11 @@ public partial class NavigationBar : INavigationBar, IDisposable
     private IBackButtonBehavior? backButtonBehavior;
     private MenuItemCollection? menuItems;
 
-    public NavigationBar(View view, IAgent agent)
+    public NavigationBar(CreateNavigationBarArgs args)
 	{
-        _view = view;
-        _agent = agent;
-        _context = agent.Context;
+        _view = args.View;
+        _agent = args.Agent;
+        _context = args.Agent.Context;
         IgnoreSafeArea = true;
 		InitializeComponent();
 

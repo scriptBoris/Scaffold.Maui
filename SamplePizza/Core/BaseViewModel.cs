@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SamplePizza.Services;
 using ScaffoldLib.Maui;
+using ScaffoldLib.Maui.Args;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -67,17 +68,34 @@ public abstract class BaseViewModel : BaseNotify
 
     public Task<bool> ShowAlert(string title, string message, string ok, string cancel)
     {
-        return View.GetContext()!.DisplayAlert(title, message, ok, cancel);
+        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        {
+            Title = title,
+            Description = message,
+            Ok = ok,
+            Cancel = cancel,
+        });
     }
 
     public Task ShowError(string message)
     {
-        return View.GetContext()!.DisplayAlert("Error", message, "OK");
+        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        {
+            Title = "Error",
+            Description = message,
+            Ok = "OK",
+            Payload = PayloadTypes.Error,
+        });
     }
 
     public void ShowToast(string title, string message)
     {
-        View.GetContext()!.Toast(title, message, TimeSpan.FromSeconds(4));
+        View.GetContext()!.Toast(new CreateToastArgs
+        {
+            Title = title,
+            Message = message,
+            ShowTime  = TimeSpan.FromSeconds(4),
+        });
     }
 
     public Task ReplaceTo(object viewModelKey)

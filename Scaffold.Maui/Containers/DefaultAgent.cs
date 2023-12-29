@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Core;
+﻿using ButtonSam.Maui.Core;
+using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace ScaffoldLib.Maui.Containers
     {
         private readonly IScaffold _context;
 
-        public DefaultAgent(AgentArgs args, IScaffold context) : base(args, context)
+        public DefaultAgent(AgentArgs args) : base(args)
         {
-            this._context = context;
+            _context = args.Context;
             BindingContext = null;
         }
 
@@ -48,6 +49,34 @@ namespace ScaffoldLib.Maui.Containers
                     return this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut);
                 default:
                     return Task.CompletedTask;
+            }
+        }
+
+        public override void AnimationFunction(double toFill, NavigatingTypes animType)
+        {
+            double toZero = 1 - toFill;
+
+            switch (animType)
+            {
+                case NavigatingTypes.Push:
+                    TranslationX *= toZero;
+                    break;
+                case NavigatingTypes.UnderPush:
+                    TranslationX = -50 * toFill;
+                    break;
+                case NavigatingTypes.Pop:
+                    TranslationX = Width * toFill;
+                    break;
+                case NavigatingTypes.UnderPop:
+                    TranslationX *= toZero;
+                    break;
+                case NavigatingTypes.Replace:
+                    Opacity = toFill;
+                    break;
+                case NavigatingTypes.UnderReplace:
+                    break;
+                default:
+                    break;
             }
         }
     }

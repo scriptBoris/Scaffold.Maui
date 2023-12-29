@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit;
@@ -20,9 +21,9 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     private bool IsBusy => isAnimatingClose || isAnimatingShow;
 
-    public DisplayActionSheetLayer(string? title, string? cancel, string? destruction, string? itemDisplayBinding, object[] buttons)
+    public DisplayActionSheetLayer(CreateDisplayActionSheet args)
     {
-        _originalItems = buttons;
+        _originalItems = args.Items;
         CommandTapItem = new Command((param) =>
         {
             if (!IsBusy && param is KeyValuePair<int, string> kvp)
@@ -36,15 +37,15 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         Opacity = 0;
         itemList.BindingContext = this;
         var items = new Dictionary<int, string>();
-        for (int i = 0; i < buttons.Length; i++)
-            items.Add(i, buttons[i].GetDisplayItemText(itemDisplayBinding));
+        for (int i = 0; i < args.Items.Length; i++)
+            items.Add(i, args.Items[i].GetDisplayItemText(args.ItemDisplayBinding));
         BindableLayout.SetItemsSource(itemList, items);
 
-        labelTitle.IsVisible = title != null;
-        labelTitle.Text = title;
+        labelTitle.IsVisible = args.Title != null;
+        labelTitle.Text = args.Title;
 
-        labelButtonCancel.Text = cancel;
-        buttonCancel.IsVisible = cancel != null;
+        labelButtonCancel.Text = args.Cancel;
+        buttonCancel.IsVisible = args.Cancel != null;
         buttonCancel.TapCommand = new Command(() =>
         {
             if (!IsBusy)
@@ -54,8 +55,8 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             }
         });
 
-        labelButtonDestruction.Text = destruction;
-        buttonDestruction.IsVisible = destruction != null;
+        labelButtonDestruction.Text = args.Destruction;
+        buttonDestruction.IsVisible = args.Destruction != null;
         buttonDestruction.TapCommand = new Command(() =>
         {
             if (!IsBusy)
@@ -77,7 +78,7 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             }),
         });
 
-        if (destruction == null && cancel == null)
+        if (args.Destruction == null && args.Cancel == null)
             rootStackLayout.Padding = new Thickness(0, 10, 0, 0);
     }
 

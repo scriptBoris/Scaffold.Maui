@@ -130,7 +130,12 @@ public class ElementPicker : BaseView
                 items.Add(item);
         }
 
-        var res = await Scaffold.GetRootScaffold()!.DisplayActionSheet(Placeholder, "Cancel", null, null, items.ToArray());
+        var res = await Scaffold.GetRootScaffold()!.DisplayActionSheet(new ScaffoldLib.Maui.Args.CreateDisplayActionSheet
+        {
+            Title = Placeholder,
+            Cancel = "Cancel",
+            Items = items.ToArray(),
+        });
         if (res.IsDestruction)
         {
             SelectedItem = null;

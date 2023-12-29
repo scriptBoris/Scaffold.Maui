@@ -1,3 +1,4 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit;
@@ -20,8 +21,14 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     private bool IsBusy => isAnimatingClose || isAnimatingShow;
 
-    public DisplayActionSheetLayer(string? title, string? cancel, string? destruction, string? displayProperty, object[] buttons)
+    public DisplayActionSheetLayer(CreateDisplayActionSheet args)
     {
+        string? title = args.Title;
+        string? cancel = args.Cancel;
+        string? destruction = args.Destruction;
+        string? displayProperty = args.Destruction;
+        object[] buttons = args.Items;
+
         _originalItems = buttons;
         CommandTapItem = new Command((param) =>
         {
@@ -69,8 +76,8 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         });
 
         // Safe area
-        Scaffold.SafeAreaChanged += UpdateSafeArea;
-        UpdateSafeArea(null, Scaffold.SafeArea);
+        Scaffold.DeviceSafeAreaChanged += UpdateSafeArea;
+        UpdateSafeArea(null, Scaffold.DeviceSafeArea);
 
         // BG
         this.GestureRecognizers.Add(new TapGestureRecognizer

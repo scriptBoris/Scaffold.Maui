@@ -28,6 +28,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 
     public async void AddLayer(IZBufferLayout layer, int zIndex)
     {
+        BatchBegin();
         IsVisible = true;
 
         var old = items.FirstOrDefault((x) => x.Index == zIndex);
@@ -49,6 +50,8 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 
         if (layer is View v)
             await v.AwaitReady();
+
+        BatchCommit();
 
         await layer.Show();
         layer.TryAppearing(true);

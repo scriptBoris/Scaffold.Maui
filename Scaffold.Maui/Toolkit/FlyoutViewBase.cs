@@ -104,6 +104,8 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
     {
         isInitialized = true;
 
+        this.BatchBegin();
+
         if (initialIsPresented != null)
             UpdateFlyoutMenuPresented(initialIsPresented.Value);
 
@@ -112,6 +114,8 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
 
         if (initialDetail != null)
             UpdateDetail(initialDetail, null);
+
+        this.BatchCommit();
     }
 
     private async void UpdateDetail(View? view, View? oldDetail)

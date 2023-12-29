@@ -28,7 +28,7 @@ internal static class ScaffoldWindows
                     if (w is not MauiWinUIWindow window)
                         return;
 
-                    Scaffold.SafeArea = new Microsoft.Maui.Thickness(0, 40, 0, 0);
+                    Scaffold.DeviceSafeArea = new Microsoft.Maui.Thickness(0, 40, 0, 0);
                     rootScaffold = Application.Current?.MainPage?.GetRootScaffold();
                     if (rootScaffold == null)
                         return;

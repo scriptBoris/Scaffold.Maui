@@ -1,5 +1,7 @@
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using System.Threading.Channels;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
@@ -10,7 +12,7 @@ public partial class DisplayAlertLayer : IDisplayAlert
     private bool isBusy;
     private bool? prepareResult;
 
-    private DisplayAlertLayer()
+    public DisplayAlertLayer(CreateDisplayAlertArgs args)
     {
         InitializeComponent();
         Opacity = 0;
@@ -22,23 +24,19 @@ public partial class DisplayAlertLayer : IDisplayAlert
 
         buttonOk.TapCommand = new Command(() => Close(true));
         buttonCancel.TapCommand = new Command(() => Close(false));
-    }
+        labelTitle.Text = args.Title;
+        labelDescription.Text = args.Description;
+        labelButtonOk.Text = args.Ok;
 
-    public DisplayAlertLayer(string title, string description, string ok) : this()
-    {
-        labelTitle.Text = title;
-        labelDescription.Text = description;
-        labelButtonOk.Text = ok;
-        buttonCancel.IsVisible = false;
-        lineButtons.IsVisible = false;
-    }
-
-    public DisplayAlertLayer(string title, string description, string ok, string cancel) : this()
-    {
-        labelTitle.Text = title;
-        labelDescription.Text = description;
-        labelButtonOk.Text = ok;
-        labelButtonCancel.Text = cancel;
+        if (args.Cancel == null)
+        {
+            buttonCancel.IsVisible = false;
+            lineButtons.IsVisible = false;
+        }
+        else
+        {
+            labelButtonCancel.Text = args.Cancel;
+        }
     }
 
     private void Close(bool result)
