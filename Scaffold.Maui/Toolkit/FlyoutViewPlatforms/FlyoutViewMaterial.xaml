@@ -21,17 +21,17 @@
               VerticalOptions="Fill" />
 
         <!--  flyout background  -->
-        <BoxView x:Name="_panelFlyoutBackground"
-                 HorizontalOptions="Fill"
-                 VerticalOptions="Fill"
-                 BackgroundColor="#66666666"
-                 IsVisible="False"
-                 Opacity="0">
-            <BoxView.GestureRecognizers>
+        <HorizontalStackLayout x:Name="_panelFlyoutBackground"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="Fill"
+                               BackgroundColor="#66666666"
+                               IsVisible="False"
+                               Opacity="0">
+            <HorizontalStackLayout.GestureRecognizers>
                 <!--  WTF Event not worked, but command is fine  -->
                 <TapGestureRecognizer x:Name="gestureTap" />
-            </BoxView.GestureRecognizers>
-        </BoxView>
+            </HorizontalStackLayout.GestureRecognizers>
+        </HorizontalStackLayout>
 
         <!--  flyout  -->
         <ContentView x:Name="_panelFlyout"

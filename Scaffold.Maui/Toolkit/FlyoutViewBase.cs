@@ -118,38 +118,44 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
         this.BatchCommit();
     }
 
-    private async void UpdateDetail(View? view, View? oldDetail)
+    private async void UpdateDetail(View? newDetail, View? oldDetail)
     {
         cancellationTokenSource.Cancel();
         cancellationTokenSource = new();
         var cancel = cancellationTokenSource.Token;
 
-        if (view is Scaffold scaffold)
+        if (newDetail is Scaffold scaffold)
             scaffold.BackButtonBehavior ??= BackButtonBehaviorFactory();
+
+        // Start
+        this.BatchBegin();
 
         bool isAnimate = oldDetail != null;
         oldDetail?.TryDisappearing();
 
-        if (view != null)
+        if (newDetail != null)
         {
             // Very important!
             // if detail just view (without binding context) then
             // disable pass current binding context to detail
-            if (view.BindingContext == default(object))
-                view.BindingContext = null;
+            if (newDetail.BindingContext == default(object))
+                newDetail.BindingContext = null;
 
-            AttachDetail(view);
-            view.TryAppearing();
+            AttachDetail(newDetail);
+            newDetail.TryAppearing();
 
             if (isAnimate)
             {
-                await view.AwaitReady(cancel);
-                PrepareAnimateSetupDetail(view, oldDetail!);
-                var task = AnimateSetupDetail(view, oldDetail!, cancel);
+                PrepareAnimateSetupDetail(newDetail, oldDetail!);
+                
+                this.BatchCommit();
+
+                await newDetail.AwaitReady(cancel);
+                var task = AnimateSetupDetail(newDetail, oldDetail!, cancel);
                 await task.WithCancelation(cancel);
             }
 
-            view.TryAppearing(true);
+            newDetail.TryAppearing(true);
         }
 
         if (oldDetail != null)
@@ -157,6 +163,9 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
             DeattachDetail(oldDetail);
             oldDetail.TryDisappearing(true);
         }
+
+        if (!isAnimate)
+            this.BatchCommit();
     }
 
     public void OnAppear(bool isComplete)

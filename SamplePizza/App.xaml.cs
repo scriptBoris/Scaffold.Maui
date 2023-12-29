@@ -15,4 +15,15 @@ public partial class App : Application
         else
             authService.SetupAppForUnauthorized();
     }
+
+#if WINDOWS
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var w = base.CreateWindow(activationState);
+        w.Width = 500;
+        w.Height = 700;
+        w.X = 700;
+        return w;
+    }
+#endif
 }

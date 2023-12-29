@@ -1,4 +1,5 @@
 ﻿using ButtonSam.Maui.Core;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using System;
 using System.Collections.Generic;
@@ -6,78 +7,85 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Containers
+namespace ScaffoldLib.Maui.Containers;
+
+public class DefaultAgent : Agent
 {
-    public class DefaultAgent : Agent
+    private readonly IScaffold _context;
+
+    public DefaultAgent(CreateAgentArgs args) : base(args)
     {
-        private readonly IScaffold _context;
+        _context = args.Context;
+        BindingContext = null;
+    }
 
-        public DefaultAgent(AgentArgs args) : base(args)
+    public override void PrepareAnimate(NavigatingTypes type)
+    {
+        switch (type)
         {
-            _context = args.Context;
-            BindingContext = null;
+            case NavigatingTypes.Replace:
+                Opacity = 0;
+                break;
+            case NavigatingTypes.Push:
+                TranslationX = ((View)_context).Width;
+                break;
+            default:
+                break;
         }
+    }
 
-        public override void PrepareAnimate(NavigatingTypes type)
+    public override AnimationInfo GetAnimation(NavigatingTypes animationType)
+    {
+        switch (animationType)
         {
-            switch (type)
-            {
-                case NavigatingTypes.Replace:
-                    Opacity = 0;
-                    break;
-                case NavigatingTypes.Push:
-                    TranslationX = ((View)_context).Width;
-                    break;
-                default:
-                    break;
-            }
+            case NavigatingTypes.Push:
+                return new AnimationInfo
+                {
+                    Easing = Easing.CubicOut,
+                    Time = Scaffold.AnimationTime,
+                };
+            case NavigatingTypes.Pop:
+                return new AnimationInfo
+                {
+                    Easing = Easing.CubicOut,
+                    Time = Scaffold.AnimationTime,
+                };
+            case NavigatingTypes.Replace:
+                return new AnimationInfo
+                {
+                    Easing = Easing.Linear,
+                    Time = Scaffold.AnimationTime,
+                };
+            default:
+                throw new NotSupportedException();
         }
+    }
 
-        public override Task Animate(NavigatingTypes type, CancellationToken cancellationToken)
+    public override void DoAnimation(double toFill, NavigatingTypes animType)
+    {
+        double toZero = 1 - toFill;
+
+        switch (animType)
         {
-            switch (type)
-            {
-                case NavigatingTypes.Replace:
-                    return this.FadeTo(1, Scaffold.AnimationTime);
-                case NavigatingTypes.Push:
-                    return this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut);
-                case NavigatingTypes.Pop:
-                    return this.TranslateTo(Width, 0, Scaffold.AnimationTime, Easing.CubicOut);
-                case NavigatingTypes.UnderPush:
-                    return this.TranslateTo(-50, 0, Scaffold.AnimationTime, Easing.CubicOut);
-                case NavigatingTypes.UnderPop:
-                    return this.TranslateTo(0, 0, Scaffold.AnimationTime, Easing.CubicOut);
-                default:
-                    return Task.CompletedTask;
-            }
-        }
-
-        public override void AnimationFunction(double toFill, NavigatingTypes animType)
-        {
-            double toZero = 1 - toFill;
-
-            switch (animType)
-            {
-                case NavigatingTypes.Push:
-                    TranslationX *= toZero;
-                    break;
-                case NavigatingTypes.UnderPush:
-                    TranslationX = -50 * toFill;
-                    break;
-                case NavigatingTypes.Pop:
-                    TranslationX = Width * toFill;
-                    break;
-                case NavigatingTypes.UnderPop:
-                    TranslationX *= toZero;
-                    break;
-                case NavigatingTypes.Replace:
-                    Opacity = toFill;
-                    break;
-                case NavigatingTypes.UnderReplace:
-                    break;
-                default:
-                    break;
-            }
+            case NavigatingTypes.Push:
+                TranslationX *= toZero;
+                break;
+            case NavigatingTypes.UnderPush:
+                TranslationX = -50 * toFill;
+                break;
+            case NavigatingTypes.Pop:
+                TranslationX = Width * toFill;
+                break;
+            case NavigatingTypes.UnderPop:
+                TranslationX *= toZero;
+                break;
+            case NavigatingTypes.Replace:
+                Opacity = toFill;
+                break;
+            case NavigatingTypes.UnderReplace:
+                break;
+            default:
+                break;
         }
     }
 }

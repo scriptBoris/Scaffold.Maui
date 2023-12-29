@@ -8,7 +8,7 @@ namespace ScaffoldLib.Maui.Core;
 
 public class ViewFactory
 {
-    public Func<AgentArgs, IAgent>? OverrideAgent { get; set; }
+    public Func<CreateAgentArgs, IAgent>? OverrideAgent { get; set; }
     public Func<CreateNavigationBarArgs, INavigationBar>? OverrideNavigationBar { get; set; }
     public Func<CreateViewWrapperArgs, IViewWrapper>? OverrideViewWrapper { get; set; }
     public Func<CreateCollapsedMenuArgs, IZBufferLayout>? OverrideCollapsedMenu { get; set; }
@@ -16,7 +16,7 @@ public class ViewFactory
     public Func<CreateDisplayActionSheet, IDisplayActionSheet>? OverrideDisplayActionSheet { get; set; }
     public Func<CreateToastArgs, IToast>? OverrideToast { get; set; }
 
-    internal IAgent CreateAgent(AgentArgs args)
+    internal IAgent CreateAgent(CreateAgentArgs args)
     {
         var result = OverrideAgent?.Invoke(args);
         if (result == null)

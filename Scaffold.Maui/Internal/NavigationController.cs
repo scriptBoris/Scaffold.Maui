@@ -2,6 +2,7 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 using System;
@@ -41,7 +42,7 @@ internal class NavigationController : IDisposable
         var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
         var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
 
-        var args = new AgentArgs
+        var args = new CreateAgentArgs
         {
             Context = _scaffold,
             View = view,
@@ -83,15 +84,13 @@ internal class NavigationController : IDisposable
             _scaffold.BatchCommit();
 
             //await newAgent.AwaitReady(cancel);
-            //var t1 = oldAgent?.Animate(NavigatingTypes.UnderPush, cancel) ?? Task.CompletedTask;
-            //var t2 = newAgent.Animate(NavigatingTypes.Push, cancel);
-            //await Task.WhenAll(t1, t2);
 
-            await _scaffold.TransitAnimation("push", 0, 1, Scaffold.AnimationTime, Easing.CubicIn, x =>
+            var anim = newAgent.GetAnimation(NavigatingTypes.Push);
+            await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>
             {
                 _scaffold.BatchBegin();
-                oldAgent?.AnimationFunction(x, NavigatingTypes.UnderPush);
-                newAgent.AnimationFunction(x, NavigatingTypes.Push);
+                oldAgent?.DoAnimation(x, NavigatingTypes.UnderPush);
+                newAgent.DoAnimation(x, NavigatingTypes.Push);
                 _scaffold.BatchCommit();
             });
 
@@ -111,7 +110,7 @@ internal class NavigationController : IDisposable
         var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
         var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
 
-        var args = new AgentArgs
+        var args = new CreateAgentArgs
         {
             Context = _scaffold,
             IndexInStack = index,
@@ -138,7 +137,7 @@ internal class NavigationController : IDisposable
         var bgColor = Scaffold.GetNavigationBarBackgroundColor(view) ?? _scaffold.NavigationBarBackgroundColor ?? Scaffold.DefaultNavigationBarBackgroundColor;
         var fgColor = Scaffold.GetNavigationBarForegroundColor(view) ?? _scaffold.NavigationBarForegroundColor ?? Scaffold.DefaultNavigationBarForegroundColor;
 
-        var args = new AgentArgs
+        var args = new CreateAgentArgs
         {
             Context = _scaffold,
             View = view,
@@ -149,6 +148,9 @@ internal class NavigationController : IDisposable
             BackButtonBehavior = _scaffold.BackButtonBehavior,
             Behaviors = _scaffold.ExternalBevahiors.ToArray(),
         };
+
+        // Batch start
+        _scaffold.BatchBegin();
 
         var newAgent = _scaffold.ViewFactory.CreateAgent(args);
         _agents.Add(newAgent);
@@ -169,18 +171,20 @@ internal class NavigationController : IDisposable
 
             oldAgent.PrepareAnimate(NavigatingTypes.UnderReplace);
             newAgent.PrepareAnimate(NavigatingTypes.Replace);
+
+            // Batch end
+            _scaffold.BatchCommit();
+
             await newAgent.AwaitReady(cancel);
 
-            await _scaffold.TransitAnimation("replace", 0, 1, Scaffold.AnimationTime, Easing.CubicOut, x =>
+            var anim = newAgent.GetAnimation(NavigatingTypes.Replace);
+            await _scaffold.TransitAnimation("replace", 0, 1, anim.Time, anim.Easing, x =>
             {
                 _scaffold.BatchBegin();
-                oldAgent.AnimationFunction(x, NavigatingTypes.UnderReplace);
-                newAgent.AnimationFunction(x, NavigatingTypes.Replace);
+                oldAgent.DoAnimation(x, NavigatingTypes.UnderReplace);
+                newAgent.DoAnimation(x, NavigatingTypes.Replace);
                 _scaffold.BatchCommit();
             });
-            //var t1 = oldAgent.Animate(NavigatingTypes.UnderReplace, cancel);
-            //var t2 = newAgent.Animate(NavigatingTypes.Replace, cancel);
-            //await Task.WhenAll(t1, t2);
 
             if (cancel.IsCancellationRequested)
                 return;
@@ -191,6 +195,12 @@ internal class NavigationController : IDisposable
         oldAgent.TryDisappearing(true, AppearingStl);
         newAgent.TryAppearing(true, AppearingStl);
         oldAgent.Dispose();
+
+        if (!isAnimated)
+        {
+            // Batch end
+            _scaffold.BatchCommit();
+        }
     }
 
     internal async Task<bool> PopAsync(bool isAnimated)
@@ -221,17 +231,14 @@ internal class NavigationController : IDisposable
             previosAgent.PrepareAnimate(NavigatingTypes.UnderPop);
             currentAgent.PrepareAnimate(NavigatingTypes.Pop);
 
-            await _scaffold.TransitAnimation("pop", 0, 1, Scaffold.AnimationTime, Easing.CubicOut, x =>
+            var anim = currentAgent.GetAnimation(NavigatingTypes.Pop);
+            await _scaffold.TransitAnimation("pop", 0, 1, anim.Time, anim.Easing, x =>
             {
                 _scaffold.BatchBegin();
-                previosAgent.AnimationFunction(x, NavigatingTypes.UnderPop);
-                currentAgent.AnimationFunction(x, NavigatingTypes.Pop);
+                previosAgent.DoAnimation(x, NavigatingTypes.UnderPop);
+                currentAgent.DoAnimation(x, NavigatingTypes.Pop);
                 _scaffold.BatchCommit();
             });
-
-            //var t1 = previosAgent.Animate(NavigatingTypes.UnderPop, CancellationToken.None);
-            //var t2 = currentAgent.Animate(NavigatingTypes.Pop, CancellationToken.None);
-            //await Task.WhenAll(t1, t2);
         }
 
         _scaffold.Children.Remove((View)currentAgent);

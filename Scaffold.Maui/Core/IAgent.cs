@@ -1,6 +1,7 @@
 ﻿using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Layouts;
+using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Internal;
 using System;
@@ -24,30 +25,15 @@ public interface IAgent : IDisposable
     IBackButtonBehavior? BackButtonBehavior { get; internal set; }
     Thickness SafeArea { get; internal set; }
 
-    void PrepareAnimate(NavigatingTypes underPush);
-
-    [Obsolete("Use alt")]
-    Task Animate(NavigatingTypes underPush, CancellationToken cancellationToken);
-
-    void AnimationFunction(double x, NavigatingTypes animType);
+    void PrepareAnimate(NavigatingTypes navigationType);
+    AnimationInfo GetAnimation(NavigatingTypes animationType);
+    void DoAnimation(double x, NavigatingTypes animType);
 
     void OnBackButton();
     void OnMenuButton();
 
     void OnBehaiorAdded(IBehavior newBehaior);
     void OnBehaiorRemoved(IBehavior removedBehaior);
-}
-
-public class AgentArgs
-{
-    public required IScaffold Context { get; set; }
-    public required View View { get; set; }
-    public required int IndexInStack { get; set; }
-    public required Color NavigationBarBackgroundColor { get; set; }
-    public required Color NavigationBarForegroundColor { get; set; }
-    public required Thickness SafeArea { get; set; }
-    public required IBackButtonBehavior? BackButtonBehavior { get; set; }
-    public required IBehavior[] Behaviors { get; set; }
 }
 
 [DebuggerDisplay($"Agent :: {{{nameof(ViewType)}}}")]
@@ -62,7 +48,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     private IBackButtonBehavior? _backButtonBehavior;
     private bool isBackButtonPressed;
 
-    public Agent(AgentArgs args)
+    public Agent(CreateAgentArgs args)
     {
         _view = args.View;
         Context = args.Context;
@@ -264,8 +250,8 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     public virtual void OnBehaiorAdded(IBehavior newBehaior) { }
     public virtual void OnBehaiorRemoved(IBehavior removedBehaior) { }
     public virtual void PrepareAnimate(NavigatingTypes type) { }
-    public virtual Task Animate(NavigatingTypes type, CancellationToken cancellationToken) => Task.CompletedTask;
-    public virtual void AnimationFunction(double x, NavigatingTypes animType) { }
+    public virtual AnimationInfo GetAnimation(NavigatingTypes underPush) => new AnimationInfo();
+    public virtual void DoAnimation(double x, NavigatingTypes animType) { }
 
     public virtual async void OnBackButton()
     {

@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Core;
+﻿using ScaffoldLib.Maui.Args;
+using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Toolkit;
 using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 using System;
@@ -15,7 +16,7 @@ public class AgentWinUI : Agent, IWindowsBehavior
     private readonly ButtonSam.Maui.Button _flytoutButton;
     private FlyoutViewWinUI.FlyoutBehavior? flyoutBehavior;
 
-    public AgentWinUI(AgentArgs args) : base(args)
+    public AgentWinUI(CreateAgentArgs args) : base(args)
     {
         _context = args.Context;
         _flytoutButton = new ButtonSam.Maui.Button
@@ -132,6 +133,7 @@ public class AgentWinUI : Agent, IWindowsBehavior
         {
             case NavigatingTypes.Push:
                 Opacity = 0;
+                TranslationX = 130;
                 break;
             case NavigatingTypes.UnderPush:
                 break;
@@ -149,21 +151,56 @@ public class AgentWinUI : Agent, IWindowsBehavior
         }
     }
 
-    public override Task Animate(NavigatingTypes type, CancellationToken cancellationToken)
+    public override AnimationInfo GetAnimation(NavigatingTypes animationType)
     {
-        switch (type)
+        switch (animationType)
         {
             case NavigatingTypes.Push:
-                return this.FadeTo(1, 140);
+                return new AnimationInfo
+                {
+                    Easing = Easing.Linear,
+                    Time = 140,
+                };
             case NavigatingTypes.Pop:
-                return this.FadeTo(0, 140);
+                return new AnimationInfo
+                {
+                    Easing = Easing.Linear,
+                    Time = 140,
+                };
             case NavigatingTypes.Replace:
-                return this.FadeTo(1, 140);
-            case NavigatingTypes.UnderPush:
-            case NavigatingTypes.UnderPop:
-            case NavigatingTypes.UnderReplace:
+                return new AnimationInfo
+                {
+                    Easing = Easing.Linear,
+                    Time = 140,
+                };
             default:
-                return Task.CompletedTask;
+                throw new NotSupportedException();
+        }
+    }
+
+    public override void DoAnimation(double toFill, NavigatingTypes animType)
+    {
+        double toZero = 1 - toFill;
+        switch (animType)
+        {
+            case NavigatingTypes.Push:
+                Opacity = toFill;
+                TranslationX *= toZero;
+                break;
+            case NavigatingTypes.UnderPush:
+                break;
+            case NavigatingTypes.Pop:
+                Opacity = toZero;
+                break;
+            case NavigatingTypes.UnderPop:
+                break;
+            case NavigatingTypes.Replace:
+                Opacity = toFill;
+                break;
+            case NavigatingTypes.UnderReplace:
+                break;
+            default:
+                break;
         }
     }
 
