@@ -29,7 +29,17 @@ internal static class WinImageTools
 
         if (source is Microsoft.UI.Xaml.Media.Imaging.BitmapImage img)
         {
-            var ff = await StorageFile.GetFileFromApplicationUriAsync(img.UriSource);
+            StorageFile ff;
+
+            try
+            {
+                ff = await StorageFile.GetFileFromApplicationUriAsync(img.UriSource);
+            }
+            catch (Exception)
+            {
+                return ImgResult.Result(null);
+            }
+
             if (cancel.IsCancellationRequested)
                 return ImgResult.Cancel();
 

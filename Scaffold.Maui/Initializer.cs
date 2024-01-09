@@ -19,17 +19,23 @@ public static class Initializer
     {
 #if ANDROID
         Platforms.Android.ScaffoldAndroid.Init(builder);
-#elif WINDOWS
-        Platforms.Windows.ScaffoldWindows.Init(builder);
 #elif IOS
         Platforms.iOS.ScaffoldIOS.Init(builder);
+#elif WINDOWS
+        Platforms.Windows.ScaffoldWindows.Init(builder);
 #endif
 
         Scaffold.Preserve();
 
         builder.ConfigureMauiHandlers(h =>
         {
-            h.AddHandler(typeof(ImageTint), typeof(ImageTintHandler));
+#if ANDROID
+            h.AddHandler(typeof(ImageTint), typeof(Platforms.Android.ImageTintHandler));
+#elif IOS
+            h.AddHandler(typeof(ImageTint), typeof(Platforms.iOS.ImageTintHandler));
+#elif WINDOWS
+            h.AddHandler(typeof(ImageTint), typeof(Platforms.Windows.ImageTintHandler));
+#endif
         });
 
         builder.UseButtonSam();

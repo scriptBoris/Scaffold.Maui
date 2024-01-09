@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+             xmlns:vm="clr-namespace:SampleDll.ViewModels"
+             x:Class="SampleDll.Views.InfoView"
+             x:DataType="vm:InfoViewModel"
+             scaffold:Scaffold.Title="About app"
+             Padding="20"
+             VerticalOptions="CenterAndExpand">
+    <Image Source="scaffold_icon.png"
+           Margin="0,0,0,20"
+           WidthRequest="100"
+           HeightRequest="100"/>
+
+    <Label FontSize="22"
+           Text="Scaffold.Maui"
+           HorizontalOptions="Center"/>
+
+    <Label Text="This is sample app for demonstration drawing on whole display"
+           HorizontalTextAlignment="Center"
+           HorizontalOptions="Center"/>
+
+    <StackLayout HorizontalOptions="Center">
+        <Label Text="Source Repository"
+               Margin="0,15,0,0"/>
+        <Label Text="https://github.com/scriptboris/scaffold.maui"
+               TextColor="BlueViolet">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CommandGoRepo}"/>
+            </Label.GestureRecognizers>
+        </Label>
+    </StackLayout>
+</StackLayout>

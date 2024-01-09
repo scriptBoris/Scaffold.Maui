@@ -8,10 +8,6 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Toolkit;
 
-public partial class ImageTintHandler : ImageHandler
-{
-}
-
 public class ImageTint : Image, IDisposable
 {
     public ImageTint()

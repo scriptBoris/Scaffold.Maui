@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:controls="clr-namespace:SampleDll.Controls"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+      xmlns:vm="clr-namespace:SampleDll.ViewModels"
+      x:Class="SampleDll.Views.RegisterView"
+      x:DataType="vm:RegisterViewModel"
+      scaffold:Scaffold.HasNavigationBar="True"
+      scaffold:Scaffold.Title="Registration"
+      Padding="10">
+    <StackLayout Spacing="10"
+                 VerticalOptions="FillAndExpand">
+        <Grid ColumnDefinitions="2*,5*"
+              RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
+              RowSpacing="10">
+
+            <Label Text="First name"
+                   VerticalTextAlignment="Center"/>
+            <Entry Grid.Row="0"
+                   Grid.Column="1"
+                   Placeholder="Required"
+                   Text="{Binding FirstName}"/>
+
+            <Label Grid.Row="1"
+                   Text="Last name"
+                   VerticalTextAlignment="Center"/>
+            <Entry Grid.Row="1"
+                   Grid.Column="1"
+                   Placeholder="Required"
+                   Text="{Binding LastName}"/>
+
+            <Label Grid.Row="2"
+                   Text="Email"
+                   VerticalTextAlignment="Center"/>
+            <Entry Grid.Row="2"
+                   Grid.Column="1"
+                   Placeholder="Required"
+                   Text="{Binding Email}"/>
+
+            <Label Grid.Row="3"
+                   Text="Password"
+                   VerticalTextAlignment="Center"/>
+            <Entry Grid.Row="3"
+                   Grid.Column="1"
+                   Placeholder="Required"
+                   Text="{Binding Password}"/>
+
+            <Label Grid.Row="4"
+                   Text="Birthday"
+                   VerticalTextAlignment="Center"/>
+            <DatePicker Grid.Row="4"
+                        Grid.Column="1"
+                        Date="{Binding Birthday}"/>
+
+            <Label Grid.Row="5"
+                   Text="Language"
+                   VerticalTextAlignment="Center"/>
+
+            <controls:ElementPicker Grid.Row="5"
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding Languages}"
+                                    Placeholder="Select Language"
+                                    SelectedItem="{Binding SelectedLanguage}"/>
+        </Grid>
+
+        <Button Command="{Binding CommandAccept}"
+                Text="Accept"
+                VerticalOptions="EndAndExpand"/>
+    </StackLayout>
+</Grid>

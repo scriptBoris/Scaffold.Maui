@@ -83,7 +83,7 @@ internal class NavigationController : IDisposable
             // Batch end
             _scaffold.BatchCommit();
 
-            //await newAgent.AwaitReady(cancel);
+            await newAgent.AwaitReady(cancel);
 
             var anim = newAgent.GetAnimation(NavigatingTypes.Push);
             await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>

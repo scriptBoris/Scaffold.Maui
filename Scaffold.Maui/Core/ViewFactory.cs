@@ -1,4 +1,5 @@
 ﻿using ScaffoldLib.Maui.Containers;
+using Common = ScaffoldLib.Maui.Containers.Common;
 using Material = ScaffoldLib.Maui.Containers.Material;
 using WinUI = ScaffoldLib.Maui.Containers.WinUI;
 using Cupertino = ScaffoldLib.Maui.Containers.Cupertino;
@@ -23,8 +24,10 @@ public class ViewFactory
         {
 #if WINDOWS
             result = new WinUI.AgentWinUI(args);
+#elif ANDROID
+            result = new Material.AgentMaterial(args);
 #else
-            result = new Containers.DefaultAgent(args);
+            result = new Common.CommonAgent(args);
 #endif
         }
         OnAgentCreated(result);

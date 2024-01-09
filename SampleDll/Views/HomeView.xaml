@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:models="clr-namespace:SampleDll.Models"
+      xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+      xmlns:vm="clr-namespace:SampleDll.ViewModels"
+      x:Class="SampleDll.Views.HomeView"
+      x:DataType="vm:HomeViewModel"
+      x:Name="root"
+      scaffold:Scaffold.Title="Pizza sample">
+
+    <scaffold:Scaffold.MenuItems>
+        <scaffold:MenuItem ImageSource="magnify.png"
+                           Text="Search"/>
+
+        <scaffold:MenuItem Command="{Binding CommandCart}"
+                           ImageSource="cart_outline.png"
+                           Text="Cart"/>
+    </scaffold:Scaffold.MenuItems>
+
+    <CollectionView ItemSizingStrategy="MeasureFirstItem"
+                    ItemsSource="{Binding PizzaItems}"
+                    VerticalOptions="FillAndExpand">
+        <CollectionView.Header>
+            <ContentView HeightRequest="50"/>
+        </CollectionView.Header>
+
+        <CollectionView.Footer>
+            <ContentView HeightRequest="50"/>
+        </CollectionView.Footer>
+
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="models:PizzaItem">
+                <ContentView>
+                    <sbutton:Button BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#333}"
+                                    TapCommand="{Binding BindingContext.CommandSelectPizza, Source={Reference root}}"
+                                    TapCommandParameter="{Binding .}"
+                                    Margin="10,10,10,0"
+                                    Padding="0">
+                        <Grid ColumnDefinitions="140,*"
+                              RowDefinitions="33,50,20,40">
+                            <Image Grid.RowSpan="4"
+                                   Source="{Binding Image}"
+                                   Margin="10"
+                                   VerticalOptions="Center"/>
+
+                            <Label Grid.Column="1"
+                                   FontSize="18"
+                                   Text="{Binding Name}"
+                                   VerticalTextAlignment="End"/>
+
+                            <Label Grid.Row="1"
+                                   Grid.Column="1"
+                                   MaxLines="2"
+                                   Text="{Binding Description}"/>
+
+                            <Label Grid.Row="2"
+                                   Grid.Column="1"
+                                   FontAttributes="Bold"
+                                   FontSize="18"
+                                   Text="{Binding Price, StringFormat='${0:0.00}'}"
+                                   TextColor="Orange"/>
+
+                            <sbutton:Button Grid.Row="3"
+                                            Grid.Column="1"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            CornerRadius="20,0,0,0"
+                                            Padding="0"
+                                            WidthRequest="50"
+                                            HorizontalOptions="EndAndExpand">
+                                <Label FontAttributes="Bold"
+                                       FontSize="30"
+                                       Text="+"
+                                       TextColor="#FFF"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                            </sbutton:Button>
+                        </Grid>
+                    </sbutton:Button>
+                </ContentView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+
+    <ScrollView Orientation="Horizontal"
+                Margin="0,10,0,0"
+                HeightRequest="50"
+                VerticalOptions="Start">
+        <StackLayout BindableLayout.ItemsSource="{Binding Filters}"
+                     Orientation="Horizontal"
+                     Spacing="10"
+                     Padding="10,0">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="models:HomeFilterItem">
+                    <sbutton:Button BackgroundColor="{StaticResource Primary}"
+                                    Padding="25,10"
+                                    VerticalOptions="Start">
+                        <Label Text="{Binding Name}"
+                               TextColor="#FFF"/>
+                    </sbutton:Button>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+    </ScrollView>
+</Grid>

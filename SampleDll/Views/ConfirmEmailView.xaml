@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+             xmlns:vm="clr-namespace:SampleDll.ViewModels"
+             x:Class="SampleDll.Views.ConfirmEmailView"
+             x:DataType="vm:ConfirmEmailViewModel"
+             scaffold:Scaffold.NavigationBarBackgroundColor="#FFF"
+             scaffold:Scaffold.NavigationBarForegroundColor="#000"
+             scaffold:Scaffold.Title="Confirm email">
+
+    <scaffold:Scaffold.MenuItems>
+        <scaffold:MenuItem Command="{Binding CommandRetry}"
+                           ImageSource="refresh.png"
+                           Text="Retry"/>
+    </scaffold:Scaffold.MenuItems>
+
+    <Border StrokeShape="RoundRectangle 8"
+            Margin="0,0,0,90"
+            Padding="10"
+            WidthRequest="240"
+            VerticalOptions="CenterAndExpand">
+        <StackLayout Spacing="10">
+            <Entry Keyboard="Numeric"
+                   Placeholder="Confirm code"
+                   Text="{Binding ConfirmCode}"
+                   HorizontalTextAlignment="Center"/>
+
+            <Button Command="{Binding CommandConfirm}"
+                    Text="Confirm"/>
+        </StackLayout>
+    </Border>
+</StackLayout>

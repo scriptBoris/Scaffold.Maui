@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
@@ -6,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UIKit;
+using ScaffoldLib.Maui.Toolkit;
 
-namespace ScaffoldLib.Maui.Toolkit;
+namespace ScaffoldLib.Maui.Platforms.iOS;
 
-public partial class ImageTintHandler
+public class ImageTintHandler : ImageHandler
 {
     public ImageTintHandler() : base(ImageTintHandlerMapper)
     {
