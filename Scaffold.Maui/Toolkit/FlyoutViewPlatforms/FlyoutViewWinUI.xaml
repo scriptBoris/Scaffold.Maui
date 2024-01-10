@@ -5,8 +5,8 @@
                         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
                         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
                         x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewWinUI"
-                        HorizontalOptions="Fill"
-                        VerticalOptions="Fill">
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill">
     <toolkit:FlyoutViewBase.Children>
         <Grid x:Name="gridRoot"
               ColumnDefinitions="Auto, *"
@@ -14,21 +14,21 @@
               RowDefinitions="40, *"
               RowSpacing="0">
 
-            <!--  flyout  -->
-            <ContentView x:Name="panelFlyout"
-                         Grid.Row="1"
-                         Grid.Column="0"
-                         HorizontalOptions="Start"
-                         WidthRequest="30" />
-
-            <!--  detail  -->
+            <!--detail-->
             <Grid x:Name="panelDetail"
                   Grid.Row="0"
                   Grid.RowSpan="2"
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
-                  HorizontalOptions="Fill"
-                  VerticalOptions="Fill" />
+                  VerticalOptions="Fill"
+                  HorizontalOptions="Fill"/>
+
+            <!--flyout-->
+            <ContentView x:Name="panelFlyout"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         WidthRequest="30"
+                         HorizontalOptions="Start"/>
 
         </Grid>
     </toolkit:FlyoutViewBase.Children>

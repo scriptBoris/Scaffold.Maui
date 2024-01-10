@@ -41,6 +41,21 @@ internal static class ScaffoldWindows
                     titleBar.ButtonInactiveBackgroundColor = Colors.Transparent.ToWindowsColor();
                     titleBar.ButtonInactiveForegroundColor = Colors.Gray.ToWindowsColor();
                     ResolveStatusBarScheme(initialColorScheme);
+#if NET8_0
+                    // Setup "mainPage" as root content for window
+                    if (window.Content is Microsoft.UI.Xaml.Controls.Panel rc)
+                    {
+                        if (rc.Children[0] is WindowRootView wrv)
+                        {
+                            if (wrv.Content is RootNavigationView nav)
+                            {
+                                var content = nav.Content as ContentPanel;
+                                nav.Content = null;
+                                window.Content = content;
+                            }
+                        }
+                    }
+#endif
                 });
             });
         });
