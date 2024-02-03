@@ -10,4 +10,5 @@ public class AnimationInfo
 {
     public Easing? Easing { get; set; }
     public uint Time { get; set; }
+    public bool UsingPlatformAnimation { get; set; }
 }

@@ -11,27 +11,27 @@
       BackgroundColor="Transparent">
 
     <Border x:Name="border"
-            Margin="0,35,10,0"
-            Padding="0"
-            HorizontalOptions="End"
             StrokeShape="RoundRectangle 13"
             StrokeThickness="0"
-            VerticalOptions="Start">
+            Margin="0,35,10,0"
+            Padding="0"
+            VerticalOptions="Start"
+            HorizontalOptions="End">
         <internal:GlassView Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
                             MinimumWidthRequest="170">
             <StackLayout x:Name="stackMenu"
                          Spacing="0">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="scaffold:MenuItem">
-                        <local:ButtonCollapsedMenu Padding="15"
-                                                   BackgroundColor="Transparent"
+                    <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+                        <local:ButtonCollapsedMenu BackgroundColor="Transparent"
                                                    CornerRadius="0"
                                                    ForegroundColor="{AppThemeBinding Light=#333, Dark=#FFF}"
                                                    Icon="{Binding ImageSource}"
                                                    TapCommand="{Binding CommandSelectedMenu, Source={Reference root}}"
                                                    TapCommandParameter="{Binding .}"
                                                    Text="{Binding Text}"
-                                                   UseOriginalColor="{Binding UseOriginalColor}" />
+                                                   UseOriginalColor="{Binding UseOriginalColor}"
+                                                   Padding="15"/>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </StackLayout>

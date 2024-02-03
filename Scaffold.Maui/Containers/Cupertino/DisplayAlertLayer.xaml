@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:acrylic="clr-namespace:Xe.AcrylicView;assembly=Xe.AcrylicView"
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
       x:Class="ScaffoldLib.Maui.Containers.Cupertino.DisplayAlertLayer"
@@ -10,10 +9,10 @@
     <internal:GlassView Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
                         BackgroundColor="Transparent"
                         CornerRadius="13"
-                        VerticalOptions="Center"
-                        WidthRequest="250">
+                        WidthRequest="250"
+                        VerticalOptions="Center">
         <internal:GlassView.GestureRecognizers>
-            <TapGestureRecognizer />
+            <TapGestureRecognizer/>
         </internal:GlassView.GestureRecognizers>
 
         <StackLayout Spacing="0">
@@ -21,48 +20,48 @@
             <StackLayout Margin="10,18">
                 <Label x:Name="labelTitle"
                        FontSize="17"
-                       HorizontalTextAlignment="Center"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       HorizontalTextAlignment="Center"/>
 
                 <Label x:Name="labelDescription"
                        FontSize="13"
-                       HorizontalTextAlignment="Center"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       HorizontalTextAlignment="Center"/>
             </StackLayout>
 
             <Line BackgroundColor="#666"
-                  HeightRequest="0.35" />
+                  HeightRequest="0.35"/>
 
-            <StackLayout HorizontalOptions="FillAndExpand"
-                         Orientation="Horizontal"
-                         Spacing="0">
+            <StackLayout Orientation="Horizontal"
+                         Spacing="0"
+                         HorizontalOptions="FillAndExpand">
                 <sam:Button x:Name="buttonOk"
-                            Padding="13"
                             BackgroundColor="Transparent"
                             CornerRadius="0"
-                            HorizontalOptions="FillAndExpand"
-                            TapColor="#666">
+                            TapColor="#666"
+                            Padding="13"
+                            HorizontalOptions="FillAndExpand">
                     <Label x:Name="labelButtonOk"
                            FontSize="17"
-                           HorizontalTextAlignment="Center"
-                           TextColor="#0A84FF" />
+                           TextColor="#0A84FF"
+                           HorizontalTextAlignment="Center"/>
                 </sam:Button>
 
                 <Line x:Name="lineButtons"
                       BackgroundColor="#666"
-                      VerticalOptions="FillAndExpand"
-                      WidthRequest="0.35" />
+                      WidthRequest="0.35"
+                      VerticalOptions="FillAndExpand"/>
 
                 <sam:Button x:Name="buttonCancel"
-                            Padding="13"
                             BackgroundColor="Transparent"
                             CornerRadius="0"
-                            HorizontalOptions="FillAndExpand"
-                            TapColor="#666">
+                            TapColor="#666"
+                            Padding="13"
+                            HorizontalOptions="FillAndExpand">
                     <Label x:Name="labelButtonCancel"
                            FontSize="17"
-                           HorizontalTextAlignment="Center"
-                           TextColor="#0A84FF" />
+                           TextColor="#0A84FF"
+                           HorizontalTextAlignment="Center"/>
                 </sam:Button>
             </StackLayout>
 

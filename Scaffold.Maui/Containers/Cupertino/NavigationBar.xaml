@@ -6,25 +6,30 @@
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
       x:Class="ScaffoldLib.Maui.Containers.Cupertino.NavigationBar"
       x:Name="navBar">
-    <StackLayout Orientation="Horizontal">
-        <!--  back button  -->
+    <StackLayout Orientation="Horizontal"
+                 HeightRequest="50">
+        <!--back button-->
         <local:ButtonCupertino x:Name="backButton"
-                               Padding="8"
                                BackgroundColor="Transparent"
                                CornerRadius="0"
-                               Icon="ios_chevron_left.png" />
+                               IconSize="40,40"
+                               Padding="0">
+            <local:ButtonCupertino.Icon>
+                <internal:SvgImageSource Data="ios_chevron_left.svg;40;40"/>
+            </local:ButtonCupertino.Icon>
+        </local:ButtonCupertino>
 
-        <ContentView HorizontalOptions="FillAndExpand" />
 
-        <!--  menu items  -->
+        <ContentView HorizontalOptions="FillAndExpand"/>
+
+        <!--menu items-->
         <StackLayout x:Name="stackMenu"
-                     Margin="0,0,0,0"
                      Orientation="Horizontal"
-                     Spacing="2">
+                     Spacing="2"
+                     Margin="0,0,0,0">
             <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="scaffold:MenuItem">
-                    <local:ButtonCupertino Padding="8"
-                                           BackgroundColor="Transparent"
+                <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+                    <local:ButtonCupertino BackgroundColor="Transparent"
                                            CornerRadius="20"
                                            ForegroundColor="{Binding ForegroundColor, Source={Reference navBar}}"
                                            Icon="{Binding ImageSource}"
@@ -33,30 +38,34 @@
                                            TapCommand="{Binding Command}"
                                            Text="{Binding Text}"
                                            UseOriginalColor="{Binding UseOriginalColor}"
-                                           VerticalOptions="Center" />
+                                           Padding="8"
+                                           VerticalOptions="Center"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
-        <!--  menu button  -->
+        <!--menu button-->
         <local:ButtonCupertino x:Name="buttonMenu"
-                               Margin="5,0,0,0"
-                               Padding="8"
                                BackgroundColor="Transparent"
                                CornerRadius="20"
-                               HorizontalOptions="Start"
-                               Icon="ic_dots_vertical.png"
-                               VerticalOptions="Center" />
+                               Margin="5,0,0,0"
+                               Padding="8"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start">
+            <local:ButtonCupertino.Icon>
+                <internal:SvgImageSource Data="ic_dots_vertical.svg"/>
+            </local:ButtonCupertino.Icon>
+        </local:ButtonCupertino>
     </StackLayout>
 
-    <!--  title  -->
+    <!--title-->
     <Label x:Name="labelTitle"
            BackgroundColor="{x:Null}"
            FontSize="18"
-           HorizontalOptions="FillAndExpand"
-           HorizontalTextAlignment="Center"
            InputTransparent="True"
            LineBreakMode="TailTruncation"
-           VerticalTextAlignment="Center" />
+           HorizontalTextAlignment="Center"
+           VerticalTextAlignment="Center"
+           HorizontalOptions="FillAndExpand"/>
 
 </Grid>

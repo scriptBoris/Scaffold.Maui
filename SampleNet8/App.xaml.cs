@@ -1,4 +1,6 @@
 ﻿using SampleDll.Services;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace SampleNet8
 {

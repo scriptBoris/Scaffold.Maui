@@ -24,6 +24,7 @@ public static class ScaffoldAndroid
                     var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
                     if (scaffold != null)
                     {
+                        scaffold.TryDrawDebugLabel();
                         scaffold.OnAppear(false);
                         scaffold.OnAppear(true);
                     }

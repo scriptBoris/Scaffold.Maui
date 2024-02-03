@@ -84,15 +84,50 @@ internal class NavigationController : IDisposable
             _scaffold.BatchCommit();
 
             await newAgent.AwaitReady(cancel);
-
             var anim = newAgent.GetAnimation(NavigatingTypes.Push);
-            await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>
+            if (anim.UsingPlatformAnimation)
             {
-                _scaffold.BatchBegin();
-                oldAgent?.DoAnimation(x, NavigatingTypes.UnderPush);
-                newAgent.DoAnimation(x, NavigatingTypes.Push);
-                _scaffold.BatchCommit();
-            });
+                var taskOld = oldAgent?.DoPlatformAnimation(NavigatingTypes.UnderPush) ?? Task.CompletedTask;
+                var taskNew = newAgent.DoPlatformAnimation(NavigatingTypes.Push);
+                await Task.WhenAll(taskOld, taskNew);
+            }
+            else
+            {
+                await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>
+                {
+                    _scaffold.BatchBegin();
+                    oldAgent?.DoAnimation(x, NavigatingTypes.UnderPush);
+                    newAgent.DoAnimation(x, NavigatingTypes.Push);
+                    _scaffold.BatchCommit();
+                });
+            }
+            //#if IOS
+            //            var tscPush = new TaskCompletionSource();
+            //            if (newAgent is View va && va.Handler.PlatformView is UIKit.UIView uiv)
+            //            {
+            //                var animator = new UIKit.UIViewPropertyAnimator(0.200, UIKit.UIViewAnimationCurve.EaseOut,
+            //                    () =>
+            //                    {
+            //                        oldAgent?.DoAnimation(1, NavigatingTypes.UnderPush);
+            //                        newAgent.DoAnimation(1, NavigatingTypes.Push);
+            //                    });
+            //                animator.StartAnimation();
+            //                animator.AddCompletion(pos =>
+            //                {
+            //                    tscPush.TrySetResult();
+            //                });
+            //            }
+            //            await tscPush.Task;
+
+            //#else
+            //await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>
+            //{
+            //    _scaffold.BatchBegin();
+            //    oldAgent?.DoAnimation(x, NavigatingTypes.UnderPush);
+            //    newAgent.DoAnimation(x, NavigatingTypes.Push);
+            //    _scaffold.BatchCommit();
+            //});
+            //#endif
 
             if (cancel.IsCancellationRequested)
                 return;
@@ -244,6 +279,8 @@ internal class NavigationController : IDisposable
         _scaffold.Children.Remove((View)currentAgent);
         currentAgent.TryDisappearing(true, AppearingStl);
         previosAgent.TryAppearing(true, AppearingStl);
+        previosAgent.RestoreVisualState();
+        currentAgent.TryRemoveFromNavigation();
         currentAgent.Dispose();
 
         return true;
@@ -254,11 +291,30 @@ internal class NavigationController : IDisposable
         if (index < 0 || index >= NavigationStack.Count)
             return false;
 
+        bool isIntantPop = index > 0 && index == NavigationStack.Count - 1;
         var agent = Agents[index];
+
+        if (isIntantPop)
+            agent.TryDisappearing(false, AppearingStl);
+
         _navigationStack.RemoveAt(index);
         _agents.RemoveAt(index);
         _scaffold.Children.Remove((View)agent);
+
+        if (isIntantPop)
+            agent.TryDisappearing(true, AppearingStl);
+
+        agent.TryRemoveFromNavigation();
         agent.Dispose();
+
+        if (isIntantPop)
+        {
+            var under = Agents[index - 1];
+            under.TryAppearing(false, AppearingStl);
+            under.TryAppearing(true, AppearingStl);
+            under.RestoreVisualState();
+        }
+
         return true;
     }
 

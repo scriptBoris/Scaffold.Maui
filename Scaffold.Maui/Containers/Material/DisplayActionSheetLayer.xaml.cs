@@ -11,26 +11,23 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 {
     private readonly TaskCompletionSource<IDisplayActionSheetResult> _tsc = new();
     private readonly object[] _originalItems;
-    private bool isAnimatingClose;
-    private bool isAnimatingShow;
 
+    private bool isBusy;
     private bool isCanceled;
     private bool isDestruction;
     private int? prepareInt;
     private object? prepareSelectedItem;
-
-    private bool IsBusy => isAnimatingClose || isAnimatingShow;
 
     public DisplayActionSheetLayer(CreateDisplayActionSheet args)
     {
         _originalItems = args.Items;
         CommandTapItem = new Command((param) =>
         {
-            if (!IsBusy && param is KeyValuePair<int, string> kvp)
+            if (!isBusy && param is KeyValuePair<int, string> kvp)
             {
                 prepareInt = kvp.Key;
                 prepareSelectedItem = _originalItems[kvp.Key];
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
         InitializeComponent();
@@ -48,10 +45,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         buttonCancel.IsVisible = args.Cancel != null;
         buttonCancel.TapCommand = new Command(() =>
         {
-            if (!IsBusy)
+            if (!isBusy)
             {
                 isCanceled = true;
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
 
@@ -59,10 +56,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         buttonDestruction.IsVisible = args.Destruction != null;
         buttonDestruction.TapCommand = new Command(() =>
         {
-            if (!IsBusy)
+            if (!isBusy)
             {
                 isDestruction = true;
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
 
@@ -70,10 +67,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         {
             Command = new Command(() =>
             {
-                if (!IsBusy)
+                if (!isBusy)
                 {
                     isCanceled = true;
-                    _ = Close();
+                    DeatachLayer?.Invoke();
                 }
             }),
         });
@@ -86,25 +83,20 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     public event VoidDelegate? DeatachLayer;
 
-    public async Task Close()
+    public async Task OnShow(CancellationToken cancel)
     {
-        if (isAnimatingShow)
-            this.CancelAnimations();
+        this.CancelAnimations();
+        isBusy = true;
+        await this.FadeTo(1, 180);
+        isBusy = false;
+    }
 
-        if (isAnimatingClose)
-            return;
-
-        isAnimatingClose = true;
-
+    public async Task OnHide(CancellationToken cancel)
+    {
+        this.CancelAnimations();
+        isBusy = true;
         await this.FadeTo(0, 180);
-        _tsc.TrySetResult(new DisplayActionSheetResult
-        {
-            IsCanceled = isCanceled,
-            IsDestruction = isDestruction,
-            SelectedItemId = prepareInt,
-            SelectedItem = prepareSelectedItem,
-        });
-        DeatachLayer?.Invoke();
+        isBusy = false;
     }
 
     public Task<IDisplayActionSheetResult> GetResult()
@@ -112,10 +104,14 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         return _tsc.Task;
     }
 
-    public async Task Show()
+    public void OnRemoved()
     {
-        isAnimatingShow = true;
-        await this.FadeTo(1, 180);
-        isAnimatingShow = false;
+        _tsc.TrySetResult(new DisplayActionSheetResult
+        {
+            IsCanceled = isCanceled,
+            IsDestruction = isDestruction,
+            SelectedItemId = prepareInt,
+            SelectedItem = prepareSelectedItem,
+        });
     }
 }

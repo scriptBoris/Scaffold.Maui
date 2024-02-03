@@ -8,11 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UIKit;
 using ScaffoldLib.Maui.Toolkit;
+using Microsoft.Maui.Graphics.Platform;
+using ScaffoldLib.Maui.Internal;
 
 namespace ScaffoldLib.Maui.Platforms.iOS;
 
 public class ImageTintHandler : ImageHandler
 {
+    private ImageSourcePartLoader? _imageSourcePartLoader;
+
     public ImageTintHandler() : base(ImageTintHandlerMapper)
     {
     }
@@ -32,6 +36,9 @@ public class ImageTintHandler : ImageHandler
             native.ColorFilter = proxy.TintColor?.ToPlatform();
         }
     }
+
+    //public override ImageSourcePartLoader SourceLoader =>
+    //    _imageSourcePartLoader ??= new ImageSourcePartLoaderExt(new Loader(this));
 
     protected override UIImageView CreatePlatformView()
     {
@@ -131,4 +138,36 @@ public class ImageTintHandler : ImageHandler
             return combinedImage;
         }
     }
+
+    //public class ImageSourcePartLoaderExt : ImageSourcePartLoader
+    //{
+    //    public ImageSourcePartLoaderExt(IImageSourcePartSetter str) : base(str)
+    //    {
+    //    }
+    //}
+
+    //public class Loader : IImageSourcePartSetter
+    //{
+    //    private readonly WeakReference<ImageTintHandler> _handler;
+
+    //    public Loader(ImageTintHandler handler)
+    //    {
+    //        _handler = new(handler);
+    //    }
+
+    //    public IImageSourcePart? ImageSourcePart =>
+    //        Handler?.VirtualView as IImageSourcePart ?? Handler?.VirtualView as Microsoft.Maui.IImage;
+
+    //    public IElementHandler? Handler => _handler.GetTargetOrDefault();
+
+    //    public void SetImageSource(UIImage? platformImage)
+    //    {
+    //        if (Handler?.PlatformView is not UIImageView imageView)
+    //            return;
+
+    //        imageView.Image = platformImage;
+    //        if (Handler?.VirtualView is Microsoft.Maui.IImage image && image.Source is IStreamImageSource)
+    //            imageView.InvalidateMeasure(image);
+    //    }
+    //}
 }

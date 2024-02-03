@@ -74,7 +74,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     public void UpdateBackButtonVisibility(bool isVisible)
     {
         var src = backButtonBehavior?.OverrideBackButtonIcon(_agent, _context);
-        backButton.Icon = src ?? "ios_chevron_left.png";
+        backButton.Icon = src ?? new SvgImageSource("ios_chevron_left.svg",40,40);
 
         var visible = backButtonBehavior?.OverrideBackButtonVisibility(_agent, _context);
         backButton.IsVisible = visible ?? isVisible;

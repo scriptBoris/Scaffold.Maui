@@ -27,6 +27,7 @@ internal static class ScaffoldIOS
                     var scaffold = Microsoft.Maui.Controls.Application.Current?.MainPage?.GetRootScaffold();
                     if (scaffold != null)
                     {
+                        scaffold.TryDrawDebugLabel();
                         scaffold.OnAppear(false);
                         scaffold.OnAppear(true);
                     }

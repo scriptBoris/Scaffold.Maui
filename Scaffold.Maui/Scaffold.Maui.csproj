@@ -29,20 +29,17 @@
 		<None Include="..\Nuget\icon.png" Pack="True" PackagePath="\" />
 	</ItemGroup>
 
-	<ItemGroup Condition="( '$(TargetFramework)' == 'net8.0-windows10.0.19041.0' )">
-	  <PackageReference Include="SkiaSharp" Version="2.88.6" />
-	</ItemGroup>
-
-	<ItemGroup Condition="( '$(TargetFramework)' == 'net7.0-windows10.0.19041.0' )">
-		<PackageReference Include="SkiaSharp" Version="2.88.6" />
-	</ItemGroup>
-
 	<ItemGroup>
+		<PackageReference Include="SkiaSharp" Version="2.88.7" />
+		<PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
 		<PackageReference Include="ButtonSam.Maui" Version="8.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<MauiImage Include="Resources\Images\*" Pack="True" PackagePath="Resources\Images\" />
+		<MauiAsset Include="Resources\Images\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<EmbeddedResource Include="Resources\Images\*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -61,15 +58,25 @@
 	  <Compile Update="Containers\Cupertino\DisplayAlertLayer.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Containers\Cupertino\ToastLayer.xaml.cs">
+	    <SubType>Code</SubType>
+	    <DependentUpon>%(Filename)</DependentUpon>
+	  </Compile>
 	  <Compile Update="Containers\Material\CollapsedMenuItemLayer.xaml.cs">
 	    <DependentUpon>CollapsedMenuItemLayer.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Containers\WinUI\CollapsedMenuItemLayer.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Toolkit\FlyoutViewPlatforms\FlyoutViewCupertino.xaml.cs">
+	    <DependentUpon>FlyoutViewCupertino.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="Containers\Common\DebugInfo.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Containers\Cupertino\CollapsedMenuItemLayer.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
@@ -81,6 +88,10 @@
 		</MauiXaml>
 		<MauiXaml Update="Containers\Cupertino\NavigationBar.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Containers\Cupertino\ToastLayer.xaml">
+		  <SubType>Designer</SubType>
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Containers\Material\DisplayActionSheetLayer.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -102,6 +113,9 @@
 		</MauiXaml>
 		<MauiXaml Update="Containers\WinUI\NavigationBar.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewCupertino.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewMaterial.xaml">
 			<Generator>MSBuild:Compile</Generator>

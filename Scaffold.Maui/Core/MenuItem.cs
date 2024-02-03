@@ -10,7 +10,7 @@ using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
 namespace ScaffoldLib.Maui;
 
-public class MenuItem : BindableObject
+public class ScaffoldMenuItem : BindableObject
 {
     private MenuItemCollection? parent;
 
@@ -19,7 +19,7 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
         nameof(Text),
         typeof(string),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         null
     );
     public string? Text
@@ -32,7 +32,7 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(
         nameof(ImageSource),
         typeof(ImageSource),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         null
     );
     public ImageSource? ImageSource
@@ -45,7 +45,7 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty ColorProperty = BindableProperty.Create(
         nameof(Color),
         typeof(Color),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         null
     );
     public Color? Color
@@ -58,7 +58,7 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty UseOriginalColorProperty = BindableProperty.Create(
         nameof(UseOriginalColor),
         typeof(bool),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         false
     );
     public bool UseOriginalColor
@@ -71,7 +71,7 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty CommandProperty = BindableProperty.Create(
         nameof(Command),
         typeof(ICommand),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         null
     );
     public ICommand? Command
@@ -84,11 +84,11 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty IsCollapsedProperty = BindableProperty.Create(
         nameof(IsCollapsed),
         typeof(bool),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         false,
         propertyChanged: (b, o, n) =>
         {
-            if (b is MenuItem self)
+            if (b is ScaffoldMenuItem self)
                 self.parent?.ResolveItem(self, self.IsVisible, (bool)o);
         }
     );
@@ -102,11 +102,11 @@ public class MenuItem : BindableObject
     public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create(
         nameof(IsVisible),
         typeof(bool),
-        typeof(MenuItem),
+        typeof(ScaffoldMenuItem),
         true,
         propertyChanged: (b, o, n) =>
         {
-            if (b is MenuItem self)
+            if (b is ScaffoldMenuItem self)
                 self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
         }
     );
@@ -114,6 +114,24 @@ public class MenuItem : BindableObject
     {
         get => (bool)GetValue(IsVisibleProperty);
         set => SetValue(IsVisibleProperty, value);
+    }
+
+    // padding
+    public static readonly BindableProperty PaddingProperty = BindableProperty.Create(
+        nameof(Padding),
+        typeof(Thickness),
+        typeof(ScaffoldMenuItem),
+        new Thickness(5),
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is ScaffoldMenuItem self)
+                self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
+        }
+    );
+    public Thickness Padding
+    {
+        get => (Thickness)GetValue(PaddingProperty);
+        set => SetValue(PaddingProperty, value);
     }
     #endregion bindable props
 

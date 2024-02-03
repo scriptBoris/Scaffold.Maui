@@ -12,52 +12,52 @@
     <StackLayout Orientation="Horizontal"
                  Spacing="0">
         <internal:Button x:Name="buttonBack"
-                         Margin="5"
-                         Padding="6"
                          BackgroundColor="Transparent"
-                         CornerRadius="5">
+                         CornerRadius="5"
+                         Margin="5"
+                         Padding="6">
             <toolkit:ImageTint x:Name="imageBackButton"
-                               HeightRequest="18"
                                Source="ic_arrow_left.png"
-                               WidthRequest="18" />
+                               WidthRequest="18"
+                               HeightRequest="18"/>
         </internal:Button>
         <Label x:Name="labelTitle"
+               MaxLines="1"
                Margin="10,0,0,0"
-               HorizontalOptions="FillAndExpand"
                VerticalTextAlignment="Center"
-               MaxLines="1" />
+               HorizontalOptions="FillAndExpand"/>
 
         <StackLayout x:Name="stackMenu"
                      Orientation="Horizontal"
                      Spacing="0">
             <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="scaffold:MenuItem">
-                    <local:ButtonMenu VerticalOptions="Center"
-                                      BackgroundColor="Transparent"
+                <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+                    <local:ButtonMenu BackgroundColor="Transparent"
                                       ForegroundColor="{Binding ForegroundColor, Source={Reference navBar}}"
                                       ImageSource="{Binding ImageSource}"
                                       MenuItemColor="{Binding Color}"
                                       TapColor="{Binding TapColor, Source={Reference navBar}}"
                                       TapCommand="{Binding Command}"
                                       Text="{Binding Text}"
-                                      UseOriginalColor="{Binding UseOriginalColor}" />
+                                      UseOriginalColor="{Binding UseOriginalColor}"
+                                      VerticalOptions="Center"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
         <internal:Button x:Name="buttonMenu"
-                         Margin="0,0,0,0"
-                         Padding="5"
-                         HorizontalOptions="Start"
-                         VerticalOptions="FillAndExpand"
                          BackgroundColor="Transparent"
                          CornerRadius="0"
-                         IsVisible="{Binding IsVisibleButtonMoreMenu, Source={Reference navBar}}">
+                         IsVisible="{Binding IsVisibleButtonMoreMenu, Source={Reference navBar}}"
+                         Margin="0,0,0,0"
+                         Padding="5"
+                         VerticalOptions="FillAndExpand"
+                         HorizontalOptions="Start">
             <toolkit:ImageTint x:Name="imageMenu"
-                               HeightRequest="22"
                                Source="ic_menu_down.png"
                                TintColor="{Binding ForegroundColor, Source={Reference navBar}}"
-                               WidthRequest="22" />
+                               WidthRequest="22"
+                               HeightRequest="22"/>
         </internal:Button>
     </StackLayout>
 </Grid>

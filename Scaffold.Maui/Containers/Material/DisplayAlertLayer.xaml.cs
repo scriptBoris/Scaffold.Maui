@@ -6,10 +6,10 @@ namespace ScaffoldLib.Maui.Containers.Material;
 
 public partial class DisplayAlertLayer : IDisplayAlert
 {
-    public event VoidDelegate? DeatachLayer;
 	private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
-	private bool isBusy;
 	private bool? prepareResult;
+
+    public event VoidDelegate? DeatachLayer;
 
     public DisplayAlertLayer(CreateDisplayAlertArgs args)
     {
@@ -42,7 +42,7 @@ public partial class DisplayAlertLayer : IDisplayAlert
     private void Close(bool result)
     {
         prepareResult ??= result;
-		Close().ConfigureAwait(false);
+        DeatachLayer?.Invoke();
     }
 
 	public Task<bool> GetResult()
@@ -50,22 +50,18 @@ public partial class DisplayAlertLayer : IDisplayAlert
 		return _taskCompletionSource.Task;
 	}
 
-    public async Task Show()
+    public async Task OnShow(CancellationToken cancel)
     {
-		isBusy = true;
         await this.FadeTo(1, 180);
-		isBusy = false;
     }
 
-    public async Task Close()
+    public async Task OnHide(CancellationToken cancel)
     {
-        if (isBusy)
-            return;
-
-        isBusy = true;
-
         await this.FadeTo(0, 180);
+    }
+
+    public void OnRemoved()
+    {
         _taskCompletionSource.TrySetResult(prepareResult ?? false);
-		DeatachLayer?.Invoke();
     }
 }

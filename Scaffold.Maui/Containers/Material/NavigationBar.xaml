@@ -9,64 +9,68 @@
       x:DataType="local:NavigationBar"
       x:Name="navigationBar">
 
-    <StackLayout Margin="7,0"
-                 HeightRequest="56"
-                 Orientation="Horizontal"
-                 Spacing="0">
-        <!--  back button  -->
+    <StackLayout Orientation="Horizontal"
+                 Spacing="0"
+                 Margin="7,0"
+                 HeightRequest="56">
+        <!--back button-->
         <internal:Button x:Name="backButton"
+                         BackgroundColor="Transparent"
+                         CornerRadius="20"
                          Margin="0,0,0,0"
                          Padding="8"
-                         HorizontalOptions="Start"
                          VerticalOptions="Center"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20">
+                         HorizontalOptions="Start">
             <toolkit:ImageTint x:Name="imageBackButton"
-                               HeightRequest="24"
-                               Source="ic_arrow_left.png"
-                               WidthRequest="24" />
+                               WidthRequest="24"
+                               HeightRequest="24">
+                <toolkit:ImageTint.Source>
+                    <internal:SvgImageSource Data="ic_arrow_left.svg"/>
+                </toolkit:ImageTint.Source>
+            </toolkit:ImageTint>
         </internal:Button>
 
-        <!--  title  -->
+        <!--title-->
         <Label x:Name="labelTitle"
-               Margin="13,0,0,0"
-               HorizontalOptions="FillAndExpand"
-               VerticalTextAlignment="Center"
                FontSize="22"
-               LineBreakMode="TailTruncation" />
+               LineBreakMode="TailTruncation"
+               Margin="13,0,0,0"
+               VerticalTextAlignment="Center"
+               HorizontalOptions="FillAndExpand"/>
 
-        <!--  menu items  -->
+        <!--menu items-->
         <StackLayout x:Name="stackMenu"
-                     Margin="0,0,0,0"
                      Orientation="Horizontal"
-                     Spacing="5">
+                     Spacing="5"
+                     Margin="0,0,0,0">
             <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="scaffold:MenuItem">
-                    <local:ButtonMenu VerticalOptions="Center"
-                                      BackgroundColor="Transparent"
+                <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+                    <local:ButtonMenu BackgroundColor="Transparent"
                                       ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
                                       ImageSource="{Binding ImageSource}"
                                       MenuItemColor="{Binding Color}"
                                       TapColor="{Binding TapColor, Source={Reference navigationBar}}"
                                       TapCommand="{Binding Command}"
                                       Text="{Binding Text}"
-                                      UseOriginalColor="{Binding UseOriginalColor}" />
+                                      UseOriginalColor="{Binding UseOriginalColor}"
+                                      Padding="{Binding Padding}"
+                                      VerticalOptions="Center"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
-        <!--  menu button  -->
+        <!--menu button-->
         <internal:Button x:Name="buttonMenu"
+                         BackgroundColor="Transparent"
+                         CornerRadius="20"
                          Margin="5,0,0,0"
                          Padding="8"
-                         HorizontalOptions="Start"
                          VerticalOptions="Center"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20">
+                         HorizontalOptions="Start">
             <toolkit:ImageTint x:Name="imageMenu"
-                               HeightRequest="24"
                                Source="ic_dots_vertical.png"
-                               WidthRequest="24" />
+                               WidthRequest="24"
+                               HeightRequest="24"/>
         </internal:Button>
     </StackLayout>
 </Grid>

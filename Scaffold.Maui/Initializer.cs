@@ -1,4 +1,5 @@
 ﻿using ButtonSam.Maui;
+using Microsoft.Maui.LifecycleEvents;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Toolkit;
 using System;

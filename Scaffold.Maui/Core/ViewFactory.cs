@@ -26,8 +26,10 @@ public class ViewFactory
             result = new WinUI.AgentWinUI(args);
 #elif ANDROID
             result = new Material.AgentMaterial(args);
+#elif IOS
+            result = new Cupertino.AgentCupertino(args);
 #else
-            result = new Common.CommonAgent(args);
+            throw new NotImplementedException();
 #endif
         }
         OnAgentCreated(result);
@@ -118,7 +120,11 @@ public class ViewFactory
         var res = OverrideToast?.Invoke(args);
         if (res == null)
         {
+#if IOS
+            res = new Cupertino.ToastLayer(args);
+#else
             res = new Material.ToastLayer(args);
+#endif
         }
         OnToastCreated(res);
         return res;

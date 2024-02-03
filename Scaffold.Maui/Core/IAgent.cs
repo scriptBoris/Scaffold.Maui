@@ -28,6 +28,8 @@ public interface IAgent : IDisposable
     void PrepareAnimate(NavigatingTypes navigationType);
     AnimationInfo GetAnimation(NavigatingTypes animationType);
     void DoAnimation(double x, NavigatingTypes animType);
+    Task DoPlatformAnimation(NavigatingTypes animType);
+    void RestoreVisualState();
 
     void OnBackButton();
     void OnMenuButton();
@@ -252,6 +254,14 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     public virtual void PrepareAnimate(NavigatingTypes type) { }
     public virtual AnimationInfo GetAnimation(NavigatingTypes underPush) => new AnimationInfo();
     public virtual void DoAnimation(double x, NavigatingTypes animType) { }
+    public virtual Task DoPlatformAnimation(NavigatingTypes animType) => Task.CompletedTask;
+    public virtual void RestoreVisualState()
+    {
+        TranslationX = 0;
+        TranslationY = 0;
+        Scale = 1;
+        Opacity = 1;
+    }
 
     public virtual async void OnBackButton()
     {

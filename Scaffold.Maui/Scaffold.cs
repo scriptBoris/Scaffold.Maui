@@ -8,6 +8,9 @@ using System.Threading.Channels;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Animations;
 using ScaffoldLib.Maui.Args;
+#if IOS
+using UIKit;
+#endif
 
 namespace ScaffoldLib.Maui;
 
@@ -464,6 +467,20 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             return true;
     }
 
+    private bool isAddedDebug;
+    internal void TryDrawDebugLabel()
+    {
+#if RELEASE
+        return;
+#endif
+
+        if (isAddedDebug)
+            return;
+
+        isAddedDebug = true;
+        ZBuffer.AddLayer(new Containers.Common.DebugInfo(), 888);
+    }
+
     public void AddBehavior(IBehavior behavior)
     {
         _externalBevahiors.Add(behavior);
@@ -731,6 +748,14 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             var token = activity?.CurrentFocus?.WindowToken;
             inputMethodManager.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
             activity?.Window?.DecorView.ClearFocus();
+        }
+#elif IOS
+        var window = UIKit.UIApplication.SharedApplication?.KeyWindow;
+        var rootView = window?.RootViewController?.View;
+
+        if (rootView != null)
+        {
+            rootView.EndEditing(true);
         }
 #endif
     }

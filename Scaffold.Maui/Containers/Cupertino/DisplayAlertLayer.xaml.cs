@@ -39,38 +39,35 @@ public partial class DisplayAlertLayer : IDisplayAlert
         }
     }
 
-    private void Close(bool result)
-    {
-        prepareResult ??= result;
-        Close().ConfigureAwait(false);
-    }
-
     public Task<bool> GetResult()
     {
         return _taskCompletionSource.Task;
     }
 
-    public async Task Show()
+    public async Task OnShow(CancellationToken cancel)
     {
-        isBusy = true;
-
+        this.CancelAnimations();
         await Task.WhenAll(
             this.FadeTo(1, 180),
             this.ScaleTo(1, 180, Easing.CubicInOut)
         );
-
-        isBusy = false;
     }
 
-    public async Task Close()
+    public async Task OnHide(CancellationToken cancel)
     {
-        if (isBusy)
-            return;
-
-        isBusy = true;
-
+        this.CancelAnimations();
         await this.FadeTo(0, 180);
+    }
+
+    public void OnRemoved()
+    {
         _taskCompletionSource.TrySetResult(prepareResult ?? false);
+    }
+
+    private void Close(bool result)
+    {
+        prepareResult ??= result;
         DeatachLayer?.Invoke();
     }
+
 }

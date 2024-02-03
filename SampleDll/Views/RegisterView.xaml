@@ -2,7 +2,9 @@
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:controls="clr-namespace:SampleDll.Controls"
+      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal;assembly=Scaffold.Maui"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui;assembly=Scaffold.Maui"
+      xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit;assembly=Scaffold.Maui"
       xmlns:vm="clr-namespace:SampleDll.ViewModels"
       x:Class="SampleDll.Views.RegisterView"
       x:DataType="vm:RegisterViewModel"
@@ -63,6 +65,26 @@
                                     Placeholder="Select Language"
                                     SelectedItem="{Binding SelectedLanguage}"/>
         </Grid>
+
+        <!--<Image BackgroundColor="Green"
+               HorizontalOptions="Start">
+            <Image.Source>
+                <internal:SvgImageSource Data="ic_arrow_left.svg;30;30"/>
+            </Image.Source>
+        </Image>
+
+        <toolkit:ImageTint BackgroundColor="Green"
+                           TintColor="Pink"
+                           HorizontalOptions="Start">
+            <toolkit:ImageTint.Source>
+                <internal:SvgImageSource Data="ios_chevron_left.svg;100;100"/>
+            </toolkit:ImageTint.Source>
+        </toolkit:ImageTint>
+
+        <StackLayout BackgroundColor="Red"
+                     WidthRequest="30"
+                     HeightRequest="30"
+                     HorizontalOptions="Start"/>-->
 
         <Button Command="{Binding CommandAccept}"
                 Text="Accept"

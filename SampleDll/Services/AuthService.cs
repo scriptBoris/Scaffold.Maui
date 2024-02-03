@@ -26,32 +26,8 @@ public class AuthService : IAuthService
     public AuthService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        //Task.Run(async () =>
-        //{
-        //    string? token = await SecureStorage.GetAsync("isUserLogin");
-        //    IsUserLoggin = token != null;
-        //});
-
-        bool isCompleted = false;
-        var thread = new Thread(async () =>
-        {
-            string? token = await SecureStorage.GetAsync("isUserLogin");
-            IsUserLoggin = token != null;
-
-            isCompleted = true;
-        });
-
-        thread.IsBackground = true;
-        thread.Priority = ThreadPriority.Highest;
-        thread.Start();
-        while(!isCompleted)
-        {
-            Console.WriteLine("SKIP");
-        }
-
-        //var awaitToken = SecureStorage.GetAsync("isUserLogin");
-        //while (!awaitToken.IsCompleted)
-        //IsUserLoggin = awaitToken.Result != null;
+        string? token = Preferences.Default.Get<string?>("isUserLogin", null);
+        IsUserLoggin = token != null;
     }
 
     public bool IsUserLoggin { get; private set; }
@@ -60,7 +36,7 @@ public class AuthService : IAuthService
     {
         sessionScope?.Dispose();
         IsUserLoggin = true;
-        SecureStorage.SetAsync("isUserLogin", "true");
+        Preferences.Default.Set("isUserLogin", "true");
         sessionScope = _serviceProvider.CreateScope();
 
         var scaffold = Scaffold.GetRootScaffold()!;
@@ -93,7 +69,7 @@ public class AuthService : IAuthService
 
     public void Logout()
     {
-        SecureStorage.Remove("isUserLogin");
+        Preferences.Default.Remove("isUserLogin");
         IsUserLoggin = false;
         SetupAppForUnauthorized();
     }

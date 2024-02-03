@@ -1,15 +1,12 @@
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
-using ScaffoldLib.Maui.Internal;
 
-namespace ScaffoldLib.Maui.Containers.Material;
+namespace ScaffoldLib.Maui.Containers.Cupertino;
 
 public partial class ToastLayer : IToast
 {
     private readonly TaskCompletionSource<bool> _tsc = new();
-
     public event VoidDelegate? DeatachLayer;
-    private bool isInitialized;
 
     public ToastLayer(CreateToastArgs args)
 	{
@@ -17,6 +14,8 @@ public partial class ToastLayer : IToast
         labelTitle.Text = args.Title;
         labelTitle.IsVisible = args.Title != null;
         labelMessage.Text = args.Message;
+        Opacity = 0;
+
         this.Dispatcher.StartTimer(args.ShowTime, () =>
         {
             DeatachLayer?.Invoke();
@@ -24,36 +23,24 @@ public partial class ToastLayer : IToast
         });
     }
 
-    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+    public async Task OnShow(CancellationToken cancel)
     {
-        var res = base.MeasureOverride(widthConstraint, heightConstraint);
-
-        if (!isInitialized)
-        {
-            isInitialized = true;
-            frame.TranslationY = frame.DesiredSize.Height;
-        }
-        return res;
+        await this.FadeTo(1, 180);
     }
 
-    public async Task OnShow(CancellationToken cancellation)
-    {
-        await frame.TranslateTo(0, 0, 140, Easing.CubicIn);
-    }
-
-    public async Task OnHide(CancellationToken cancellation)
+    public async Task OnHide(CancellationToken cancel)
     {
         await this.FadeTo(0, 180);
-    }
-
-    public Task GetResult()
-    {
-        return _tsc.Task;
     }
 
     public void OnRemoved()
     {
         _tsc.TrySetResult(true);
+    }
+
+    public Task GetResult()
+    {
+        return _tsc.Task;
     }
 
     private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)

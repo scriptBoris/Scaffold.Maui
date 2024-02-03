@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Core;
 
-public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
+public class MenuItemCollection : ObservableCollection<ScaffoldMenuItem>, IDisposable
 {
     private readonly BindableObject _attachedView;
     private const int maxVis = 2;
@@ -36,8 +36,8 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
             item.BindingContext = _attachedView.BindingContext;
     }
 
-    internal ObservableCollection<MenuItem> VisibleItems { get; private set; }
-    internal ObservableCollection<MenuItem> CollapsedItems { get; private set; }
+    internal ObservableCollection<ScaffoldMenuItem> VisibleItems { get; private set; }
+    internal ObservableCollection<ScaffoldMenuItem> CollapsedItems { get; private set; }
 
     protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
@@ -46,13 +46,13 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                var add = (MenuItem)e.NewItems![0]!;
+                var add = (ScaffoldMenuItem)e.NewItems![0]!;
                 add.SetParent(this);
                 add.BindingContext = _attachedView.BindingContext;
                 ResolveItem(add);
                 break;
             case NotifyCollectionChangedAction.Remove:
-                var rm = (MenuItem)e.OldItems![0]!;
+                var rm = (ScaffoldMenuItem)e.OldItems![0]!;
                 CollapsedItems.Remove(rm);
                 VisibleItems.Remove(rm);
                 rm.SetParent(null);
@@ -70,7 +70,7 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
         }
     }
 
-    internal void ResolveItem(MenuItem item)
+    internal void ResolveItem(ScaffoldMenuItem item)
     {
         if (!item.IsVisible)
         {
@@ -111,7 +111,7 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
     }
 
     // TODO В будущем побороть этот дурацкий алгоритм
-    internal void ResolveItem(MenuItem item, bool oldVisible, bool oldCollapse)
+    internal void ResolveItem(ScaffoldMenuItem item, bool oldVisible, bool oldCollapse)
     {
         VisibleItems.Clear();
         CollapsedItems.Clear();
@@ -122,7 +122,7 @@ public class MenuItemCollection : ObservableCollection<MenuItem>, IDisposable
         }
     }
 
-    private static int FindPos(MenuItem item, IList<MenuItem> master, IList<MenuItem> slave)
+    private static int FindPos(ScaffoldMenuItem item, IList<ScaffoldMenuItem> master, IList<ScaffoldMenuItem> slave)
     {
         int value = master.IndexOf(item);
         if (slave.IndexOf(item) >= 0)

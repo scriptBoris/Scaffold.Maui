@@ -4,6 +4,9 @@ using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit;
 using System.Threading.Tasks;
 using System.Windows.Input;
+#if IOS
+using UIKit;
+#endif
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
@@ -11,32 +14,31 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 {
     private readonly TaskCompletionSource<IDisplayActionSheetResult> _tsc = new();
     private readonly object[] _originalItems;
-    private bool isAnimatingClose;
-    private bool isAnimatingShow;
 
     private bool isCanceled;
     private bool isDestruction;
     private int? prepareInt;
     private object? prepareSelectedItem;
+    private bool isBusy;
 
-    private bool IsBusy => isAnimatingClose || isAnimatingShow;
+    public event VoidDelegate? DeatachLayer;
 
     public DisplayActionSheetLayer(CreateDisplayActionSheet args)
     {
         string? title = args.Title;
         string? cancel = args.Cancel;
         string? destruction = args.Destruction;
-        string? displayProperty = args.Destruction;
+        string? displayProperty = args.ItemDisplayBinding;
         object[] buttons = args.Items;
 
         _originalItems = buttons;
         CommandTapItem = new Command((param) =>
         {
-            if (!IsBusy && param is KeyValuePair<int, string> kvp)
+            if (!isBusy && param is KeyValuePair<int, string> kvp)
             {
                 prepareInt = kvp.Key;
                 prepareSelectedItem = _originalItems[kvp.Key];
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
         InitializeComponent();
@@ -56,10 +58,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         containerButtonCancel.IsVisible = cancel != null;
         buttonCancel.TapCommand = new Command(() =>
         {
-            if (!IsBusy)
+            if (!isBusy)
             {
                 isCanceled = true;
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
 
@@ -68,10 +70,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         containerButtonDestruction.IsVisible = destruction != null;
         buttonDestruction.TapCommand = new Command(() =>
         {
-            if (!IsBusy)
+            if (!isBusy)
             {
                 isDestruction = true;
-                _ = Close();
+                DeatachLayer?.Invoke();
             }
         });
 
@@ -84,10 +86,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         {
             Command = new Command(() =>
             {
-                if (!IsBusy)
+                if (!isBusy)
                 {
                     isCanceled = true;
-                    _ = Close();
+                    DeatachLayer?.Invoke();
                 }
             }),
         });
@@ -95,40 +97,56 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     public ICommand CommandTapItem { get; private set; }
 
-    public event VoidDelegate? DeatachLayer;
-
     private void UpdateSafeArea(object? sender, Thickness e)
     {
         var padding = new Thickness(e.Left, e.Top, e.Right, e.Bottom * 0.7);
         Padding = padding;
     }
 
-    public async Task Show()
+    public async Task OnShow(CancellationToken cancel)
     {
-        rootStackLayout.TranslationY = rootStackLayout.Height;
-        isAnimatingShow = true;
-        await Task.WhenAll(
-            this.FadeTo(1, 180),
-            rootStackLayout.TranslateTo(0, 0, 180, Easing.SinInOut)
-        );
-        isAnimatingShow = false;
+#if IOS
+        isBusy = true;
+        var tsc = new TaskCompletionSource();
+        var root = (UIView)this.Handler!.PlatformView!;
+        var stackView = (UIView)rootStackLayout.Handler!.PlatformView!;
+        var originFrame = stackView.Frame;
+        stackView.Frame = originFrame.OffsetBy(0, originFrame.Height);
+
+        double dur = (double)250 / 1000.0;
+        var animator = new UIViewPropertyAnimator(dur, UIViewAnimationCurve.EaseInOut,
+        () =>
+        {
+            root.Alpha = 1;
+            stackView.Frame = originFrame;
+        });
+        animator.UserInteractionEnabled = false;
+        animator.AddCompletion(pos =>
+        {
+            rootStackLayout.TranslationY = 0;
+            this.Opacity = 1;
+            tsc.SetResult();
+        });
+        animator.StartAnimation();
+        await tsc.Task;
+        isBusy = false;
+#endif
     }
 
-    public async Task Close()
+    public async Task OnHide(CancellationToken cancel)
     {
-        if (isAnimatingShow)
-            this.CancelAnimations();
-
-        if (isAnimatingClose)
-            return;
-
-        isAnimatingClose = true;
+        isBusy = true;
+        this.CancelAnimations();
 
         await Task.WhenAll(
-            this.FadeTo(0, 120),
-            rootStackLayout.TranslateTo(0, Height, 120, Easing.SinInOut)
+            this.FadeTo(0, 190),
+            rootStackLayout.TranslateTo(0, Height, 190, Easing.SinInOut)
         );
+        isBusy = false;
+    }
 
+    public void OnRemoved()
+    {
         _tsc.TrySetResult(new DisplayActionSheetResult
         {
             IsCanceled = isCanceled,
@@ -136,7 +154,6 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             SelectedItemId = prepareInt,
             SelectedItem = prepareSelectedItem,
         });
-        DeatachLayer?.Invoke();
     }
 
     public Task<IDisplayActionSheetResult> GetResult()

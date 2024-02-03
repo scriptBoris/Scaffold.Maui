@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ScaffoldLib.Maui.Internal;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino
 {
@@ -20,6 +21,7 @@ namespace ScaffoldLib.Maui.Containers.Cupertino
             {
                 HeightRequest = 22,
                 WidthRequest = 22,
+                Aspect = Aspect.AspectFill,
             };
             Content = _iconImage;
             UpdateColors();
@@ -35,12 +37,12 @@ namespace ScaffoldLib.Maui.Containers.Cupertino
             propertyChanged: (b, o, n) =>
             {
                 if (b is ButtonCupertino self)
-                    self.UpdateIcon();
+                    self.UpdateIcon(n as ImageSource);
             }
         );
         public ImageSource? Icon
         {
-            get => GetValue(IconProperty) as ImageSource;
+            get => GetValue(IconProperty) as string;
             set => SetValue(IconProperty, value);
         }
 
@@ -159,6 +161,12 @@ namespace ScaffoldLib.Maui.Containers.Cupertino
             AnimationPropertyColor(color);
         }
 
+        protected override void AnimationStop()
+        {
+            base.AnimationStop();
+            UpdateColors();
+        }
+
         protected override Task<bool> MauiAnimationPressed()
         {
             AnimationPropertyColor(pressedAnimationColor);
@@ -171,9 +179,9 @@ namespace ScaffoldLib.Maui.Containers.Cupertino
             return Task.FromResult(true);
         }
 
-        private void UpdateIcon()
+        private void UpdateIcon(ImageSource? imageSource)
         {
-            _iconImage.Source = Icon;
+            _iconImage.Source = imageSource;
         }
 
         private void UpdateText()

@@ -8,7 +8,6 @@ namespace ScaffoldLib.Maui.Containers.WinUI;
 public partial class CollapsedMenuItemLayer : IZBufferLayout
 {
     private bool isBusy;
-    private TaskCompletionSource<bool> tsc = new();
 
     public event VoidDelegate? DeatachLayer;
 
@@ -19,8 +18,9 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
         BindingContext = this;
         GestureRecognizers.Add(new TapGestureRecognizer
         {
-            Command = new Command(() => Close().ConfigureAwait(false))
+            Command = new Command(() => DeatachLayer?.Invoke())
         });
+        Opacity = 0;
 
         var obs = Scaffold.GetMenuItems(args.View).CollapsedItems;
         BindableLayout.SetItemsSource(stackMenu, obs);
@@ -28,38 +28,30 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
 
     public ICommand CommandSelectedMenu { get; private set; }
 
-    protected override void OnHandlerChanged()
-    {
-        base.OnHandlerChanged();
-        tsc.TrySetResult(true);
-    }
-
     private void ActionSelectedMenu(object param)
     {
-        if (param is MenuItem menuItem)
+        if (!isBusy && param is ScaffoldMenuItem menuItem)
         {
             menuItem.Command?.Execute(null);
         }
-        Close().ConfigureAwait(false);
+        DeatachLayer?.Invoke();
     }
 
-    public async Task Show()
+    public async Task OnShow(CancellationToken cancel)
     {
         isBusy = true;
-        Opacity = 0;
-        await tsc.Task;
         await this.FadeTo(1, 180);
         isBusy = false;
     }
 
-    public async Task Close()
+    public async Task OnHide(CancellationToken cancel)
     {
-        if (isBusy)
-            return;
-
         isBusy = true;
-
         await this.FadeTo(0, 180);
-        DeatachLayer?.Invoke();
+        isBusy = false;
+    }
+
+    public void OnRemoved()
+    {
     }
 }

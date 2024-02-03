@@ -156,19 +156,30 @@ namespace ScaffoldLib.Maui.Internal
             if (handler == null)
                 return;
 
-            var tsc = new TaskCompletionSource<bool>();
-            view.Animate("checkisload", 
-                callback: (x) => {}, 
-                rate: 1, 
-                length: 10, 
-                easing: null, 
-                finished: async (x, isFail) => 
-                {
-                    await Task.Delay(25);
-                    tsc.SetResult(true); 
-                }
-            );
-            await tsc.Task.WithCancelation(cancellation);
+            //await Task.Delay(1000);
+
+            //var tsc = new TaskCompletionSource<bool>();
+
+            //view.Animate("checkisload", 
+            //    callback: (x) => {}, 
+            //    rate: 1, 
+            //    length: 10, 
+            //    easing: null, 
+            //    finished: async (x, isFail) => 
+            //    {
+            //        await Task.Delay(25);
+            //        tsc.SetResult(true); 
+            //    }
+            //);
+
+            //var uiview = handler.PlatformView as UIKit.UIView;
+            //var animator = new UIKit.UIViewPropertyAnimator(20, 16f, () => { });
+            //animator.AddCompletion((pos) =>
+            //{
+            //    tsc.SetResult(true);
+            //});
+
+            //await tsc.Task.WithCancelation(cancellation);
         }
 #endif
 
@@ -182,8 +193,18 @@ namespace ScaffoldLib.Maui.Internal
             if (h == null)
                 return;
 
-            var av = (Android.Views.View)h.PlatformView!;
-            var vto = av?.ViewTreeObserver;
+            Android.Views.View av = (Android.Views.View)h.PlatformView!;
+            Android.Views.ViewTreeObserver? vto = null;
+
+            try
+            {
+                vto = av?.ViewTreeObserver;
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
             if (vto == null)
                 return;
 
@@ -211,8 +232,11 @@ namespace ScaffoldLib.Maui.Internal
 
             await Task.WhenAll(readyLayout.Task, readyDraw.Task, readyGlobalDraw.Task).WithCancelation(cancel);
 
-            vto.PreDraw -= Draw;
-            vto.GlobalLayout -= GlobalDraw;
+            if (vto.IsAlive)
+            {
+                vto.PreDraw -= Draw;
+                vto.GlobalLayout -= GlobalDraw;
+            }
             av.LayoutChange -= Change;
 
             if (cancel.IsCancellationRequested)
@@ -364,6 +388,18 @@ namespace ScaffoldLib.Maui.Internal
         internal static void InvalidateMeasureHardcore(this View view)
         {
             ((IView)view).InvalidateMeasure();
+        }
+
+        internal static T? GetTargetOrDefault<T>(this WeakReference<T> self)
+            where T : class
+        {
+            if (self == null)
+                throw new ArgumentNullException(nameof(self));
+
+            if (self.TryGetTarget(out var target))
+                return target;
+
+            return default;
         }
     }
 }

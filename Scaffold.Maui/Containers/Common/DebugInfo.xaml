@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Label xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="ScaffoldLib.Maui.Containers.Common.DebugInfo"
+       BackgroundColor="Red"
+       FontSize="16"
+       Rotation="40"
+       Text="DEBUG"
+       TextColor="#CCC"
+       TranslationX="30"
+       Margin="10"
+       Padding="20,0"
+       VerticalOptions="Start"
+       HorizontalOptions="End"/>

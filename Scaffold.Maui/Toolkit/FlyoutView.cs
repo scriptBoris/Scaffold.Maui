@@ -10,6 +10,8 @@ namespace ScaffoldLib.Maui.Toolkit;
 public class FlyoutView :
 #if WINDOWS
     FlyoutViewPlatforms.FlyoutViewWinUI
+#elif IOS
+    FlyoutViewPlatforms.FlyoutViewCupertino
 #else
     FlyoutViewPlatforms.FlyoutViewMaterial
 #endif
