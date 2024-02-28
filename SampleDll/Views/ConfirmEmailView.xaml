@@ -9,11 +9,11 @@
              scaffold:Scaffold.NavigationBarForegroundColor="#000"
              scaffold:Scaffold.Title="Confirm email">
 
-    <scaffold:Scaffold.MenuItems>
-        <scaffold:MenuItem Command="{Binding CommandRetry}"
-                           ImageSource="refresh.png"
-                           Text="Retry"/>
-    </scaffold:Scaffold.MenuItems>
+    <Scaffold.MenuItems>
+        <ScaffoldMenuItem Command="{Binding CommandRetry}"
+                          ImageSource="refresh.png"
+                          Text="Retry"/>
+    </Scaffold.MenuItems>
 
     <Border StrokeShape="RoundRectangle 8"
             Margin="0,0,0,90"

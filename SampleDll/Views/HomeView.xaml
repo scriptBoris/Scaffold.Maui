@@ -10,14 +10,14 @@
       x:Name="root"
       scaffold:Scaffold.Title="Pizza sample">
 
-    <scaffold:Scaffold.MenuItems>
-        <scaffold:MenuItem ImageSource="magnify.png"
-                           Text="Search"/>
+    <Scaffold.MenuItems>
+        <ScaffoldMenuItem ImageSource="magnify.png"
+                          Text="Search"/>
 
-        <scaffold:MenuItem Command="{Binding CommandCart}"
-                           ImageSource="cart_outline.png"
-                           Text="Cart"/>
-    </scaffold:Scaffold.MenuItems>
+        <ScaffoldMenuItem Command="{Binding CommandCart}"
+                          ImageSource="cart_outline.png"
+                          Text="Cart"/>
+    </Scaffold.MenuItems>
 
     <CollectionView ItemSizingStrategy="MeasureFirstItem"
                     ItemsSource="{Binding PizzaItems}"

@@ -11,10 +11,10 @@
              Spacing="15"
              Padding="10">
 
-    <scaffold:Scaffold.MenuItems>
-        <scaffold:MenuItem ImageSource="cog.png"
-                           Text="Edit profile"/>
-    </scaffold:Scaffold.MenuItems>
+    <Scaffold.MenuItems>
+        <ScaffoldMenuItem ImageSource="cog.png"
+                          Text="Edit profile"/>
+    </Scaffold.MenuItems>
 
     <Grid>
         <Border Stroke="{StaticResource Primary}"

@@ -13,11 +13,11 @@
       scaffold:Scaffold.Title=""
       RowDefinitions="*,*">
 
-    <scaffold:Scaffold.MenuItems>
-        <scaffold:MenuItem Command="{Binding CommandLike}"
-                           ImageSource="heart.png"
-                           UseOriginalColor="{Binding PizzaItem.IsLiked}"/>
-    </scaffold:Scaffold.MenuItems>
+    <Scaffold.MenuItems>
+        <ScaffoldMenuItem Command="{Binding CommandLike}"
+                          ImageSource="heart.png"
+                          UseOriginalColor="{Binding PizzaItem.IsLiked}"/>
+    </Scaffold.MenuItems>
 
     <Image Grid.RowSpan="2"
            Aspect="AspectFill"
