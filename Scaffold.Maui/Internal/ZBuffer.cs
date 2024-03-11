@@ -16,6 +16,11 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
     public ZBuffer()
     {
         BindingContext = null;
+
+        // on winui wtf empty zbuffer cannot pass interactive events
+#if WINDOWS
+        InputTransparent = true;
+#endif
     }
 
     public int LayersCount => _items.Count;

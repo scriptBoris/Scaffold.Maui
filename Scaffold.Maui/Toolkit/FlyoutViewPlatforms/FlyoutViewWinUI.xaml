@@ -4,6 +4,7 @@
                         xmlns:buttonsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
                         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
                         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
+                        xmlns:winuiContainers="clr-namespace:ScaffoldLib.Maui.Containers.WinUI"
                         x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewWinUI"
                         VerticalOptions="Fill"
                         HorizontalOptions="Fill">
@@ -14,12 +15,17 @@
               RowDefinitions="40, *"
               RowSpacing="0">
 
+            <!--<winuiContainers:ButtonMenu>
+                <toolkit:ImageTint Source="ic_scaffold_menu.png"
+                                   WidthRequest="18"
+                                   HeightRequest="18"/>
+            </winuiContainers:ButtonMenu>-->
+
             <!--detail-->
             <Grid x:Name="panelDetail"
                   Grid.Row="0"
                   Grid.RowSpan="2"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="2"
+                  Grid.Column="1"
                   VerticalOptions="Fill"
                   HorizontalOptions="Fill"/>
 

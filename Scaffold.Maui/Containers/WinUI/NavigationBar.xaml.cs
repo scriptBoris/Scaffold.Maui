@@ -14,6 +14,7 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     private IBackButtonBehavior? backButtonBehavior;
     private Color? foregroundColor;
     private bool isVisibleButtonMoreMenu;
+    public const float RightPadding = 150;
 
     public NavigationBar(CreateNavigationBarArgs args)
     {
@@ -124,6 +125,12 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
 
     protected override Size ArrangeOverride(Rect bounds)
     {
+        double l = Math.Abs(bounds.Left);
+        Padding = new Thickness(
+            left: l,
+            top: 0,
+            right: RightPadding, 
+            bottom: 0);
         var res = base.ArrangeOverride(bounds);
         Scaffold.PlatformSpec.UpdateDesktopDragArea();
         return res;

@@ -11,5 +11,12 @@ namespace SampleNet8
             InitializeComponent();
             SampleDll.SampleDllInit.EntryPoint(authService);
         }
+
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            var w = base.CreateWindow(activationState);
+            w.Width = 600;
+            return w;
+        }
     }
 }

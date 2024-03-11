@@ -125,14 +125,54 @@ public class ImageTintHandler : ImageHandler
         PlatformView.Source = res.Source;
     }
 
+    protected virtual async void ProcessTintAndSetup(StreamImageSource imageSource)
+    {
+        cancelSource?.Cancel();
+        cancelSource = new();
+
+        if (VirtualView is not ImageTint proxy)
+            return;
+
+        Stream? str = null;
+        try
+        {
+            str = await imageSource.Stream(cancelSource.Token);
+        }
+        catch (Exception)
+        {
+        }
+        if (str == null)
+            return;
+
+        var res = Platforms.Windows.WinImageTools.ProcessImage(str, proxy.TintColor, cancelSource.Token);
+        if (res.IsCanceled)
+            return;
+
+        PlatformView.Source = res.Source;
+    }
+
     public static void MapSource(ImageTintHandler h, ImageTint v)
     {
-        h.Loader.UpdateImageSourceAsync();
+        if (v.Source is StreamImageSource streamImageSource)
+        {
+            h.ProcessTintAndSetup(streamImageSource);
+        }
+        else
+        {
+            h.Loader.UpdateImageSourceAsync();
+        }
     }
 
     public static void MapTintColor(ImageTintHandler h, ImageTint v)
     {
-        h.ProcessTintAndSetup(h.originImageSource);
+        if (v.Source is StreamImageSource streamImageSource)
+        {
+            h.ProcessTintAndSetup(streamImageSource);
+        }
+        else
+        {
+            h.ProcessTintAndSetup(h.originImageSource);
+        }
     }
 
     private class SetterImg : IImageSourcePartSetter

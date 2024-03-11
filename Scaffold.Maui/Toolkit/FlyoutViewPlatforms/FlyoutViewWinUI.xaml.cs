@@ -3,17 +3,42 @@ using ScaffoldLib.Maui.Internal;
 
 namespace ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 
-public partial class FlyoutViewWinUI : FlyoutViewBase
+public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
 {
     private FlyoutBehavior? currentBehavior;
     private const int Min = 40;
     private const int Max = 200;
-
+    private ButtonSam.Maui.Button btn;
     public FlyoutViewWinUI()
     {
         InitializeComponent();
         Scaffold.SetHasNavigationBar(this, false);
+
+        btn = new ButtonSam.Maui.Button
+        {
+            Margin = 5,
+            Padding = 6,
+            BackgroundColor = Colors.Transparent,
+            CornerRadius = 5,
+            HorizontalOptions = LayoutOptions.Start,
+            Content = new ImageTint
+            {
+                HeightRequest = 18,
+                WidthRequest = 18,
+                Source = "ic_scaffold_menu.png",
+            },
+            TapCommand = new Command(() =>
+            {
+                IsPresented = !IsPresented;
+            }),
+        };
+        gridRoot.Children.Add(btn);
     }
+
+    public Rect[] UndragArea => new Rect[]
+    {
+        new Rect(0,0, btn.Width, btn.Height),
+    };
 
     protected override void PrepareAnimateSetupDetail(View newDetail, View oldDetail)
     {

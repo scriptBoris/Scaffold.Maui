@@ -84,6 +84,46 @@ internal static class WinImageTools
         return ImgResult.Result(null);
     }
 
+    public static ImgResult ProcessImage(Stream stream, Color? tintColor, CancellationToken cancel)
+    {
+        try
+        {
+            using var bmp = SKBitmap.Decode(stream);
+            int w = bmp.Width;
+            int h = bmp.Height;
+
+            using var surface = SKSurface.Create(new SKImageInfo(w, h));
+            using var canvas = surface.Canvas;
+
+            if (tintColor != null)
+            {
+                using var tintPaint = new SKPaint
+                {
+                    ColorFilter = SKColorFilter.CreateBlendMode(tintColor.ToSkia(), SKBlendMode.SrcIn),
+                };
+                canvas.DrawBitmap(bmp, 0, 0, tintPaint);
+            }
+            else
+            {
+                canvas.DrawBitmap(bmp, 0, 0);
+            }
+
+            var bin = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
+            if (cancel.IsCancellationRequested)
+                return ImgResult.Cancel();
+
+            IRandomAccessStream streamResult = new MemoryStream(bin).AsRandomAccessStream();
+            var sourceResult = new WriteableBitmap(w, h);
+            sourceResult.SetSource(streamResult);
+
+            return ImgResult.Result(sourceResult);
+        }
+        catch (Exception ooops)
+        {
+            return ImgResult.Result(null);
+        }
+    }
+
     private static SKColor ToSkia(this Color mauiColor)
     {
         byte red = (byte)(mauiColor.Red * 255f);

@@ -13,37 +13,42 @@ namespace ScaffoldLib.Maui.Containers.WinUI;
 public class AgentWinUI : Agent, IWindowsBehavior
 {
     private readonly IScaffold _context;
-    private readonly ButtonSam.Maui.Button _flytoutButton;
+    private readonly ButtonSam.Maui.Button? _flytoutButton;
     private FlyoutViewWinUI.FlyoutBehavior? flyoutBehavior;
 
     public AgentWinUI(CreateAgentArgs args) : base(args)
     {
         _context = args.Context;
-        _flytoutButton = new ButtonSam.Maui.Button
-        {
-            Margin = 5,
-            Padding = 6,
-            BackgroundColor = Colors.Transparent,
-            CornerRadius = 5,
-            HorizontalOptions = LayoutOptions.Start,
-            Content = new ImageTint
-            {
-                HeightRequest = 18,
-                WidthRequest = 18,
-                Source = "ic_scaffold_menu.png",
-            },
-            IsVisible = false,
-            TapCommand = new Command(() =>
-            {
-                if (flyoutBehavior != null)
-                    flyoutBehavior.InvokeChangePresented();
-            }),
-        };
-        Children.Insert(2, _flytoutButton);
+        //_flytoutButton = new ButtonSam.Maui.Button
+        //{
+        //    Margin = 5,
+        //    Padding = 6,
+        //    BackgroundColor = Colors.Transparent,
+        //    CornerRadius = 5,
+        //    HorizontalOptions = LayoutOptions.Start,
+        //    Content = new ImageTint
+        //    {
+        //        HeightRequest = 18,
+        //        WidthRequest = 18,
+        //        Source = "ic_scaffold_menu.png",
+        //    },
+        //    IsVisible = false,
+        //    TapCommand = new Command(() =>
+        //    {
+        //        if (flyoutBehavior != null)
+        //            flyoutBehavior.InvokeChangePresented();
+        //    }),
+        //};
+        //Children.Insert(2, _flytoutButton);
 
         var flyout = args.Behaviors.FirstOrDefault(x => x is FlyoutViewWinUI.FlyoutBehavior) as FlyoutViewWinUI.FlyoutBehavior;
         if (flyout != null)
             OnBehaiorAdded(flyout);
+
+#if WINDOWS
+        InputTransparent = true;
+        CascadeInputTransparent = false;
+#endif
     }
 
     public Rect[] UndragArea
@@ -52,12 +57,15 @@ public class AgentWinUI : Agent, IWindowsBehavior
         {
             var list = new List<Rect>();
 
-            if (_flytoutButton.IsVisible)
+            if (_flytoutButton != null && _flytoutButton.IsVisible)
                 list.Add(_flytoutButton.Frame);
 
             foreach (var item in Children)
                 if (item is IWindowsBehavior v)
                     list.AddRange(v.UndragArea);
+
+            if (ViewWrapper.View is IWindowsBehavior vb)
+                list.AddRange(vb.UndragArea);
 
             return list.ToArray();
         }
@@ -69,7 +77,9 @@ public class AgentWinUI : Agent, IWindowsBehavior
         {
             flyoutBehavior = b;
             flyoutBehavior.Changed += SetupFlyoutOffsets;
-            _flytoutButton.IsVisible = true;
+
+            if (_flytoutButton != null)
+                _flytoutButton.IsVisible = true;
             SetupFlyoutOffsets(b);
         }
     }
@@ -78,7 +88,8 @@ public class AgentWinUI : Agent, IWindowsBehavior
     {
         if (removedBehaior == flyoutBehavior)
         {
-            _flytoutButton.IsVisible = false;
+            if (_flytoutButton != null)
+                _flytoutButton.IsVisible = false;
             flyoutBehavior.Changed -= SetupFlyoutOffsets;
             flyoutBehavior = null;
         }
@@ -90,8 +101,13 @@ public class AgentWinUI : Agent, IWindowsBehavior
 
         if (NavigationBar is IView bar)
         {
+            double off = 0;
+            if (flyoutBehavior != null)
+                off = flyoutBehavior.NavigationBarOffset;
+                //off = flyoutBehavior.ViewOffset;
+
             offsetY = bar.DesiredSize.Height;
-            bar.Arrange(new Rect(0, 0, bounds.Width, bar.DesiredSize.Height));
+            bar.Arrange(new Rect(-off, 0, bounds.Width + off, bar.DesiredSize.Height));
         }
 
         if (_flytoutButton is IView flyoutButton)
@@ -206,15 +222,21 @@ public class AgentWinUI : Agent, IWindowsBehavior
 
     private void SetupFlyoutOffsets(FlyoutViewWinUI.FlyoutBehavior flyout)
     {
-        if (NavigationBar is Layout nav)
-            nav.Padding = new Thickness(
-                flyout.NavigationBarOffset,
-                nav.Padding.Top,
-                nav.Padding.Right,
-                nav.Padding.Bottom
-            );
+        //if (NavigationBar is IView bar)
+        //{
+        //    double off = flyout.ViewOffset;
+        //    bar.Arrange(new Rect(-off, 0, Width + off, bar.DesiredSize.Height));
+        //}
 
-        if (ViewWrapper is Layout wrapper)
-            wrapper.Margin = new Thickness(flyout.ViewOffset, 0, 0, 0);
+        //if (NavigationBar is Layout nav)
+        //    nav.Padding = new Thickness(
+        //        flyout.NavigationBarOffset,
+        //        nav.Padding.Top,
+        //        nav.Padding.Right,
+        //        nav.Padding.Bottom
+        //    );
+
+        //if (ViewWrapper is Layout wrapper)
+        //    wrapper.Margin = new Thickness(flyout.ViewOffset, 0, 0, 0);
     }
 }
