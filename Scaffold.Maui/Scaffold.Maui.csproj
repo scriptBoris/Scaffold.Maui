@@ -16,7 +16,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.9.37-beta</Version>
+		<Version>0.9.38-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -59,7 +59,6 @@
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
 	  <Compile Update="Containers\Cupertino\ToastLayer.xaml.cs">
-	    <SubType>Code</SubType>
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
 	  <Compile Update="Containers\Material\CollapsedMenuItemLayer.xaml.cs">
@@ -75,7 +74,7 @@
 
 	<ItemGroup>
 		<MauiXaml Update="Containers\Common\DebugInfo.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+		    <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Containers\Cupertino\CollapsedMenuItemLayer.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -90,8 +89,7 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Containers\Cupertino\ToastLayer.xaml">
-		  <SubType>Designer</SubType>
-		  <Generator>MSBuild:Compile</Generator>
+		    <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Containers\Material\DisplayActionSheetLayer.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -115,7 +113,7 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewCupertino.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+		    <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Toolkit\FlyoutViewPlatforms\FlyoutViewMaterial.xaml">
 			<Generator>MSBuild:Compile</Generator>
