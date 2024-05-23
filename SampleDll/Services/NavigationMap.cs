@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SampleDll.Core;
 using SampleDll.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace SampleDll.Services
 {
@@ -87,7 +82,7 @@ namespace SampleDll.Services
                 parameters.Add(dependency);
             }
 
-            var vm = (BaseViewModel)FormatterServices.GetUninitializedObject(pair.ViewModel);
+            var vm = (BaseViewModel)RuntimeHelpers.GetUninitializedObject(pair.ViewModel);
             vm.ServiceProvider = _serviceProvider;
             vm.Args = navigationKey;
             vm.TypeView = pair.View;
