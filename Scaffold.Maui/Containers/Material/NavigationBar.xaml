@@ -9,21 +9,21 @@
       x:DataType="local:NavigationBar"
       x:Name="navigationBar">
 
-    <StackLayout Orientation="Horizontal"
-                 Spacing="0"
+    <StackLayout HeightRequest="56"
                  Margin="7,0"
-                 HeightRequest="56">
+                 Orientation="Horizontal"
+                 Spacing="0">
         <!--back button-->
         <internal:Button x:Name="backButton"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20"
+                         HorizontalOptions="Start"
+                         VerticalOptions="Center"
                          Margin="0,0,0,0"
                          Padding="8"
-                         VerticalOptions="Center"
-                         HorizontalOptions="Start">
+                         BackgroundColor="Transparent"
+                         CornerRadius="20">
             <toolkit:ImageTint x:Name="imageBackButton"
-                               WidthRequest="24"
-                               HeightRequest="24">
+                               HeightRequest="24"
+                               WidthRequest="24">
                 <toolkit:ImageTint.Source>
                     <internal:SvgImageSource Data="ic_arrow_left.svg"/>
                 </toolkit:ImageTint.Source>
@@ -32,45 +32,45 @@
 
         <!--title-->
         <Label x:Name="labelTitle"
-               FontSize="22"
-               LineBreakMode="TailTruncation"
+               HorizontalOptions="FillAndExpand"
                Margin="13,0,0,0"
                VerticalTextAlignment="Center"
-               HorizontalOptions="FillAndExpand"/>
+               FontSize="22"
+               LineBreakMode="TailTruncation"/>
 
         <!--menu items-->
         <StackLayout x:Name="stackMenu"
+                     Margin="0,0,0,0"
                      Orientation="Horizontal"
-                     Spacing="5"
-                     Margin="0,0,0,0">
+                     Spacing="5">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
-                    <local:ButtonMenu BackgroundColor="Transparent"
+                    <local:ButtonMenu VerticalOptions="Center"
+                                      BackgroundColor="Transparent"
                                       ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
                                       ImageSource="{Binding ImageSource}"
+                                      ImageSourcePadding="{Binding ImageSourcePadding}"
                                       MenuItemColor="{Binding Color}"
                                       TapColor="{Binding TapColor, Source={Reference navigationBar}}"
                                       TapCommand="{Binding Command}"
                                       Text="{Binding Text}"
-                                      UseOriginalColor="{Binding UseOriginalColor}"
-                                      Padding="{Binding Padding}"
-                                      VerticalOptions="Center"/>
+                                      UseOriginalColor="{Binding UseOriginalColor}"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
 
         <!--menu button-->
         <internal:Button x:Name="buttonMenu"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20"
+                         HorizontalOptions="Start"
+                         VerticalOptions="Center"
                          Margin="5,0,0,0"
                          Padding="8"
-                         VerticalOptions="Center"
-                         HorizontalOptions="Start">
+                         BackgroundColor="Transparent"
+                         CornerRadius="20">
             <toolkit:ImageTint x:Name="imageMenu"
-                               Source="ic_dots_vertical.png"
+                               HeightRequest="24"
                                WidthRequest="24"
-                               HeightRequest="24"/>
+                               Source="ic_dots_vertical.png"/>
         </internal:Button>
     </StackLayout>
 </Grid>

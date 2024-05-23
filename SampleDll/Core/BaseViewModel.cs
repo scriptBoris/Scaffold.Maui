@@ -4,6 +4,7 @@ using ScaffoldLib.Maui;
 using ScaffoldLib.Maui.Args;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -32,8 +33,23 @@ public class BaseViewModel<TNavKey> : BaseViewModel where TNavKey : notnull
         {
             try
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 _view = (View)Activator.CreateInstance(TypeView)!;
                 _view.BindingContext = this;
+
+                stopwatch.Stop();
+
+                var elapsedTime = stopwatch.Elapsed;
+                Console.WriteLine($"Прошло времени: {elapsedTime}");
+
+                long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                Console.WriteLine($"Прошло времени в миллисекундах: {elapsedMilliseconds}");
+
+                long elapsedTicks = stopwatch.ElapsedTicks;
+                Console.WriteLine($"Прошло времени в тиках: {elapsedTicks}");
+
             }
             catch (Exception ex)
             {
@@ -65,6 +81,16 @@ public abstract class BaseViewModel : BaseNotify
     public View View => ResolveView();
 
     protected abstract View ResolveView();
+
+    public Task ShowAlert(string title, string message, string ok)
+    {
+        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        {
+            Title = title,
+            Description = message,
+            Ok = ok,
+        });
+    }
 
     public Task<bool> ShowAlert(string title, string message, string ok, string cancel)
     {

@@ -86,6 +86,23 @@ internal class ButtonMenu : Internal.Button
         set => SetValue(MenuItemColorProperty, value);
     }
 
+    // image source padding
+    public static readonly BindableProperty ImageSourcePaddingProperty = BindableProperty.Create(
+        nameof(ImageSourcePadding),
+        typeof(Thickness),
+        typeof(ButtonMenu),
+        new Thickness(8),
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is ButtonMenu self)
+                self.UpdateImagePaddings();
+        }
+    );
+    public Thickness ImageSourcePadding
+    {
+        get => (Thickness)GetValue(ImageSourcePaddingProperty);
+        set => SetValue(ImageSourcePaddingProperty, value);
+    }
 
     // use original color
     public static readonly BindableProperty UseOriginalColorProperty = BindableProperty.Create(
@@ -140,14 +157,12 @@ internal class ButtonMenu : Internal.Button
             switch (newValue)
             {
                 case ContentType.Icon:
-                    Padding = new Thickness(8);
                     BackgroundColor = Colors.Transparent;
                     Content = new ImageTint
                     {
-                        WidthRequest = 24,
-                        HeightRequest = 24,
                         Source = ImageSource,
                     };
+                    UpdateImagePaddings();
                     CornerRadius = 20;
                     break;
 
@@ -201,6 +216,34 @@ internal class ButtonMenu : Internal.Button
             default:
                 break;
         }
+    }
+
+    private Size UpdateImagePaddings()
+    {
+        if (currentContentType != ContentType.Icon)
+            return default;
+
+        double left = ImageSourcePadding.Left;
+        double top = ImageSourcePadding.Top;
+        double right = ImageSourcePadding.Right;
+        double bottom = ImageSourcePadding.Bottom;
+
+        //double left = Math.Abs(ImageSourcePadding.Left);
+        //double top = Math.Abs(ImageSourcePadding.Top);
+        //double right = Math.Abs(ImageSourcePadding.Right);
+        //double bottom = Math.Abs(ImageSourcePadding.Bottom);
+
+        var padding = new Thickness(left, top, right, bottom);
+        Padding = padding;
+        var size = new Size(40 - padding.HorizontalThickness, 40 - padding.VerticalThickness);
+
+        if (Content is ImageTint img)
+        {
+            img.HeightRequest = size.Height;
+            img.WidthRequest = size.Width;
+        }
+
+        return size;
     }
 
     private enum ContentType

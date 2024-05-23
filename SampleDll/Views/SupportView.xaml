@@ -7,26 +7,38 @@
              x:Class="SampleDll.Views.SupportView"
              x:DataType="vm:SupportViewModel"
              scaffold:Scaffold.Title="Technical support">
+
+    <Scaffold.MenuItems>
+        <ScaffoldMenuItem Command="{Binding CommandAlert}"
+                          ImageSource="headset.png"
+                          IsCollapsed="True"
+                          Text="Call"/>
+        <ScaffoldMenuItem Command="{Binding CommandAlert}"
+                          ImageSource="information_slab_circle.png"
+                          IsCollapsed="True"
+                          Text="Help"/>
+    </Scaffold.MenuItems>
+
     <StackLayout>
         <ScrollView VerticalOptions="FillAndExpand">
-            <StackLayout Spacing="30"
-                         Padding="10">
+            <StackLayout Padding="10"
+                         Spacing="30">
                 <Label Text="Support message"/>
             </StackLayout>
         </ScrollView>
 
-        <Grid BackgroundColor="{AppThemeBinding Dark=#333, Light=#FFF}"
-              ColumnDefinitions="*, Auto"
-              Padding="10">
+        <Grid Padding="10"
+              BackgroundColor="{AppThemeBinding Dark=#333, Light=#FFF}"
+              ColumnDefinitions="*, Auto">
             <Entry Grid.Column="0"
                    Placeholder="Typping message"/>
 
             <sam:Button Grid.Column="1"
                         BackgroundColor="{StaticResource Primary}">
-                <Label Text="SEND"
-                       TextColor="White"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"/>
+                <Label HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       Text="SEND"
+                       TextColor="White"/>
             </sam:Button>
         </Grid>
     </StackLayout>

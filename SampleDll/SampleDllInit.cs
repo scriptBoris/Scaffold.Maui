@@ -18,7 +18,10 @@ public static class SampleDllInit
 
     public static MauiAppBuilder UseSampleDll(this MauiAppBuilder builder)
     {
-        builder.UseScaffold();
+        builder.UseScaffold(new ScaffoldLib.Maui.Args.UseScaffoldArgs
+        {
+            UseDebugInfo = true,
+        });
 
         var services = builder.Services;
 
@@ -31,11 +34,11 @@ public static class SampleDllInit
         services.AddScoped<IWaresService, WaresService>();
 
         builder.ConfigureMauiHandlers(h =>
-         {
+        {
 #if WINDOWS
-             h.AddHandler(typeof(ElementPicker), typeof(ElementPickerHandler));
+            h.AddHandler(typeof(ElementPicker), typeof(ElementPickerHandler));
 #endif
-         });
+        });
 
         return builder;
     }

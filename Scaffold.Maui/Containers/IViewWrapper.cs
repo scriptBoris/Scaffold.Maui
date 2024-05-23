@@ -8,85 +8,84 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Containers
-{
-    public interface IViewWrapper : IDisposable
-    {
-        View? Overlay { get; set; }
-        View View { get; }
+namespace ScaffoldLib.Maui.Containers;
 
-        void UpdateSafeArea(Thickness safeArea);
+public interface IViewWrapper : IDisposable
+{
+    View? Overlay { get; set; }
+    View View { get; }
+
+    void UpdateSafeArea(Thickness safeArea);
+}
+
+public class ViewWrapper : Layout, ILayoutManager, IViewWrapper
+{
+    private View? _overlay;
+
+    public ViewWrapper(CreateViewWrapperArgs args)
+    {
+        View = args.View;
+        this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#242424"));
+        Children.Add(args.View);
     }
 
-    public class ViewWrapper : Layout, ILayoutManager, IViewWrapper
+    public View View { get; private set; }
+    public View? Overlay
     {
-        private View? _overlay;
-
-        public ViewWrapper(CreateViewWrapperArgs args)
+        get => _overlay;
+        set
         {
-            View = args.View;
-            this.SetAppThemeColor(BackgroundColorProperty, Color.FromArgb("#eee"), Color.FromArgb("#242424"));
-            Children.Add(args.View);
-        }
-
-        public View View { get; private set; }
-        public View? Overlay
-        {
-            get => _overlay;
-            set
+            if (_overlay != null)
             {
-                if (_overlay != null)
-                {
-                    Children.Remove(_overlay);
-                }
+                Children.Remove(_overlay);
+            }
 
-                _overlay = value;
+            _overlay = value;
 
-                if (_overlay != null)
-                {
-                    Children.Add(value);
-                }
+            if (_overlay != null)
+            {
+                Children.Add(value);
             }
         }
+    }
 
-        protected override ILayoutManager CreateLayoutManager()
-        {
-            return this;
-        }
+    protected override ILayoutManager CreateLayoutManager()
+    {
+        return this;
+    }
 
-        public virtual Size ArrangeChildren(Rect bounds)
-        {
-            ((IView)View).Arrange(bounds);
+    public virtual Size ArrangeChildren(Rect bounds)
+    {
+        ((IView)View).Arrange(bounds);
 
-            if (Overlay is IView overlay)
-                overlay.Arrange(bounds);
+        if (Overlay is IView overlay)
+            overlay.Arrange(bounds);
 
-            return bounds.Size;
-        }
+        return bounds.Size;
+    }
 
-        public virtual Size Measure(double widthConstraint, double heightConstraint)
-        {
-            ((IView)View).Measure(widthConstraint, heightConstraint);
+    public virtual Size Measure(double widthConstraint, double heightConstraint)
+    {
+        ((IView)View).Measure(widthConstraint, heightConstraint);
 
-            if (Overlay is IView overlay)
-                overlay.Measure(widthConstraint, heightConstraint);
+        if (Overlay is IView overlay)
+            overlay.Measure(widthConstraint, heightConstraint);
 
-            return new Size(widthConstraint, heightConstraint);
-        }
+        return new Size(widthConstraint, heightConstraint);
+    }
 
-        public virtual void UpdateSafeArea(Thickness safeArea)
-        {
-        }
+    public virtual void UpdateSafeArea(Thickness safeArea)
+    {
+    }
 
-        public virtual void Dispose()
-        {
-            if (View is IRemovedFromNavigation vrm)
-                vrm.OnRemovedFromNavigation();
+    public virtual void Dispose()
+    {
+        if (View is IRemovedFromNavigation vrm)
+            vrm.OnRemovedFromNavigation();
 
-            if (View.BindingContext is IRemovedFromNavigation vmrm)
-                vmrm.OnRemovedFromNavigation();
+        if (View.BindingContext is IRemovedFromNavigation vmrm)
+            vmrm.OnRemovedFromNavigation();
 
-            Handler = null;
-        }
+        Handler = null;
     }
 }

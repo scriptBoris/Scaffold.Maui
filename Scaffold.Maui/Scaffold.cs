@@ -398,10 +398,14 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     {
         get
         {
-            var last = _navigationController.CurrentAgent?.ViewWrapper.View;
-            if (last is IBackButtonListener v)
+            var agent = _navigationController.CurrentAgent;
+            if (agent?.OverrideBackButtonListener != null)
+                return agent.OverrideBackButtonListener;
+
+            var view = agent?.ViewWrapper.View;
+            if (view is IBackButtonListener v)
                 return v;
-            else if (last?.BindingContext is IBackButtonListener vm)
+            else if (view?.BindingContext is IBackButtonListener vm)
                 return vm;
 
             return this;
@@ -524,12 +528,18 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public async Task PushAsync(View view, bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("PushAsync method should been executed in main thread");
+
         Scaffold.SetScaffoldContext(view, this);
         await _navigationController.PushAsync(view, isAnimated);
     }
 
     public async Task<bool> InsertView(View view, int index, bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("InsertView method should been executed in main thread");
+
         if (index < 0)
             return false;
 
@@ -544,6 +554,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public async Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("ReplaceView method should been executed in main thread");
+
         var oldIndex = NavigationStack.IndexOf(oldView);
         if (oldIndex < 0)
             return false;
@@ -569,12 +582,18 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public Task<bool> PopAsync(bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("PopAsync method should been executed in main thread");
+
         _zBufer.RemoveLayerAsync(IScaffold.MenuItemsIndexZ).ConfigureAwait(true);
         return _navigationController.PopAsync(isAnimated);
     }
 
     public async Task<bool> PopToRootAsync(bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("PopToRootAsync method should been executed in main thread");
+
         int count = _navigationController.NavigationStack.Count;
         if (count <= 1)
             return false;
@@ -592,6 +611,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public async Task<bool> PopToRootAndSetRootAsync(View newRootView, bool isAnimated = true)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("PopToRootAndSetRootAsync method should been executed in main thread");
+
         int count = _navigationController.NavigationStack.Count;
         if (count == 0)
             return false;
@@ -610,6 +632,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public async Task<bool> RemoveView(View view, bool isAnimated)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidNavigationException("RemoveView method should been executed in main thread");
+
         int count = _navigationController.NavigationStack.Count;
         if (count <= 1)
             return false;

@@ -10,8 +10,15 @@ using System.Diagnostics;
 
 namespace ScaffoldLib.Maui.Core;
 
-public interface IAgent : IDisposable
+public interface IAgent : IRemovedFromNavigation, IDisposable, IAppear, IDisappear
 {
+    event EventHandler? RemovedFromNavigation;
+    event EventHandler? Appeared;
+    event EventHandler? Disappeared;
+    event EventHandler? AppearedCompleted;
+    event EventHandler? DisappearedCompleted;
+
+    IBackButtonListener? OverrideBackButtonListener { get; set; }
     IScaffold Context { get; }
     IViewWrapper ViewWrapper { get; }
     INavigationBar? NavigationBar { get; }
@@ -39,7 +46,7 @@ public interface IAgent : IDisposable
 }
 
 [DebuggerDisplay($"Agent :: {{{nameof(ViewType)}}}")]
-public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppear, IDisappear, IRemovedFromNavigation
+public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
 {
     private readonly View _view;
     private INavigationBar? _navigationBar;
@@ -49,6 +56,12 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
     private int _indexInNavigationStack;
     private IBackButtonBehavior? _backButtonBehavior;
     private bool isBackButtonPressed;
+
+    public event EventHandler? RemovedFromNavigation;
+    public event EventHandler? Appeared;
+    public event EventHandler? Disappeared;
+    public event EventHandler? AppearedCompleted;
+    public event EventHandler? DisappearedCompleted;
 
     public Agent(CreateAgentArgs args)
     {
@@ -73,6 +86,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
         SafeArea = args.SafeArea;
     }
 
+    public IBackButtonListener? OverrideBackButtonListener { get; set; }
     public IScaffold Context { get; private set; }
     public bool IsAppear { get; set; }
     public IViewWrapper ViewWrapper { get; private set; }
@@ -144,7 +158,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
             NavigationBar?.UpdateNavigationBarForegroundColor(value);
         }
     }
-    public IBackButtonBehavior? BackButtonBehavior 
+    public IBackButtonBehavior? BackButtonBehavior
     {
         get => _backButtonBehavior;
         set
@@ -228,7 +242,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
                 var navBar = Context.ViewFactory.CreateNavigationBar(new Args.CreateNavigationBarArgs
                 {
                     Agent = this,
-                    View  = _view,
+                    View = _view,
                 });
                 if (navBar != null)
                 {
@@ -275,11 +289,13 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
             isBackButtonPressed = false;
             return;
         }
-        
+
         await this.Dispatcher.DispatchAsync(async () =>
         {
             IBackButtonListener ls;
-            if (ViewWrapper.View is IBackButtonListener v)
+            if (OverrideBackButtonListener != null)
+                ls = OverrideBackButtonListener;
+            else if (ViewWrapper.View is IBackButtonListener v)
                 ls = v;
             else if (ViewWrapper.View.BindingContext is IBackButtonListener vm)
                 ls = vm;
@@ -315,13 +331,22 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable, IAppe
 
     public virtual void OnAppear(bool isComplete)
     {
+        if (isComplete)
+            AppearedCompleted?.Invoke(this, EventArgs.Empty);
+        else
+            Appeared?.Invoke(this, EventArgs.Empty);
     }
 
     public virtual void OnDisappear(bool isComplete)
     {
+        if (isComplete)
+            DisappearedCompleted?.Invoke(this, EventArgs.Empty);
+        else
+            Disappeared?.Invoke(this, EventArgs.Empty);
     }
 
     public virtual void OnRemovedFromNavigation()
     {
+        RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
     }
 }

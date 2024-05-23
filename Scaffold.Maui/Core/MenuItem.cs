@@ -116,24 +116,25 @@ public class ScaffoldMenuItem : BindableObject
         set => SetValue(IsVisibleProperty, value);
     }
 
-    // padding
-    public static readonly BindableProperty PaddingProperty = BindableProperty.Create(
-        nameof(Padding),
+    // image source padding
+    public static readonly BindableProperty ImageSourcePaddingProperty = BindableProperty.Create(
+        nameof(ImageSourcePadding),
         typeof(Thickness),
         typeof(ScaffoldMenuItem),
-        new Thickness(5),
-        propertyChanged: (b, o, n) =>
-        {
-            if (b is ScaffoldMenuItem self)
-                self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
-        }
+#if ANDROID
+        new Thickness(8)
+#elif IOS
+        new Thickness(10)
+#else
+        new Thickness(8)
+#endif
     );
-    public Thickness Padding
+    public Thickness ImageSourcePadding
     {
-        get => (Thickness)GetValue(PaddingProperty);
-        set => SetValue(PaddingProperty, value);
+        get => (Thickness)GetValue(ImageSourcePaddingProperty);
+        set => SetValue(ImageSourcePaddingProperty, value);
     }
-    #endregion bindable props
+#endregion bindable props
 
     internal void SetParent(MenuItemCollection? parent)
     {

@@ -2,57 +2,56 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-             xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="ScaffoldLib.Maui.Containers.Cupertino.DisplayActionSheetLayer"
              x:Name="root"
              BackgroundColor="#AA000000">
 
     <StackLayout x:Name="rootStackLayout"
+                 VerticalOptions="EndAndExpand"
                  Margin="13"
-                 Spacing="7"
-                 VerticalOptions="EndAndExpand">
-        <internal:GlassView Padding="0"
+                 Spacing="7">
+        <internal:GlassView HorizontalOptions="FillAndExpand"
+                            VerticalOptions="EndAndExpand"
+                            Padding="0"
                             Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
-                            CornerRadius="13"
-                            HorizontalOptions="FillAndExpand"
-                            VerticalOptions="EndAndExpand">
+                            CornerRadius="13">
             <internal:GlassView.GestureRecognizers>
-                <TapGestureRecognizer />
+                <TapGestureRecognizer/>
             </internal:GlassView.GestureRecognizers>
 
             <StackLayout Spacing="0">
                 <Label x:Name="labelTitle"
                        Margin="5,5,5,10"
-                       FontSize="13"
                        HorizontalTextAlignment="Center"
-                       TextColor="#666" />
+                       FontSize="13"
+                       TextColor="#666"/>
 
-                <Line BackgroundColor="#666"
-                      HeightRequest="0.35" />
+                <ContentView HeightRequest="0.35"
+                             BackgroundColor="#666"/>
 
-                <ScrollView MaximumHeightRequest="250"
-                            VerticalOptions="Center"
+                <ScrollView VerticalOptions="Center"
+                            MaximumHeightRequest="250"
                             VerticalScrollBarVisibility="Always">
                     <StackLayout x:Name="itemList"
-                                 Spacing="0"
-                                 VerticalOptions="Center">
+                                 VerticalOptions="Center"
+                                 Spacing="0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <StackLayout Spacing="0">
-                                    <sam:Button Margin="0"
-                                                Padding="18"
-                                                BackgroundColor="Transparent"
-                                                CornerRadius="0"
-                                                TapColor="#666"
-                                                TapCommand="{Binding CommandTapItem, Source={Reference root}}"
-                                                TapCommandParameter="{Binding .}">
-                                        <Label FontSize="17"
-                                               HorizontalTextAlignment="Center"
+                                    <internal:Button Margin="0"
+                                                     Padding="18"
+                                                     BackgroundColor="Transparent"
+                                                     CornerRadius="0"
+                                                     TapColor="#666"
+                                                     TapCommand="{Binding CommandTapItem, Source={Reference root}}"
+                                                     TapCommandParameter="{Binding .}">
+                                        <Label HorizontalTextAlignment="Center"
+                                               FontSize="17"
                                                Text="{Binding Value}"
-                                               TextColor="#0A84FF" />
-                                    </sam:Button>
-                                    <Line BackgroundColor="#666"
-                                          HeightRequest="0.33" />
+                                               TextColor="#0A84FF"/>
+                                    </internal:Button>
+                                    <ContentView HeightRequest="0.33"
+                                                 BackgroundColor="#666"/>
                                 </StackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -61,47 +60,47 @@
             </StackLayout>
         </internal:GlassView>
 
-        <!--  Destruction  -->
+        <!--Destruction-->
         <internal:GlassView x:Name="containerButtonDestruction"
                             Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
                             CornerRadius="13">
             <internal:GlassView.GestureRecognizers>
-                <TapGestureRecognizer />
+                <TapGestureRecognizer/>
             </internal:GlassView.GestureRecognizers>
 
-            <sam:Button x:Name="buttonDestruction"
-                        Padding="18"
-                        BackgroundColor="Transparent"
-                        HorizontalOptions="FillAndExpand"
-                        TapColor="#666">
+            <internal:Button x:Name="buttonDestruction"
+                             HorizontalOptions="FillAndExpand"
+                             Padding="18"
+                             BackgroundColor="Transparent"
+                             TapColor="#666">
                 <Label x:Name="labelButtonDestruction"
+                       HorizontalTextAlignment="Center"
                        FontAttributes="Bold"
                        FontSize="17"
-                       HorizontalTextAlignment="Center"
-                       TextColor="#FF3B30" />
-            </sam:Button>
+                       TextColor="#FF3B30"/>
+            </internal:Button>
         </internal:GlassView>
 
-        <!--  Cancel  -->
+        <!--Cancel-->
         <internal:GlassView x:Name="containerButtonCancel"
                             Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
                             CornerRadius="13">
             <internal:GlassView.GestureRecognizers>
-                <TapGestureRecognizer />
+                <TapGestureRecognizer/>
             </internal:GlassView.GestureRecognizers>
 
-            <sam:Button x:Name="buttonCancel"
-                        Padding="18"
-                        BackgroundColor="Transparent"
-                        CornerRadius="0"
-                        HorizontalOptions="FillAndExpand"
-                        TapColor="#666">
+            <internal:Button x:Name="buttonCancel"
+                             HorizontalOptions="FillAndExpand"
+                             Padding="18"
+                             BackgroundColor="Transparent"
+                             CornerRadius="0"
+                             TapColor="#666">
                 <Label x:Name="labelButtonCancel"
+                       HorizontalTextAlignment="Center"
                        FontAttributes="Bold"
                        FontSize="17"
-                       HorizontalTextAlignment="Center"
-                       TextColor="#0A84FF" />
-            </sam:Button>
+                       TextColor="#0A84FF"/>
+            </internal:Button>
         </internal:GlassView>
     </StackLayout>
 

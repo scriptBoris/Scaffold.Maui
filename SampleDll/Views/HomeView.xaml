@@ -19,9 +19,9 @@
                           Text="Cart"/>
     </Scaffold.MenuItems>
 
-    <CollectionView ItemSizingStrategy="MeasureFirstItem"
-                    ItemsSource="{Binding PizzaItems}"
-                    VerticalOptions="FillAndExpand">
+    <CollectionView VerticalOptions="FillAndExpand"
+                    ItemSizingStrategy="MeasureFirstItem"
+                    ItemsSource="{Binding PizzaItems}">
         <CollectionView.Header>
             <ContentView HeightRequest="50"/>
         </CollectionView.Header>
@@ -33,22 +33,22 @@
         <CollectionView.ItemTemplate>
             <DataTemplate x:DataType="models:PizzaItem">
                 <ContentView>
-                    <sbutton:Button BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#333}"
+                    <sbutton:Button Margin="10,10,10,0"
+                                    Padding="0"
+                                    BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#333}"
                                     TapCommand="{Binding BindingContext.CommandSelectPizza, Source={Reference root}}"
-                                    TapCommandParameter="{Binding .}"
-                                    Margin="10,10,10,0"
-                                    Padding="0">
+                                    TapCommandParameter="{Binding .}">
                         <Grid ColumnDefinitions="140,*"
                               RowDefinitions="33,50,20,40">
                             <Image Grid.RowSpan="4"
-                                   Source="{Binding Image}"
+                                   VerticalOptions="Center"
                                    Margin="10"
-                                   VerticalOptions="Center"/>
+                                   Source="{Binding Image}"/>
 
                             <Label Grid.Column="1"
+                                   VerticalTextAlignment="End"
                                    FontSize="18"
-                                   Text="{Binding Name}"
-                                   VerticalTextAlignment="End"/>
+                                   Text="{Binding Name}"/>
 
                             <Label Grid.Row="1"
                                    Grid.Column="1"
@@ -64,17 +64,17 @@
 
                             <sbutton:Button Grid.Row="3"
                                             Grid.Column="1"
-                                            BackgroundColor="{StaticResource Primary}"
-                                            CornerRadius="20,0,0,0"
-                                            Padding="0"
                                             WidthRequest="50"
-                                            HorizontalOptions="EndAndExpand">
-                                <Label FontAttributes="Bold"
+                                            HorizontalOptions="EndAndExpand"
+                                            Padding="0"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            CornerRadius="20,0,0,0">
+                                <Label HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       FontAttributes="Bold"
                                        FontSize="30"
                                        Text="+"
-                                       TextColor="#FFF"
-                                       HorizontalTextAlignment="Center"
-                                       VerticalTextAlignment="Center"/>
+                                       TextColor="#FFF"/>
                             </sbutton:Button>
                         </Grid>
                     </sbutton:Button>
@@ -83,19 +83,19 @@
         </CollectionView.ItemTemplate>
     </CollectionView>
 
-    <ScrollView Orientation="Horizontal"
+    <ScrollView HeightRequest="50"
+                VerticalOptions="Start"
                 Margin="0,10,0,0"
-                HeightRequest="50"
-                VerticalOptions="Start">
-        <StackLayout BindableLayout.ItemsSource="{Binding Filters}"
+                Orientation="Horizontal">
+        <StackLayout Padding="10,0"
+                     BindableLayout.ItemsSource="{Binding Filters}"
                      Orientation="Horizontal"
-                     Spacing="10"
-                     Padding="10,0">
+                     Spacing="10">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="models:HomeFilterItem">
-                    <sbutton:Button BackgroundColor="{StaticResource Primary}"
+                    <sbutton:Button VerticalOptions="Start"
                                     Padding="25,10"
-                                    VerticalOptions="Start">
+                                    BackgroundColor="{StaticResource Primary}">
                         <Label Text="{Binding Name}"
                                TextColor="#FFF"/>
                     </sbutton:Button>

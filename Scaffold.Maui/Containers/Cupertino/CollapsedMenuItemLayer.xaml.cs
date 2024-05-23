@@ -10,15 +10,15 @@ namespace ScaffoldLib.Maui.Containers.Cupertino;
 
 public partial class CollapsedMenuItemLayer : IZBufferLayout
 {
-    private readonly TaskCompletionSource<bool> _tsc = new();
-
     public event VoidDelegate? DeatachLayer;
 
     public CollapsedMenuItemLayer(CreateCollapsedMenuArgs args)
     {
         InitializeComponent();
         Padding = Scaffold.DeviceSafeArea;
-        Opacity = 0;
+        border.Scale = 0;
+        border.AnchorX = 1;
+        border.AnchorY = 0;
         CommandSelectedMenu = new Command(ActionSelectedMenu);
         GestureRecognizers.Add(new TapGestureRecognizer
         {
@@ -31,12 +31,6 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
 
     public ICommand CommandSelectedMenu { get; private set; }
 
-    protected override void OnHandlerChanged()
-    {
-        base.OnHandlerChanged();
-        _tsc.TrySetResult(true);
-    }
-
     private void ActionSelectedMenu(object param)
     {
         if (param is ScaffoldMenuItem menuItem)
@@ -48,16 +42,17 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
 
     public async Task OnShow(CancellationToken cancel)
     {
-        await this.FadeTo(1, 180);
+        await border.ScaleTo(1, 200, Easing.SpringOut);
     }
 
     public async Task OnHide(CancellationToken cancel)
     {
-        await this.FadeTo(0, 180);
+        await border.ScaleTo(0, 200, Easing.SinInOut);
     }
 
     public void OnRemoved()
     {
+        border.ScaleTo(0, 200, Easing.SinInOut);
     }
 }
 
@@ -70,8 +65,6 @@ public class ButtonCollapsedMenu : ButtonSam.Maui.Button
     };
     private ImageTint? iconImage;
     private Label? label;
-    private Color releasedAnimColor = Colors.Blue;
-    private Color pressedAnimationColor = Colors.Blue;
 
     public ButtonCollapsedMenu()
     {
@@ -179,39 +172,15 @@ public class ButtonCollapsedMenu : ButtonSam.Maui.Button
         }
     }
 
-    protected void AnimationPropertyColorIcon(Color color)
-    {
-        if (iconImage != null)
-            iconImage.TintColor = color;
-    }
-
-    protected void AnimationPropertyColorLabel(Color color)
-    {
-        if (label != null)
-            label.TextColor = color;
-    }
-
     protected override void AnimationFrame(double x)
     {
-        var colorIcon = releasedAnimColor.ApplyTint(pressedAnimationColor, x);
-        AnimationPropertyColorIcon(colorIcon);
-
-        var foreground = PriorityForegroundColor ?? ForegroundColor;
-        var colorLabel = foreground.ApplyTint(TapColor, x);
-        AnimationPropertyColorLabel(colorLabel);
+        BackgroundColor = Colors.Gray;
     }
 
-    //protected override Task<bool> MauiAnimationPressed()
-    //{
-    //    AnimationPropertyColor(pressedAnimationColor);
-    //    return Task.FromResult(true);
-    //}
-
-    //protected override Task<bool> MauiAnimationReleased()
-    //{
-    //    AnimationPropertyColor(releasedAnimColor);
-    //    return Task.FromResult(true);
-    //}
+    protected override void RestoreButton()
+    {
+        BackgroundColor = Colors.Transparent;
+    }
 
     private void UpdateIcon()
     {
@@ -265,17 +234,19 @@ public class ButtonCollapsedMenu : ButtonSam.Maui.Button
 
         if (!UseOriginalColor)
         {
-            AnimationPropertyColorLabel(foreground);
-            AnimationPropertyColorIcon(foreground);
-            releasedAnimColor = foreground;
-            pressedAnimationColor = TapColor;
+            if (label != null)
+                label.TextColor = foreground;
+
+            if (iconImage != null)
+                iconImage.TintColor = foreground;
         }
         else
         {
-            AnimationPropertyColorLabel(foreground);
-            AnimationPropertyColorIcon(Colors.Transparent);
-            releasedAnimColor = Colors.Transparent;
-            pressedAnimationColor = TapColor.MultiplyAlpha(0.7f);
+            if (label != null)
+                label.TextColor = foreground;
+
+            if (iconImage != null)
+                iconImage.TintColor = null;
         }
     }
 }

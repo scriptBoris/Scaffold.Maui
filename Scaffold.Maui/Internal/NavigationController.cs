@@ -101,33 +101,6 @@ internal class NavigationController : IDisposable
                     _scaffold.BatchCommit();
                 });
             }
-            //#if IOS
-            //            var tscPush = new TaskCompletionSource();
-            //            if (newAgent is View va && va.Handler.PlatformView is UIKit.UIView uiv)
-            //            {
-            //                var animator = new UIKit.UIViewPropertyAnimator(0.200, UIKit.UIViewAnimationCurve.EaseOut,
-            //                    () =>
-            //                    {
-            //                        oldAgent?.DoAnimation(1, NavigatingTypes.UnderPush);
-            //                        newAgent.DoAnimation(1, NavigatingTypes.Push);
-            //                    });
-            //                animator.StartAnimation();
-            //                animator.AddCompletion(pos =>
-            //                {
-            //                    tscPush.TrySetResult();
-            //                });
-            //            }
-            //            await tscPush.Task;
-
-            //#else
-            //await _scaffold.TransitAnimation("push", 0, 1, anim.Time, anim.Easing, x =>
-            //{
-            //    _scaffold.BatchBegin();
-            //    oldAgent?.DoAnimation(x, NavigatingTypes.UnderPush);
-            //    newAgent.DoAnimation(x, NavigatingTypes.Push);
-            //    _scaffold.BatchCommit();
-            //});
-            //#endif
 
             if (cancel.IsCancellationRequested)
                 return;
@@ -207,10 +180,9 @@ internal class NavigationController : IDisposable
             oldAgent.PrepareAnimate(NavigatingTypes.UnderReplace);
             newAgent.PrepareAnimate(NavigatingTypes.Replace);
 
+            await newAgent.AwaitReady(cancel);
             // Batch end
             _scaffold.BatchCommit();
-
-            await newAgent.AwaitReady(cancel);
 
             var anim = newAgent.GetAnimation(NavigatingTypes.Replace);
             await _scaffold.TransitAnimation("replace", 0, 1, anim.Time, anim.Easing, x =>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using ScaffoldLib.Maui;
 using ScaffoldLib.Maui.Core;
+using System.Diagnostics;
 
 namespace SampleDll.ViewModels;
 
@@ -14,7 +15,7 @@ public class RegisterViewModelKey
 {
 }
 
-public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButtonListener
+public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButtonListener, IRemovedFromNavigation
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -48,6 +49,11 @@ public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButto
 
         bool res = await ShowAlert("Warning", "You are sure to return previus page?", "Go back", "Cancel");
         return res;
+    }
+
+    public void OnRemovedFromNavigation()
+    {
+        Debug.WriteLine("Registration has been closed");
     }
 
     private bool HasChanges()

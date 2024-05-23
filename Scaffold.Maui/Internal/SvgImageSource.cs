@@ -70,7 +70,7 @@ public class SvgImageSource : StreamImageSource
     private async Task<Stream?> ResolveResource(string path)
     {
 #if IOS
-        var asm = Assembly.Load("Scaffold.Maui.dll");
+        var asm = Assembly.Load("Scaffold.Maui");
         var names = asm.GetManifestResourceNames();
         var stream = asm.GetManifestResourceStream(ResolvePath(path));
         return stream;
@@ -115,21 +115,12 @@ public class SvgImageSource : StreamImageSource
         }
         catch (Exception ex)
         {
+            string txt = $"{nameof(SvgImageSource)}:\n" + ex.ToString();
+            Console.WriteLine(txt);
+            System.Diagnostics.Debug.WriteLine(txt);
         }
     }
 
-//#if IOS
-//    public void SetupPng(string? png, CancellationToken cancel)
-//    {
-//        var s = ImageSource.FromFile(png);
-//        var fileHandler = new FileImageSourceHandler();
-//        var img = await fileHandler.LoadImageAsync(s, cancel);
-//        if (cancel.IsCancellationRequested)
-//            return;
-
-//        PlatformView.Image = img.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-//    }
-//#endif
 }
 
 [TypeConverter(typeof(SvgDataTypeConverter))]
@@ -212,7 +203,6 @@ public class SvgDataTypeConverter : TypeConverter
 
 public static class SvgDrawer
 {
-    //public static byte[]? Draw(Stream stream, Color? color, double width, double height, float screenScale)
     public static byte[]? Draw(Stream stream, float screenScale, SvgData svgData)
     {
         try
@@ -251,20 +241,6 @@ public static class SvgDrawer
             return null;
         }
     }
-
-    //public static async Task<byte[]?> DrawAsync(Stream stream, Color? color, double width, double height,
-    //    float screenScale,
-    //    CancellationToken cancel)
-    //{
-    //    var res = await Task.Run(() =>
-    //    {
-    //        var draw = Draw(stream, color, width, height, screenScale);
-    //        if (cancel.IsCancellationRequested)
-    //            return null;
-    //        return draw;
-    //    });
-    //    return res;
-    //}
 
     /// <summary>
     /// Tos the SKC olor.
