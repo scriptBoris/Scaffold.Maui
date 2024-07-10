@@ -67,15 +67,15 @@ public class SvgImageSource : StreamImageSource
 #endif
     }
 
-    private async Task<Stream?> ResolveResource(string path)
+    private Task<Stream?> ResolveResource(string path)
     {
 #if IOS
         var asm = Assembly.Load("Scaffold.Maui");
         var names = asm.GetManifestResourceNames();
         var stream = asm.GetManifestResourceStream(ResolvePath(path));
-        return stream;
+        return Task.FromResult(stream);
 #else
-        var res = await FileSystem.Current.OpenAppPackageFileAsync(path);
+        var res = FileSystem.Current.OpenAppPackageFileAsync(path);
         return res;
 #endif
     }
@@ -96,7 +96,6 @@ public class SvgImageSource : StreamImageSource
             if (res != null)
             {
                 float scale = (float)DeviceDisplay.Current.MainDisplayInfo.Density;
-                //float scale = 1;
                 byte[]? svg = SvgDrawer.Draw(res, scale, dat);
                 if (svg != null)
                 {

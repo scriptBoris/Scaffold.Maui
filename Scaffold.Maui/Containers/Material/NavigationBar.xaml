@@ -22,11 +22,9 @@
                          BackgroundColor="Transparent"
                          CornerRadius="20">
             <toolkit:ImageTint x:Name="imageBackButton"
+                               Source="ic_arrow_left.png"
                                HeightRequest="24"
                                WidthRequest="24">
-                <toolkit:ImageTint.Source>
-                    <internal:SvgImageSource Data="ic_arrow_left.svg"/>
-                </toolkit:ImageTint.Source>
             </toolkit:ImageTint>
         </internal:Button>
 
