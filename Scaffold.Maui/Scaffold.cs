@@ -474,9 +474,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     private bool isAddedDebug;
     internal void TryDrawDebugLabel()
     {
-#if RELEASE
-        return;
-#endif
+        if (!Initializer.IsDebugMode)
+            return;
 
         if (isAddedDebug)
             return;

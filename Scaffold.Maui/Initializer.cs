@@ -1,21 +1,30 @@
 ﻿using ButtonSam.Maui;
-using Microsoft.Maui.LifecycleEvents;
 using ScaffoldLib.Maui.Args;
-using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Toolkit;
+using System.Diagnostics;
 
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/2021/maui", "ScaffoldLib.Maui")]
-
 namespace ScaffoldLib.Maui;
 
 public static class Initializer
 {
+    private static bool? _isDebugMode;
+
     internal static bool IsInitialized { get; private set; }
     internal static bool UseDebugInfo { get; private set; }
+    internal static bool IsDebugMode
+    {
+        get
+        {
+            _isDebugMode ??= !DetectReleaseMode();
+            return _isDebugMode.Value;
+        }
+    }
 
     public static MauiAppBuilder UseScaffold(this MauiAppBuilder builder, UseScaffoldArgs? configArgs = null)
     {
         configArgs ??= new();
+        UseDebugInfo = configArgs.UseDebugInfo;
 
 #if ANDROID
         Platforms.Android.ScaffoldAndroid.Init(builder);
@@ -42,5 +51,19 @@ public static class Initializer
 
         IsInitialized = true;
         return builder;
+    }
+
+    private static bool DetectReleaseMode()
+    {
+        var assembly = Application.Current.GetType().Assembly;
+        object[] attributes = assembly.GetCustomAttributes(typeof(DebuggableAttribute), true);
+        if (attributes == null || attributes.Length == 0)
+            return true;
+
+        var d = (DebuggableAttribute)attributes[0];
+        if ((d.DebuggingFlags & DebuggableAttribute.DebuggingModes.Default) == DebuggableAttribute.DebuggingModes.None)
+            return true;
+
+        return false;
     }
 }
