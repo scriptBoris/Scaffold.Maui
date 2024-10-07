@@ -32,7 +32,7 @@
 	<ItemGroup>
 		<PackageReference Include="SkiaSharp" Version="2.88.7" />
 		<PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
-		<!--<PackageReference Include="ButtonSam.Maui" Version="8.1.2" />-->
+		<PackageReference Include="ButtonSam.Maui" Version="8.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,13 +43,9 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="$(TargetFrameworks) == 'android'">
-		<None Update="Platforms\Android\Resources\drawable\ic_arrow_left.xml" />
+		<None Update="Platforms\Android\Resources\drawable\ic_arrow_left.xml"/>
 		<None Update="Platforms\Android\Resources\drawable\ic_dots_vertical.xml" />
 		<None Update="Platforms\Android\Resources\drawable\ic_scaffold_menu.xml" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\ButtonSam.Maui\ButtonSam.Maui\ButtonSam.Maui.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
