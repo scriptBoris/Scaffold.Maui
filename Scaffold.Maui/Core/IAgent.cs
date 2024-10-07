@@ -319,14 +319,10 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
         ZBuffer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
     }
 
-    public virtual void Dispose()
+    public virtual async void Dispose()
     {
-        foreach (var item in Children)
-        {
-            if (item is IDisposable disposable)
-                disposable.Dispose();
-        }
-        Handler = null;
+        await Task.Delay(500);
+        DestroyView(this);
     }
 
     public virtual void OnAppear(bool isComplete)
@@ -348,5 +344,41 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
     public virtual void OnRemovedFromNavigation()
     {
         RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
+    }
+
+    public static void DestroyView(View vroot)
+    {
+        var items = vroot.GetVisualTreeDescendants();
+
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            var item = items[i];
+            if (item == vroot)
+                continue;
+
+            if (item is IDisposable dis)
+            {
+                dis.Dispose();
+            }
+            if (item is View vitem)
+            {
+                try
+                {
+                    vitem.Handler = null;
+                    vitem.Parent = null;
+                    vitem.BindingContext = null;
+                }
+                catch (Exception)
+                {
+                }
+            }
+            GC.SuppressFinalize(item);
+        }
+
+        vroot.BindingContext = null;
+        vroot.Parent = null;
+        vroot.Handler = null;
+        GC.SuppressFinalize(vroot);
+        GC.Collect();
     }
 }

@@ -37,7 +37,7 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
 
     Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args);
     Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args, View parentView);
-    
+
     Task Toast(CreateToastArgs args);
     void AddCustomLayer(IZBufferLayout layer, int zIndex);
     void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView);
@@ -316,6 +316,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     internal static IPlatformSpecific PlatformSpec { get; private set; }
 
     internal AppearingStates AppearingState { get; private set; } = AppearingStates.None;
+
+    internal IReadOnlyList<IAgent> Agents => _navigationController.Agents;
+
 
     public static Thickness DeviceSafeArea
     {
@@ -803,6 +806,13 @@ public static class ScaffoldExtensions
     public static IScaffold? GetContext(this View view)
     {
         return Scaffold.GetScaffoldContext(view);
+    }
+
+    public static IAgent GetAgent(this View view)
+    {
+        var sc = (Scaffold)Scaffold.GetScaffoldContext(view)!;
+        var agent = sc.Agents.FirstOrDefault(x => x.ViewWrapper.View == view);
+        return agent;
     }
 
     public static View? GetPage(this View view)

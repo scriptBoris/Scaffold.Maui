@@ -92,8 +92,10 @@ public class ViewFactory
         {
 #if IOS
             res = new Cupertino.DisplayAlertLayer(args);
-#else
+#elif ANDROID
             res = new Material.DisplayAlertLayer(args);
+#elif WINDOWS
+            res = new WinUI.DisplayAlertLayer(args);
 #endif
         }
         OnDisplayAlertCreated(res);

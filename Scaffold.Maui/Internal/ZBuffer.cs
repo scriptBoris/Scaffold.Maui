@@ -18,10 +18,13 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         BindingContext = null;
 
         // on winui wtf empty zbuffer cannot pass interactive events
-#if WINDOWS
+#if WINDOWS && NET8_0_OR_GREATER
         InputTransparent = true;
+        CascadeInputTransparent = false;
 #endif
     }
+
+    public IReadOnlyList<View> Layers => _items.Select(x => (View)x.View).ToList();
 
     public int LayersCount => _items.Count;
 
@@ -177,7 +180,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         //    item.View.Arrange(bounds);
         foreach (var item in Children)
         {
-            item.Arrange(bounds);
+            var s = item.Arrange(bounds);
         }
 
         return bounds.Size;
@@ -185,8 +188,10 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 
     public Size Measure(double widthConstraint, double heightConstraint)
     {
-        foreach (var item in Children)
-            item.Measure(widthConstraint, heightConstraint);
+        foreach (View item in Children)
+        {
+            var s = item.Measure(widthConstraint, heightConstraint);
+        }
 
         return new Size(widthConstraint, heightConstraint);
     }

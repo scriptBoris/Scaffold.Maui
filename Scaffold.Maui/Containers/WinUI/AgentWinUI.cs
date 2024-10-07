@@ -117,6 +117,9 @@ public class AgentWinUI : Agent, IWindowsBehavior
                 _flytoutButton.DesiredSize.Height));
         }
 
+        if (Scaffold.GetIsContentUnderNavigationBar(ViewWrapper.View))
+            offsetY = 0;
+
         if (ViewWrapper is IView view)
         {
             double h = bounds.Height - offsetY;
