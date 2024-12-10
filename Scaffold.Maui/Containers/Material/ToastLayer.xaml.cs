@@ -1,6 +1,7 @@
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
@@ -9,7 +10,7 @@ public partial class ToastLayer : IToast
     private readonly TaskCompletionSource<bool> _tsc = new();
 
     public event VoidDelegate? DeatachLayer;
-    private bool isInitialized;
+    private double _progressShow = 0;
 
     public ToastLayer(CreateToastArgs args)
 	{
@@ -17,6 +18,7 @@ public partial class ToastLayer : IToast
         labelTitle.Text = args.Title;
         labelTitle.IsVisible = args.Title != null;
         labelMessage.Text = args.Message;
+        frame.TranslationY = 1500;
         this.Dispatcher.StartTimer(args.ShowTime, () =>
         {
             DeatachLayer?.Invoke();
@@ -24,39 +26,54 @@ public partial class ToastLayer : IToast
         });
     }
 
-    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
     {
-        var res = base.MeasureOverride(widthConstraint, heightConstraint);
-
-        if (!isInitialized)
-        {
-            isInitialized = true;
-            frame.TranslationY = frame.DesiredSize.Height;
-        }
-        return res;
+        DeatachLayer?.Invoke();
     }
 
-    public async Task OnShow(CancellationToken cancellation)
+    public Task OnShow(CancellationToken cancellation)
     {
-        await frame.TranslateTo(0, 0, 140, Easing.CubicIn);
+        return frame.AnimateTo(
+            start: _progressShow,
+            end: 1,
+            name: nameof(OnShow),
+            updateAction: (view, value) =>
+            {
+                _progressShow = value;
+                if (view.Height >= 0)
+                    view.TranslationY = double.Lerp(view.Height, 0, value);
+            },
+            length: 140,
+            easing: Easing.CubicIn,
+            cancel: cancellation);
     }
 
-    public async Task OnHide(CancellationToken cancellation)
+    public Task OnHide(CancellationToken cancellation)
     {
-        await this.FadeTo(0, 180);
+        return frame.AnimateTo(
+            start: _progressShow,
+            end: 0,
+            name: nameof(OnHide),
+            updateAction: (view, value) =>
+            {
+                _progressShow = value;
+                if (view.Height >= 0)
+                    view.TranslationY = double.Lerp(view.Height, 0, value);
+            },
+            length: 180,
+            cancel: cancellation);
     }
 
     public void OnShow()
     {
         Opacity = 1;
-        frame.TranslationX = 0;
         frame.TranslationY = 0;
     }
 
     public void OnHide()
     {
         Opacity = 0;
-        frame.TranslationY = frame.Height;
+        frame.TranslationY = 500;
     }
 
     public Task GetResult()
@@ -67,10 +84,5 @@ public partial class ToastLayer : IToast
     public void OnRemoved()
     {
         _tsc.TrySetResult(true);
-    }
-
-    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
-    {
-        DeatachLayer?.Invoke();
     }
 }
