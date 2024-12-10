@@ -130,7 +130,7 @@ public class ElementPicker : BaseView
                 items.Add(item);
         }
 
-        var res = await Scaffold.GetRootScaffold()!.DisplayActionSheet(new ScaffoldLib.Maui.Args.CreateDisplayActionSheet
+        var res = await Scaffold.GetRootScaffold()!.DisplayActionSheet(new ScaffoldLib.Maui.Args.DisplayActionSheet
         {
             Title = Placeholder,
             Cancel = "Cancel",

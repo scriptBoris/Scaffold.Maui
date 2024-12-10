@@ -1,5 +1,6 @@
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
@@ -23,14 +24,42 @@ public partial class ToastLayer : IToast
         });
     }
 
-    public async Task OnShow(CancellationToken cancel)
+    public Task OnShow(CancellationToken cancel)
     {
-        await this.FadeTo(1, 180);
+        return this.AnimateTo(
+           start: Opacity,
+           end: 1,
+           name: nameof(OnShow),
+           updateAction: (v, value) =>
+           {
+               v.Opacity = value;
+           },
+           length: 180,
+           cancel: cancel);
     }
 
-    public async Task OnHide(CancellationToken cancel)
+    public Task OnHide(CancellationToken cancel)
     {
-        await this.FadeTo(0, 180);
+        return this.AnimateTo(
+           start: Opacity,
+           end: 0,
+           name: nameof(OnHide),
+           updateAction: (v, value) =>
+           {
+               v.Opacity = value;
+           },
+           length: 180,
+           cancel: cancel);
+    }
+
+    public void OnShow()
+    {
+        Opacity = 1;
+    }
+
+    public void OnHide()
+    {
+        Opacity = 0;
     }
 
     public void OnRemoved()

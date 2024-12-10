@@ -80,7 +80,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
         _backButtonBehavior = args.BackButtonBehavior;
         UpdateNavigationBar();
 
-        ZBuffer = new ZBuffer();
+        ZBuffer = new ZBuffer(args.Context);
         Children.Add((View)ZBuffer);
 
         SafeArea = args.SafeArea;
@@ -316,7 +316,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
             Context = Context,
             View = _view,
         });
-        ZBuffer.AddLayer(overlay, IScaffold.MenuItemsIndexZ);
+        ZBuffer.AddLayer(overlay, IScaffold.MenuItemsIndexZ, true);
     }
 
     public virtual async void Dispose()
@@ -356,29 +356,35 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
             if (item == vroot)
                 continue;
 
-            if (item is IDisposable dis)
-            {
-                dis.Dispose();
-            }
             if (item is View vitem)
             {
+                // todo Почему то здесь рандомно вываливается ObjectDisposedExpection
+                //try
+                //{
+                //    vitem.Handler = null;
+                //    vitem.Parent = null;
+                //    vitem.BindingContext = new object();
+                //}
+                //catch (Exception ex)
+                //{
+                //}
+
                 try
                 {
-                    vitem.Handler = null;
-                    vitem.Parent = null;
-                    vitem.BindingContext = null;
+                    if (item is IDisposable dis)
+                    {
+                        dis.Dispose();
+                    }
                 }
                 catch (Exception)
                 {
                 }
             }
-            GC.SuppressFinalize(item);
         }
 
         vroot.BindingContext = null;
         vroot.Parent = null;
         vroot.Handler = null;
-        GC.SuppressFinalize(vroot);
         GC.Collect();
     }
 }

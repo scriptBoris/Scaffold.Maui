@@ -13,9 +13,10 @@ public class ViewFactory
     public Func<CreateNavigationBarArgs, INavigationBar>? OverrideNavigationBar { get; set; }
     public Func<CreateViewWrapperArgs, IViewWrapper>? OverrideViewWrapper { get; set; }
     public Func<CreateCollapsedMenuArgs, IZBufferLayout>? OverrideCollapsedMenu { get; set; }
-    public Func<CreateDisplayAlertArgs, IDisplayAlert>? OverrideDisplayAlert { get; set; }
+    public Func<ICreateDisplayAlertArgs, IDisplayAlert>? OverrideDisplayAlert { get; set; }
     public Func<CreateDisplayActionSheet, IDisplayActionSheet>? OverrideDisplayActionSheet { get; set; }
     public Func<CreateToastArgs, IToast>? OverrideToast { get; set; }
+    public Func<CreateZBufferBackgroundLayer, IZBufferLayout>? OverrideCreateZBufferBackgroundLayer { get; set; }
 
     internal IAgent CreateAgent(CreateAgentArgs args)
     {
@@ -85,7 +86,7 @@ public class ViewFactory
         return res;
     }
 
-    internal IDisplayAlert CreateDisplayAlert(CreateDisplayAlertArgs args)
+    internal IDisplayAlert CreateDisplayAlert(ICreateDisplayAlertArgs args)
     {
         var res = OverrideDisplayAlert?.Invoke(args);
         if (res == null)
@@ -132,6 +133,21 @@ public class ViewFactory
         return res;
     }
 
+    internal IZBufferLayout? CreateZBufferBackgroundLayer(CreateZBufferBackgroundLayer args)
+    {
+        var res = OverrideCreateZBufferBackgroundLayer?.Invoke(args);
+        if (res == null)
+        {
+            if (args.ZIndex == IScaffold.AlertIndexZ)
+                res = new Common.AlertZBufferBackgroundLayer();
+        }
+
+        if (res != null)
+            CreateZBufferBackgroundLayer(res);
+
+        return res;
+    }
+
     protected virtual void OnAgentCreated(IAgent agent) { }
     protected virtual void OnNavigationBarCreated(INavigationBar navigationBar) { }
     protected virtual void OnViewWrapperCreated(IViewWrapper viewWrapper) { }
@@ -139,4 +155,5 @@ public class ViewFactory
     protected virtual void OnDisplayAlertCreated(IDisplayAlert alert) { }
     protected virtual void OnDisplayActionSheetCreated(IDisplayActionSheet actionSheet) { }
     protected virtual void OnToastCreated(IToast toast) { }
+    protected virtual void CreateZBufferBackgroundLayer(IZBufferLayout backgroundLayer) { }
 }

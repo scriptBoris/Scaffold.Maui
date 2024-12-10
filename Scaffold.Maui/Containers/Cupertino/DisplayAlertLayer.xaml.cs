@@ -1,6 +1,7 @@
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Toolkit;
 using System.Threading.Channels;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
@@ -9,10 +10,10 @@ public partial class DisplayAlertLayer : IDisplayAlert
 {
     public event VoidDelegate? DeatachLayer;
     private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
-    private bool isBusy;
     private bool? prepareResult;
+    private double _showProgress;
 
-    public DisplayAlertLayer(CreateDisplayAlertArgs args)
+    public DisplayAlertLayer(ICreateDisplayAlertArgs args)
     {
         InitializeComponent();
         Opacity = 0;
@@ -44,19 +45,47 @@ public partial class DisplayAlertLayer : IDisplayAlert
         return _taskCompletionSource.Task;
     }
 
-    public async Task OnShow(CancellationToken cancel)
+    public Task OnShow(CancellationToken cancel)
     {
-        this.CancelAnimations();
-        await Task.WhenAll(
-            this.FadeTo(1, 180),
-            this.ScaleTo(1, 180, Easing.CubicInOut)
-        );
+        return this.AnimateTo(
+            start: _showProgress,
+            end: 1,
+            name: nameof(OnShow),
+            updateAction: (v, value) =>
+            {
+                _showProgress = value;
+                v.Opacity = value;
+                v.Scale = double.Lerp(1.4, 1, Easing.CubicInOut.Ease(value));
+            },
+            length: 180,
+            cancel: cancel);
     }
 
-    public async Task OnHide(CancellationToken cancel)
+    public Task OnHide(CancellationToken cancel)
     {
-        this.CancelAnimations();
-        await this.FadeTo(0, 180);
+        return this.AnimateTo(
+            start: _showProgress,
+            end: 0,
+            name: nameof(OnHide),
+            updateAction: (v, value) =>
+            {
+                _showProgress = value;
+                v.Opacity = value;
+            },
+            length: 180,
+            cancel: cancel);
+    }
+
+    public void OnShow()
+    {
+        Opacity = 1;
+        Scale = 1;
+    }
+
+    public void OnHide()
+    {
+        Opacity = 0;
+        Scale = 1.4;
     }
 
     public void OnRemoved()
@@ -69,5 +98,4 @@ public partial class DisplayAlertLayer : IDisplayAlert
         prepareResult ??= result;
         DeatachLayer?.Invoke();
     }
-
 }

@@ -21,6 +21,14 @@ public partial class DebugInfo : IZBufferLayout
         return Task.CompletedTask;
     }
 
+    public void OnShow()
+    {
+    }
+
+    public void OnHide()
+    {
+    }
+
     public void OnRemoved()
     {
     }

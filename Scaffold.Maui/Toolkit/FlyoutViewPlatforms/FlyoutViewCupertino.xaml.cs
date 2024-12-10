@@ -120,7 +120,7 @@ public partial class FlyoutViewCupertino : FlyoutViewBase
         public ImageSource? OverrideBackButtonIcon(IAgent agent, IScaffold context)
         {
             if (agent.IndexInNavigationStack == 0)
-                return new SvgImageSource("ios_scaffold_menu.svg");
+                return new SvgImageSource("scaffoldlib_flyout_menu.svg");
 
             return null;
         }

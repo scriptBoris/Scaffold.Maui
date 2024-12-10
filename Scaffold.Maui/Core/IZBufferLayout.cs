@@ -9,7 +9,9 @@ namespace ScaffoldLib.Maui.Core;
 public interface IZBufferLayout : IView
 {
     public event VoidDelegate? DeatachLayer;
+    void OnShow();
     Task OnShow(CancellationToken cancel);
+    void OnHide();
     Task OnHide(CancellationToken cancel);
     void OnRemoved();
 }

@@ -50,6 +50,16 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
         await border.ScaleTo(0, 200, Easing.SinInOut);
     }
 
+    public void OnShow()
+    {
+        border.Scale = 1;
+    }
+
+    public void OnHide()
+    {
+        border.Scale = 0;
+    }
+
     public void OnRemoved()
     {
         border.ScaleTo(0, 200, Easing.SinInOut);

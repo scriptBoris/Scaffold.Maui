@@ -22,9 +22,9 @@
                          BackgroundColor="Transparent"
                          CornerRadius="20">
             <toolkit:ImageTint x:Name="imageBackButton"
-                               Source="ic_arrow_left.png"
                                HeightRequest="24"
-                               WidthRequest="24">
+                               WidthRequest="24"
+                               Source="scaffoldlib_arrow_left.png">
             </toolkit:ImageTint>
         </internal:Button>
 
@@ -68,7 +68,7 @@
             <toolkit:ImageTint x:Name="imageMenu"
                                HeightRequest="24"
                                WidthRequest="24"
-                               Source="ic_dots_vertical.png"/>
+                               Source="scaffoldlib_toolbar_menu.png"/>
         </internal:Button>
     </StackLayout>
 </Grid>

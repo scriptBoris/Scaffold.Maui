@@ -84,7 +84,7 @@ public abstract class BaseViewModel : BaseNotify
 
     public Task ShowAlert(string title, string message, string ok)
     {
-        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        return View.GetContext()!.DisplayAlert(new DisplayAlertArgs
         {
             Title = title,
             Description = message,
@@ -94,7 +94,7 @@ public abstract class BaseViewModel : BaseNotify
 
     public Task<bool> ShowAlert(string title, string message, string ok, string cancel)
     {
-        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        return View.GetContext()!.DisplayAlert(new DisplayAlertArgs2
         {
             Title = title,
             Description = message,
@@ -105,7 +105,7 @@ public abstract class BaseViewModel : BaseNotify
 
     public Task ShowError(string message)
     {
-        return View.GetContext()!.DisplayAlert(new CreateDisplayAlertArgs
+        return View.GetContext()!.DisplayAlert(new DisplayAlertArgs
         {
             Title = "Error",
             Description = message,

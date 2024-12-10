@@ -120,7 +120,7 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
         public ImageSource? OverrideBackButtonIcon(IAgent agent, IScaffold context)
         {
             if (agent.IndexInNavigationStack == 0)
-                return ImageSource.FromFile("ic_scaffold_menu.png");
+                return ImageSource.FromFile("scaffoldlib_flyout_menu.png");
 
             return null;
         }

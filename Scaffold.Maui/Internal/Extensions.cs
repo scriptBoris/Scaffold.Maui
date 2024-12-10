@@ -296,19 +296,24 @@ internal static class Extensions
         return null;
     }
 
-    private static View? FindScaffold(View view)
+    private static View? FindScaffold(View view, int immersion = 0)
     {
+        if (immersion > 100)
+            throw new InvalidOperationException("A lot deep immersion for trying find scaffold");
+
+        immersion++;
+
         switch (view)
         {
             case Scaffold vc:
                 return vc;
 
             case ContentView cv:
-                return FindScaffold(cv);
+                return FindScaffold(cv.Content, immersion);
 
             case Layout l:
                 foreach (var item in l.Children)
-                    return FindScaffold((View)item);
+                    return FindScaffold((View)item, immersion);
                 break;
 
             default:
@@ -400,5 +405,29 @@ internal static class Extensions
             return target;
 
         return default;
+    }
+
+    internal static Task RunAny(Task? task1, Task? task2, Task? task3)
+    {
+        var tasks = new List<Task>();
+        
+        if (task1 != null)
+            tasks.Add(task1);
+
+        if (task2 != null)
+            tasks.Add(task2);
+
+        if (task3 != null)
+            tasks.Add(task3);
+
+        return Task.WhenAny(tasks);
+    }
+
+    internal static Task ContinueWithInUIThread(this Task task, Action code)
+    {
+        return task.ContinueWith(x =>
+        {
+            MainThread.BeginInvokeOnMainThread(code);
+        });
     }
 }

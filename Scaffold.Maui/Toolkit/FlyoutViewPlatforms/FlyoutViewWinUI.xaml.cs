@@ -25,7 +25,7 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
             {
                 HeightRequest = 18,
                 WidthRequest = 18,
-                Source = "ic_scaffold_menu.png",
+                Source = "scaffoldlib_flyout_menu.png",
             },
             TapCommand = new Command(() =>
             {

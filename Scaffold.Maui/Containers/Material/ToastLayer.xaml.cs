@@ -46,6 +46,19 @@ public partial class ToastLayer : IToast
         await this.FadeTo(0, 180);
     }
 
+    public void OnShow()
+    {
+        Opacity = 1;
+        frame.TranslationX = 0;
+        frame.TranslationY = 0;
+    }
+
+    public void OnHide()
+    {
+        Opacity = 0;
+        frame.TranslationY = frame.Height;
+    }
+
     public Task GetResult()
     {
         return _tsc.Task;

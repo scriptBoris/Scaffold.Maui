@@ -89,7 +89,7 @@ public static class ScaffoldAndroid
                     if (item is not Scaffold scaffold)
                         continue;
 
-                    if (scaffold.ZBuffer.Pop())
+                    if (scaffold.ZBuffer.TryPopModal(true))
                         return;
                 }
 

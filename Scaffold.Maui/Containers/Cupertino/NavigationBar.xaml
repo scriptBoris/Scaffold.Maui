@@ -16,7 +16,7 @@
                           ForegroundColor="{Binding ForegroundColor}"
                           ImageSourcePadding="3">
             <local:ButtonMenu.ImageSource>
-                <internal:SvgImageSource Data="ios_chevron_left.svg;44;44"/>
+                <internal:SvgImageSource Data="scaffoldlib_arrow_left.svg;44;44"/>
             </local:ButtonMenu.ImageSource>
         </local:ButtonMenu>
 
@@ -51,7 +51,7 @@
                                BackgroundColor="Transparent"
                                CornerRadius="20">
             <local:ButtonCupertino.Icon>
-                <internal:SvgImageSource Data="ic_dots_vertical.svg"/>
+                <internal:SvgImageSource Data="scaffoldlib_toolbar_menu.svg"/>
             </local:ButtonCupertino.Icon>
         </local:ButtonCupertino>
     </StackLayout>

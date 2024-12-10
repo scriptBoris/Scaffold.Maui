@@ -9,35 +9,35 @@
       x:Name="root"
       BackgroundColor="Transparent">
 
-    <Border BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
-            StrokeShape="RoundRectangle 8"
-            StrokeThickness="0"
+    <Border HorizontalOptions="End"
+            VerticalOptions="Start"
             Margin="0,35,25,0"
             Padding="0"
-            VerticalOptions="Start"
-            HorizontalOptions="End">
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
+            StrokeShape="RoundRectangle 8"
+            StrokeThickness="0">
 
-        <Border.Shadow>
+        <!--<Border.Shadow>
             <Shadow Brush="black"
                     Offset="0,0"
                     Opacity="0.4"
                     Radius="{AppThemeBinding Light=40, Dark=20}"/>
-        </Border.Shadow>
+        </Border.Shadow>-->
 
         <StackLayout x:Name="stackMenu"
                      BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
-                     Spacing="0"
-                     MinimumWidthRequest="130">
+                     MinimumWidthRequest="130"
+                     Spacing="0">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
-                    <local:ButtonMenuOnPopup BackgroundColor="Transparent"
+                    <local:ButtonMenuOnPopup Padding="10"
+                                             BackgroundColor="Transparent"
                                              CornerRadius="0"
                                              ImageSource="{Binding ImageSource}"
                                              TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
                                              TapCommandParameter="{Binding .}"
                                              Text="{Binding Text}"
-                                             UseOriginalColor="{Binding UseOriginalColor}"
-                                             Padding="10"/>
+                                             UseOriginalColor="{Binding UseOriginalColor}"/>
                     <!--<sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
                                 TapCommandParameter="{Binding .}"
                                 CornerRadius="0"

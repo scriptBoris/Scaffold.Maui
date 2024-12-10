@@ -92,7 +92,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     public void UpdateBackButtonVisibility(bool isVisible)
     {
         var src = backButtonBehavior?.OverrideBackButtonIcon(_agent, _context);
-        imageBackButton.Source = src ?? ImageSource.FromFile("ic_arrow_left.png");
+        imageBackButton.Source = src ?? ImageSource.FromFile("scaffoldlib_arrow_left.png");
 
         var visible = backButtonBehavior?.OverrideBackButtonVisibility(_agent, _context);
         backButton.IsVisible = visible ?? isVisible;

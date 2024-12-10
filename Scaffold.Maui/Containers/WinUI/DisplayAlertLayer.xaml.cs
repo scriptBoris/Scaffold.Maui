@@ -1,17 +1,18 @@
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.WinUI;
 
 public partial class DisplayAlertLayer : IDisplayAlert
 {
-	private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
-	private bool? prepareResult;
+    private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
+    private bool? prepareResult;
 
     public event VoidDelegate? DeatachLayer;
 
-    public DisplayAlertLayer(CreateDisplayAlertArgs args)
+    public DisplayAlertLayer(ICreateDisplayAlertArgs args)
     {
         InitializeComponent();
         Opacity = 0;
@@ -45,35 +46,45 @@ public partial class DisplayAlertLayer : IDisplayAlert
         DeatachLayer?.Invoke();
     }
 
-	public Task<bool> GetResult()
-	{
-		return _taskCompletionSource.Task;
-	}
-
-    public async Task OnShow(CancellationToken cancel)
+    public Task<bool> GetResult()
     {
-        await this.FadeTo(1, 180);
+        return _taskCompletionSource.Task;
     }
 
-    public async Task OnHide(CancellationToken cancel)
+    public Task OnShow(CancellationToken cancel)
     {
-        await this.FadeTo(0, 180);
+        return this.AnimateTo(
+            start: Opacity,
+            end: 1,
+            name: nameof(OnShow),
+            updateAction: (v, value) => v.Opacity = value,
+            length: 180,
+            cancel: cancel);
+    }
+
+    public Task OnHide(CancellationToken cancel)
+    {
+        return this.AnimateTo(
+            start: Opacity,
+            end: 0,
+            name: nameof(OnHide),
+            updateAction: (v, value) => v.Opacity = value,
+            length: 180,
+            cancel: cancel);
+    }
+
+    public void OnShow()
+    {
+        Opacity = 1;
+    }
+
+    public void OnHide()
+    {
+        Opacity = 0;
     }
 
     public void OnRemoved()
     {
         _taskCompletionSource.TrySetResult(prepareResult ?? false);
-    }
-
-    protected override Size ArrangeOverride(Rect bounds)
-    {
-        var res =  base.ArrangeOverride(bounds);
-        return res;
-    }
-
-    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
-    {
-        var s = base.MeasureOverride(widthConstraint, heightConstraint);
-        return s;
     }
 }

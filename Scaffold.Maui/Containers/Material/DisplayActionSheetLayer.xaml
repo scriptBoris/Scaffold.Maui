@@ -4,17 +4,18 @@
              xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="ScaffoldLib.Maui.Containers.Material.DisplayActionSheetLayer"
              x:Name="root"
-             BackgroundColor="#88000000">
+             BackgroundColor="Transparent">
 
-    <Border Padding="0"
-            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
+    <Border x:Name="border"
+            WidthRequest="250"
             HorizontalOptions="Center"
-            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
-            StrokeShape="RoundRectangle 10"
             VerticalOptions="Center"
-            WidthRequest="250">
+            Padding="0"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
+            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
+            StrokeShape="RoundRectangle 10">
         <Border.GestureRecognizers>
-            <TapGestureRecognizer />
+            <TapGestureRecognizer/>
         </Border.GestureRecognizers>
 
         <StackLayout x:Name="rootStackLayout"
@@ -22,14 +23,14 @@
                      Spacing="7">
             <Label x:Name="labelTitle"
                    Margin="10,0"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
-            <ScrollView MaximumHeightRequest="200"
-                        VerticalOptions="Center"
+            <ScrollView VerticalOptions="Center"
+                        MaximumHeightRequest="200"
                         VerticalScrollBarVisibility="Always">
                 <StackLayout x:Name="itemList"
-                             Spacing="0"
-                             VerticalOptions="Center">
+                             VerticalOptions="Center"
+                             Spacing="0">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <sam:Button Margin="0"
@@ -38,7 +39,7 @@
                                         CornerRadius="0"
                                         TapCommand="{Binding CommandTapItem, Source={Reference root}}"
                                         TapCommandParameter="{Binding .}">
-                                <Label Text="{Binding Value}" />
+                                <Label Text="{Binding Value}"/>
                             </sam:Button>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
@@ -52,7 +53,7 @@
                 <Label x:Name="labelButtonDestruction"
                        Margin="0,0,10,0"
                        HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </sam:Button>
 
             <sam:Button x:Name="buttonCancel"
@@ -62,7 +63,7 @@
                 <Label x:Name="labelButtonCancel"
                        Margin="0,0,10,0"
                        HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </sam:Button>
         </StackLayout>
     </Border>

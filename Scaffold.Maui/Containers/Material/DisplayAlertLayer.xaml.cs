@@ -1,20 +1,22 @@
 using ScaffoldLib.Maui.Args;
-using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
 public partial class DisplayAlertLayer : IDisplayAlert
 {
-	private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
-	private bool? prepareResult;
+    private readonly TaskCompletionSource<bool> _taskCompletionSource = new();
+    private bool? prepareResult;
 
     public event VoidDelegate? DeatachLayer;
 
-    public DisplayAlertLayer(CreateDisplayAlertArgs args)
+    public DisplayAlertLayer(ICreateDisplayAlertArgs args)
     {
         InitializeComponent();
-        Opacity = 0;
+        border.Opacity = 0;
+        border.Scale = 0.95;
+
         GestureRecognizers.Add(new TapGestureRecognizer
         {
             Command = new Command(() => Close(false)),
@@ -45,19 +47,52 @@ public partial class DisplayAlertLayer : IDisplayAlert
         DeatachLayer?.Invoke();
     }
 
-	public Task<bool> GetResult()
-	{
-		return _taskCompletionSource.Task;
-	}
-
-    public async Task OnShow(CancellationToken cancel)
+    public Task<bool> GetResult()
     {
-        await this.FadeTo(1, 180);
+        return _taskCompletionSource.Task;
     }
 
-    public async Task OnHide(CancellationToken cancel)
+    public Task OnShow(CancellationToken cancel)
     {
-        await this.FadeTo(0, 180);
+        return border.AnimateTo(
+            start: border.Opacity,
+            end: 1,
+            name: nameof(OnShow),
+            updateAction: (v, value) =>
+            {
+                v.Opacity = value;
+                v.Scale = double.Lerp(0.95, 1.0, value);
+            },
+            length: 180,
+            easing: null,
+            cancel: cancel);
+    }
+
+    public Task OnHide(CancellationToken cancel)
+    {
+        return border.AnimateTo(
+            start: border.Opacity,
+            end: 0,
+            name: nameof(OnHide),
+            updateAction: (v, value) =>
+            {
+                v.Opacity = value;
+            },
+            length: 180,
+            easing: null,
+            cancel: cancel);
+    }
+
+    public void OnShow()
+    {
+        border.Opacity = 1;
+        border.Scale = 1;
+    }
+
+    public void OnHide()
+    {
+        border.Opacity = 0;
+        border.Scale = 0.95;
     }
 
     public void OnRemoved()

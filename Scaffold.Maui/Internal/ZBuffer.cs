@@ -6,17 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using ScaffoldLib.Maui.Core;
 using Microsoft.Maui.Handlers;
+using System.Threading;
 
 namespace ScaffoldLib.Maui.Internal;
 
 internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 {
     private readonly List<LayerItem> _items = new();
+    private readonly IScaffold _scaffold;
+    private readonly Dictionary<int, LayerItem> _backgrounds = new();
 
-    public ZBuffer()
+    public ZBuffer(IScaffold scaffoldContext)
     {
+        _scaffold = scaffoldContext;
         BindingContext = null;
-
         // on winui wtf empty zbuffer cannot pass interactive events
 #if WINDOWS && NET8_0_OR_GREATER
         InputTransparent = true;
@@ -40,147 +43,299 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
     }
 #endif
 
-    public async void AddLayer(IZBufferLayout newLayer, int zIndex)
+    public Task AddLayerAsync(IZBufferLayout newLayer, int zIndex, bool animation)
     {
-        BatchBegin();
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Please ivoke in main UI thread");
 
         var old = _items.LastOrDefault((x) => x.Index == zIndex);
-        var newLayerItem = new LayerItem(newLayer)
-        {
-            Buffer = this,
-            Index = zIndex,
-        };
-        _items.Add(newLayerItem);
+        var nev = new LayerItem(newLayer, zIndex, this);
+
+        if (old == null)
+            TryCreateBackgroundLayer(zIndex, animation);
+
+        _items.Add(nev);
         Children.Add(newLayer);
 
-        newLayer.TryAppearing();
-
-        if (newLayer is View v)
-            await v.AwaitReady();
-
-        BatchCommit();
-
-        var taskOld = Task.CompletedTask;
-        if (old != null)
-        {
-            taskOld = this.Dispatcher.DispatchAsync(async () =>
-            {
-                if (old.View is not IZBufferLayout oldz ||
-                    old.View is not View oldv)
-                    return;
-
-                oldz.TryDisappearing(false);
-                await oldz.OnHide(old.FetchCancelation);
-                oldv.IsVisible = false;
-                oldz.TryDisappearing(true);
-            });
-        }
-
-        var taskNew = this.Dispatcher.DispatchAsync(async () =>
-        {
-            await newLayer.OnShow(newLayerItem.FetchCancelation);
-            newLayer.TryAppearing(true);
-        });
-
-        await Task.WhenAny(taskOld, taskNew);
+        _ = old?.HideAsync(animation);
+        return nev.ShowAsync(animation);
     }
 
-    public async Task<bool> RemoveLayerAsync(int zIndex)
+    public void AddLayer(IZBufferLayout newLayer, int zIndex, bool animation)
+    {
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Please ivoke in main UI thread");
+
+        var old = _items.LastOrDefault((x) => x.Index == zIndex);
+        var nev = new LayerItem(newLayer, zIndex, this);
+
+        _items.Add(nev);
+        Children.Add(nev.View);
+
+        if (animation)
+        {
+            _ = old?.HideAsync(true);
+            _ = nev.ShowAsync(true);
+
+            if (old == null)
+                _ = TryCreateBackgroundLayerAsync(zIndex, true);
+        }
+        else
+        {
+            old?.Hide(false);
+            nev.Show(false);
+
+            if (old == null)
+                TryCreateBackgroundLayer(zIndex, false);
+        }
+    }
+
+    public Task RemoveLayer(IZBufferLayout removedOverlay, bool animation)
+    {
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Please ivoke in main UI thread");
+
+        var layer = _items.LastOrDefault(x => x.ZView == removedOverlay);
+        if (layer == null)
+            return Task.CompletedTask;
+
+        return RemoveLayerAsync(layer, animation);
+    }
+
+    public async Task RemoveLayers(int zIndex, bool animation)
+    {
+        var layers = _items.Where(x => x.Index == zIndex).ToArray();
+        foreach (var item in layers)
+        {
+            _ = RemoveLayerAsync(item, animation);
+        }
+        await TryHideBackgroundLayerAsync(zIndex, animation);
+    }
+
+
+    public bool TryPopModal(bool animation)
+    {
+        var lastModal = _items.LastOrDefault(x => x.View is IModalLayout);
+        if (lastModal == null)
+            return false;
+
+        RemoveLayer(lastModal, animation);
+        return true;
+    }
+
+    public async Task<bool> TryPopLayerAsync(int zIndex, bool animation)
     {
         var match = _items.LastOrDefault(x => x.Index == zIndex);
         if (match == null)
             return false;
 
-        await RemoveLayerAsync(match);
-        var under = _items.LastOrDefault(x => x.Index == zIndex);
-        if (under != null)
-            ShowLayer(under);
-
+        await RemoveLayerAsync(match, animation);
         return true;
     }
 
-    public bool Pop()
+    private Task RemoveLayerAsync(LayerItem sureExistLayer, bool animation)
     {
-        var last = _items.LastOrDefault(x => x.View is IModalLayout);
-        if (last == null)
-            return false;
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Please ivoke in main UI thread");
 
-        RemoveLayerAsync(last).ConfigureAwait(false);
-        var under = _items.LastOrDefault(x => x.View is IModalLayout);
-        if (under != null)
-            ShowLayer(under);
+        // Если слой уже удаляется, то ничего не делаем
+        if (sureExistLayer.IsHiding)
+            return Task.CompletedTask;
 
-        return true;
-    }
+        bool useAnimation = animation;
+        var popLayer = sureExistLayer;
+        var currentLayer = _items.LastOrDefault(x => x.Index == popLayer.Index);
 
-    private async void PopAsync(LayerItem popLayer)
-    {
-        popLayer.IsRemoving = true;
+        // Если слой невиден
+        if (currentLayer != popLayer)
+        {
+            _items.Remove(popLayer);
+            Children.Remove(popLayer.View);
+            popLayer.ZView.OnRemoved();
+            return Task.CompletedTask;
+        }
+
         _items.Remove(popLayer);
+        var under = _items.LastOrDefault(x => x.Index == popLayer.Index);
 
-        if (popLayer.View is View v && v.IsVisible)
+        if (animation)
         {
-            var under = _items.LastOrDefault(x => x.Index == popLayer.Index);
+            var taskHide = popLayer.HideAsync(true)
+                .ContinueWithInUIThread(() =>
+                {
+                    Children.Remove(popLayer.View);
+                    popLayer.ZView.OnRemoved();
+                });
 
-            popLayer.View.TryDisappearing();
+            _ = under?.ShowAsync(animation);
 
-            if (popLayer.View is IZBufferLayout layout)
-                await layout.OnHide(popLayer.FetchCancelation);
+            if (under == null)
+                _ = TryHideBackgroundLayerAsync(popLayer.Index, animation);
 
-            popLayer.View.TryDisappearing(true);
-
-            if (under != null)
-                ShowLayer(under);
+            return taskHide;
         }
+        else
+        {
+            popLayer.Hide(animation);
+            under?.Show(animation);
+            Children.Remove(popLayer.View);
+            popLayer.ZView.OnRemoved();
+            
+            if (under == null)
+                TryHideBackgroundLayer(popLayer.Index, animation);
 
-        if (popLayer.View is IZBufferLayout layout2)
-            layout2.OnRemoved();
-
-        Children.Remove(popLayer.View);
-        popLayer.Dispose();
+            return Task.CompletedTask;
+        }
     }
 
-    private async Task RemoveLayerAsync(LayerItem removedLayer)
+    private void RemoveLayer(LayerItem sureExistLayer, bool animation)
     {
-        removedLayer.IsRemoving = true;
-        _items.Remove(removedLayer);
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Please ivoke in main UI thread");
 
-        if (removedLayer.View is View v && v.IsVisible)
-        {
-            removedLayer.View.TryDisappearing();
-
-            if (removedLayer.View is IZBufferLayout layout)
-                await layout.OnHide(removedLayer.FetchCancelation);
-
-            removedLayer.View.TryDisappearing(true);
-        }
-
-        if (removedLayer.View is IZBufferLayout layout2)
-            layout2.OnRemoved();
-
-        Children.Remove(removedLayer.View);
-        removedLayer.Dispose();
-    }
-
-    private async void ShowLayer(LayerItem show)
-    {
-        if (show.View is not IZBufferLayout showz ||
-            show.View is not View showv)
+        // Если слой уже удаляется, то ничего не делаем
+        if (sureExistLayer.IsHiding)
             return;
 
-        showv.IsVisible = true;
-        showz.TryAppearing();
-        await showz.OnShow(show.FetchCancelation);
-        showz.TryAppearing(true);
+        bool useAnimation = animation;
+        var popLayer = sureExistLayer;
+        var currentLayer = _items.LastOrDefault(x => x.Index == popLayer.Index);
+
+        // Если слой невиден
+        if (currentLayer != popLayer)
+        {
+            _items.Remove(popLayer);
+            Children.Remove(popLayer.View);
+            popLayer.ZView.OnRemoved();
+            return;
+        }
+
+        bool isRemoved = _items.Remove(popLayer);
+        if (!isRemoved)
+        {
+            //System.Diagnostics.Debugger.Break();
+        }
+
+        var under = _items.LastOrDefault(x => x.Index == popLayer.Index);
+
+        if (animation)
+        {
+            _ = popLayer.HideAsync(true)
+                .ContinueWithInUIThread(() =>
+                {
+                    Children.Remove(popLayer.View);
+                    popLayer.ZView.OnRemoved();
+                });
+            _ = under?.ShowAsync(true);
+
+            if (under == null)
+                _ = TryHideBackgroundLayerAsync(popLayer.Index, animation);
+        }
+        else
+        {
+            popLayer.Hide(false);
+            under?.Show(false);
+            Children.Remove(popLayer.View);
+            popLayer.ZView.OnRemoved();
+
+            if (under == null)
+                TryHideBackgroundLayer(popLayer.Index, animation);
+        }
+    }
+
+    private void TryCreateBackgroundLayer(int zindex, bool animation)
+    {
+        LayerItem? layerBG = null;
+        if (_backgrounds.TryGetValue(zindex, out var already))
+        {
+            layerBG = already;
+        }
+        else
+        {
+            var layer = _scaffold.ViewFactory.CreateZBufferBackgroundLayer(new Args.CreateZBufferBackgroundLayer
+            {
+                ZIndex = zindex
+            });
+
+            if (layer != null)
+            {
+                try
+                {
+                    layerBG = new LayerItem(layer, zindex, this);
+                    _backgrounds.Add(zindex, layerBG);
+                    Children.Insert(0, layerBG.View);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Fail to use view", ex);
+                }
+            }
+        }
+        
+        if (layerBG == null)
+            return;
+
+        _ = layerBG.ShowAsync(animation);
+    }
+
+    private Task TryCreateBackgroundLayerAsync(int zindex, bool animation)
+    {
+        LayerItem? layerBG = null;
+        if (_backgrounds.TryGetValue(zindex, out var already))
+        {
+            layerBG = already;
+        }
+        else
+        {
+            var layer = _scaffold.ViewFactory.CreateZBufferBackgroundLayer(new Args.CreateZBufferBackgroundLayer
+            {
+                ZIndex = zindex
+            });
+
+            if (layer != null)
+            {
+                try
+                {
+                    layerBG = new LayerItem(layer, zindex, this);
+                    _backgrounds.Add(zindex, layerBG);
+                    Children.Insert(0, layerBG.View);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Fail to use view", ex);
+                }
+            }
+        }
+
+        if (layerBG == null)
+            return Task.CompletedTask;
+
+        return layerBG.ShowAsync(animation);
+    }
+
+    private Task TryHideBackgroundLayerAsync(int zindex, bool animation)
+    {
+        if (_backgrounds.TryGetValue(zindex, out var bgLayer))
+        {
+            return bgLayer.HideAsync(animation);    
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void TryHideBackgroundLayer(int zindex, bool animation)
+    {
+        if (_backgrounds.TryGetValue(zindex, out var bgLayer))
+        {
+            bgLayer.Hide(animation);
+        }
     }
 
     public Size ArrangeChildren(Rect bounds)
     {
-        //foreach (var item in _items)
-        //    item.View.Arrange(bounds);
         foreach (var item in Children)
         {
-            var s = item.Arrange(bounds);
+            item.Arrange(bounds);
         }
 
         return bounds.Size;
@@ -190,7 +345,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
     {
         foreach (View item in Children)
         {
-            var s = item.Measure(widthConstraint, heightConstraint);
+            item.Measure(widthConstraint, heightConstraint);
         }
 
         return new Size(widthConstraint, heightConstraint);
@@ -211,43 +366,154 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
 
     private class LayerItem : IDisposable
     {
-        private CancellationTokenSource cancellationTokenSource = new();
+        private CancellationTokenSource _cancellationTokenSource = new();
+        private readonly ZBuffer _parent;
 
-        public LayerItem(IView view)
+        public LayerItem(IView view, int zindex, ZBuffer parent)
         {
+            _parent = parent;
+
+            Index = zindex;
             View = view;
+            ZView = (IZBufferLayout)view;
+            MauiView = (View)view;
 
             if (view is IZBufferLayout layout)
                 layout.DeatachLayer += OnViewDeatached;
+
         }
 
+        public View MauiView { get; private set; }
         public IView View { get; private set; }
-        public required ZBuffer Buffer { get; set; }
-        public required int Index { get; set; }
-        public bool IsRemoving { get; set; }
-        public AppearingStates State { get; set; }
+        public IZBufferLayout ZView { get; private set; }
+        public int Index { get; private set; }
+
+        public bool IsHiding => State == AppearingStates.Disappearing;
+        public bool IsHided => State == AppearingStates.Disappear;
+        public bool IsShowing => State == AppearingStates.Appearing;
+        public bool IsShowed => State == AppearingStates.Appear;
+
+        public AppearingStates State { get; private set; }
         public CancellationToken FetchCancelation
         {
             get
             {
-                cancellationTokenSource.Cancel();
-                cancellationTokenSource = new();
-                return cancellationTokenSource.Token;
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = new();
+                return _cancellationTokenSource.Token;
             }
         }
 
-        private void OnViewDeatached()
+        private async void OnViewDeatached()
         {
-            if (IsRemoving)
-                return;
+            await _parent.RemoveLayerAsync(this, true);
+        }
 
-            Buffer.PopAsync(this);
+        public void Show(bool animation)
+        {
+            var cancel = FetchCancelation;
+            State = AppearingStates.Appearing;
+            MauiView.TryAppearing();
+            MauiView.IsVisible = true;
+
+            if (animation)
+            {
+                ZView.OnShow(cancel).ContinueWithInUIThread(() =>
+                {
+                    if (!cancel.IsCancellationRequested)
+                    {
+                        MauiView.TryAppearing(true);
+                        State = AppearingStates.Appear;
+                    }
+                });
+            }
+            else
+            {
+                ZView.OnShow();
+                MauiView.TryAppearing(true);
+                State = AppearingStates.Appear;
+            }
+        }
+
+        public async Task ShowAsync(bool animation)
+        {
+            if (!animation)
+            {
+                Show(false);
+                return;
+            }
+
+            var cancel = FetchCancelation;
+            State = AppearingStates.Appearing;
+            MauiView.TryAppearing();
+            MauiView.IsVisible = true;
+
+            await ZView.OnShow(cancel);
+
+            if (!cancel.IsCancellationRequested)
+            {
+                MauiView.TryAppearing(true);
+                State = AppearingStates.Appear;
+            }
+        }
+
+        public void Hide(bool animation)
+        {
+            var cancel = FetchCancelation;
+            State = AppearingStates.Disappearing;
+            MauiView.TryDisappearing();
+
+            if (animation)
+            {
+                ZView.OnHide(cancel).ContinueWithInUIThread(() =>
+                {
+                    if (!cancel.IsCancellationRequested)
+                    {
+                        MauiView.TryDisappearing(true);
+                        MauiView.IsVisible = false;
+                        State = AppearingStates.Disappear;
+                    }
+                });
+            }
+            else
+            {
+                ZView.OnHide();
+                MauiView.TryDisappearing(true);
+                MauiView.IsVisible = false;
+                State = AppearingStates.Disappear;
+            }
+        }
+
+        public async Task<bool> HideAsync(bool animation)
+        {
+            if (!animation)
+            {
+                Hide(false);
+                return true;
+            }
+
+            var cancel = FetchCancelation;
+            State = AppearingStates.Disappearing;
+            MauiView.TryDisappearing();
+            await ZView.OnHide(cancel);
+
+            if (cancel.IsCancellationRequested)
+                return false;
+
+            MauiView.TryDisappearing(true);
+            MauiView.IsVisible = false;
+            State = AppearingStates.Disappear;
+            return true;
         }
 
         public void Dispose()
         {
             if (View is IZBufferLayout layout)
                 layout.DeatachLayer -= OnViewDeatached;
+
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
         }
     }
 }

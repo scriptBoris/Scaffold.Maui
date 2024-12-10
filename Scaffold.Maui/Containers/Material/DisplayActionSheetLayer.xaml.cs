@@ -1,3 +1,4 @@
+using Microsoft.Maui.Controls;
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
@@ -31,7 +32,9 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             }
         });
         InitializeComponent();
-        Opacity = 0;
+        border.Opacity = 0;
+        border.Scale = 0.95;
+
         itemList.BindingContext = this;
         var items = new Dictionary<int, string>();
         for (int i = 0; i < args.Items.Length; i++)
@@ -85,18 +88,49 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     public async Task OnShow(CancellationToken cancel)
     {
-        this.CancelAnimations();
         isBusy = true;
-        await this.FadeTo(1, 180);
+        await border.AnimateTo(
+            start: border.Opacity,
+            end: 1,
+            name: nameof(OnShow),
+            updateAction: (v, value) =>
+            {
+                v.Opacity = value;
+                v.Scale = double.Lerp(0.95, 1.0, value);
+            },
+            length: 180,
+            easing: null,
+            cancel: cancel);
         isBusy = false;
     }
 
     public async Task OnHide(CancellationToken cancel)
     {
-        this.CancelAnimations();
         isBusy = true;
-        await this.FadeTo(0, 180);
+        await border.AnimateTo(
+            start: border.Opacity,
+            end: 0,
+            name: nameof(OnHide),
+            updateAction: (v, value) =>
+            {
+                v.Opacity = value;
+            },
+            length: 180,
+            easing: null,
+            cancel: cancel);
         isBusy = false;
+    }
+
+    public void OnShow()
+    {
+        border.Opacity = 1;
+        border.Scale = 1;
+    }
+
+    public void OnHide()
+    {
+        border.Opacity = 0;
+        border.Scale = 0.95;
     }
 
     public Task<IDisplayActionSheetResult> GetResult()

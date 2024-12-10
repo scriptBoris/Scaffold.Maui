@@ -3,24 +3,25 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
       xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
       x:Class="ScaffoldLib.Maui.Containers.Material.DisplayAlertLayer"
-      BackgroundColor="#88000000">
-    <Border Padding="10"
-            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
+      BackgroundColor="Transparent">
+    <Border x:Name="border"
+            WidthRequest="250"
             HorizontalOptions="Center"
-            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
-            StrokeShape="RoundRectangle 10"
             VerticalOptions="Center"
-            WidthRequest="250">
+            Padding="10"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
+            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
+            StrokeShape="RoundRectangle 10">
         <Border.GestureRecognizers>
-            <TapGestureRecognizer />
+            <TapGestureRecognizer/>
         </Border.GestureRecognizers>
 
         <StackLayout Spacing="7">
             <Label x:Name="labelTitle"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
             <Label x:Name="labelDescription"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
             <sam:Button x:Name="buttonOk"
                         Padding="10"
@@ -28,7 +29,7 @@
                 <Label x:Name="labelButtonOk"
                        Margin="0,0,10,0"
                        HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </sam:Button>
 
             <sam:Button x:Name="buttonCancel"
@@ -37,7 +38,7 @@
                 <Label x:Name="labelButtonCancel"
                        Margin="0,0,10,0"
                        HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}" />
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </sam:Button>
         </StackLayout>
     </Border>

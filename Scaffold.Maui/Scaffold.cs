@@ -32,11 +32,9 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
     Task<bool> ReplaceView(View oldView, View newView, bool isAnimated = true);
     Task<bool> InsertView(View view, int index, bool isAnimated = true);
 
-    Task<bool> DisplayAlert(CreateDisplayAlertArgs args);
-    Task<bool> DisplayAlert(CreateDisplayAlertArgs args, View parentView);
-
-    Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args);
-    Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args, View parentView);
+    Task DisplayAlert(DisplayAlertArgs args);
+    Task<bool> DisplayAlert(DisplayAlertArgs2 args);
+    Task<IDisplayActionSheetResult> DisplayActionSheet(DisplayActionSheet args);
 
     Task Toast(CreateToastArgs args);
     void AddCustomLayer(IZBufferLayout layer, int zIndex);
@@ -86,7 +84,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         ExternalBevahiors.AsNotifyObs().CollectionChanged += Scaffold_CollectionChanged; ;
 
         _navigationController = new(this);
-        _zBufer = new();
+        _zBufer = new(this);
         Children.Add(_zBufer);
 
         DeviceSafeAreaChanged += OnSafeAreaChanged;
@@ -464,7 +462,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (current == null)
             return true;
 
-        if (_navigationController.CurrentAgent!.ZBuffer.Pop())
+        if (_navigationController.CurrentAgent!.ZBuffer.TryPopModal(true))
             return true;
 
         bool canPop = await BackButtonListener.OnBackButton();
@@ -484,7 +482,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             return;
 
         isAddedDebug = true;
-        ZBuffer.AddLayer(new Containers.Common.DebugInfo(), 888);
+        ZBuffer.AddLayer(new Containers.Common.DebugInfo(), 888, false);
     }
 
     public void AddBehavior(IBehavior behavior)
@@ -528,13 +526,13 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         return new Size(widthConstraint, heightConstraint);
     }
 
-    public async Task PushAsync(View view, bool isAnimated = true)
+    public Task PushAsync(View view, bool isAnimated = true)
     {
         if (!MainThread.IsMainThread)
             throw new InvalidNavigationException("PushAsync method should been executed in main thread");
 
         Scaffold.SetScaffoldContext(view, this);
-        await _navigationController.PushAsync(view, isAnimated);
+        return _navigationController.PushAsync(view, isAnimated);
     }
 
     public async Task<bool> InsertView(View view, int index, bool isAnimated = true)
@@ -587,7 +585,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (!MainThread.IsMainThread)
             throw new InvalidNavigationException("PopAsync method should been executed in main thread");
 
-        _zBufer.RemoveLayerAsync(IScaffold.MenuItemsIndexZ).ConfigureAwait(true);
+        // Удаляем слой отображения выпадающих меню элементов
+        _ = _zBufer.TryPopLayerAsync(IScaffold.MenuItemsIndexZ, true);
         return _navigationController.PopAsync(isAnimated);
     }
 
@@ -657,7 +656,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     public void AddCustomLayer(IZBufferLayout layer, int zIndex)
     {
-        _zBufer.AddLayer(layer, zIndex);
+        _zBufer.AddLayer(layer, zIndex, true);
     }
 
     public void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView)
@@ -666,55 +665,107 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         if (agent == null)
             return;
 
-        agent.ZBuffer.AddLayer(layer, zIndex);
+        agent.ZBuffer.AddLayer(layer, zIndex, true);
     }
 
-    public async Task<bool> DisplayAlert(CreateDisplayAlertArgs args)
+
+    public async Task DisplayAlert(DisplayAlertArgs args)
     {
-        var alert = ViewFactory.CreateDisplayAlert(args);
-        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
-        return await alert.GetResult();
+        var createArgs = new CreateDisplayAlertArgs
+        {
+            Ok = args.Ok,
+            Description = args.Description,
+            Payload = args.Payload,
+            Title = args.Title,
+        };
+        var alert = ViewFactory.CreateDisplayAlert(createArgs);
+
+        if (args.ParentView != null)
+        {
+            var agent = FindAgent(args.ParentView);
+            if (agent == null)
+                throw new InvalidOperationException($"Fail to find agent for parent view: {args.ParentView}");
+
+            agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+            await alert.GetResult();
+        }
+        else
+        {
+            _zBufer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+            await alert.GetResult();
+        }
     }
 
-    public Task<bool> DisplayAlert(CreateDisplayAlertArgs args, View parentView)
+    public async Task<bool> DisplayAlert(DisplayAlertArgs2 args)
     {
-        var agent = FindAgent(parentView);
-        if (agent == null)
-            return Task.FromResult(false);
+        var createArgs = new CreateDisplayAlertArgs2
+        {
+            Title = args.Title,
+            Description = args.Description,
+            Ok = args.Ok,
+            Cancel = args.Cancel,
+            Payload = args.Payload,
+        };
+        var alert = ViewFactory.CreateDisplayAlert(createArgs);
 
-        var alert = ViewFactory.CreateDisplayAlert(args);
-        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
-        return alert.GetResult();
+        if (args.ParentView != null)
+        {
+            var agent = FindAgent(args.ParentView);
+            if (agent == null)
+                throw new InvalidOperationException($"Fail to find agent for parent view: {args.ParentView}");
+
+            agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+            return await alert.GetResult();
+        }
+        else
+        {
+            _zBufer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+            return await alert.GetResult();
+        }
     }
 
-    public Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args)
+    public Task<IDisplayActionSheetResult> DisplayActionSheet(DisplayActionSheet args)
     {
-        var alert = ViewFactory.CreateDisplayActionSheet(args);
-        _zBufer.AddLayer(alert, IScaffold.AlertIndexZ);
-        return alert.GetResult();
-    }
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("DisplayActionSheet method should been executed in main thread");
 
-    public Task<IDisplayActionSheetResult> DisplayActionSheet(CreateDisplayActionSheet args, View parentView)
-    {
-        var agent = FindAgent(parentView);
-        if (agent == null)
-            return Task.FromResult<IDisplayActionSheetResult>(new DisplayActionSheetResult
-            {
-                IsCanceled = true,
-            });
+        var createArgs = new CreateDisplayActionSheet
+        {
+            Title = args.Title,
+            Items = args.Items,
+            Cancel = args.Cancel,
+            Destruction = args.Destruction,
+            ItemDisplayBinding = args.ItemDisplayBinding,
+            Payload = args.Payload,
+        };
+        var alert = ViewFactory.CreateDisplayActionSheet(createArgs);
 
-        var alert = ViewFactory.CreateDisplayActionSheet(args);
-        agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ);
+        if (args.ParentView != null)
+        {
+            var agent = FindAgent(args.ParentView);
+            if (agent == null)
+                throw new InvalidOperationException($"Fail to find agent for parent view: {args.ParentView}");
+
+            agent.ZBuffer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+        }
+        else
+        {
+            _zBufer.AddLayer(alert, IScaffold.AlertIndexZ, args.UseShowAnimation);
+        }
+
         return alert.GetResult();
     }
 
     public Task Toast(CreateToastArgs args)
     {
+        if (!MainThread.IsMainThread)
+            throw new InvalidOperationException("Toast method should been executed in main thread");
+
         var toast = ViewFactory.CreateToast(args);
         if (toast == null)
             return Task.CompletedTask;
 
-        _zBufer.AddLayer(toast, IScaffold.ToastIndexZ);
+        _zBufer.AddLayer(toast, IScaffold.ToastIndexZ, true);
         return toast.GetResult();
     }
 

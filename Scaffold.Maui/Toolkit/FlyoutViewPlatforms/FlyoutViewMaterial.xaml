@@ -9,8 +9,8 @@
                         VerticalOptions="Fill">
 
     <toolkit:FlyoutViewBase.Children>
-        <!--  WTF???? ZLayout no attached in children, but default grid is fine????!!  -->
-        <!--  detail  -->
+        <!--WTF???? ZLayout no attached in children, but default grid is fine????!!-->
+        <!--detail-->
         <!--<internal:ZLayout
             x:Name="panelDetail"
             VerticalOptions="Fill"
@@ -18,9 +18,9 @@
 
         <Grid x:Name="panelDetail"
               HorizontalOptions="Fill"
-              VerticalOptions="Fill" />
+              VerticalOptions="Fill"/>
 
-        <!--  flyout background  -->
+        <!--flyout background-->
         <HorizontalStackLayout x:Name="_panelFlyoutBackground"
                                HorizontalOptions="Fill"
                                VerticalOptions="Fill"
@@ -28,16 +28,16 @@
                                IsVisible="False"
                                Opacity="0">
             <HorizontalStackLayout.GestureRecognizers>
-                <!--  WTF Event not worked, but command is fine  -->
-                <TapGestureRecognizer x:Name="gestureTap" />
+                <!--WTF Event not worked, but command is fine-->
+                <TapGestureRecognizer x:Name="gestureTap"/>
             </HorizontalStackLayout.GestureRecognizers>
         </HorizontalStackLayout>
 
-        <!--  flyout  -->
+        <!--flyout-->
         <ContentView x:Name="_panelFlyout"
                      HorizontalOptions="Start"
                      VerticalOptions="Fill"
                      BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#000}"
-                     IsVisible="False" />
+                     IsVisible="False"/>
     </toolkit:FlyoutViewBase.Children>
 </toolkit:FlyoutViewBase>

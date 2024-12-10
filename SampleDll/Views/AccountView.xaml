@@ -7,29 +7,39 @@
              xmlns:vm="clr-namespace:SampleDll.ViewModels"
              x:Class="SampleDll.Views.AccountView"
              x:DataType="vm:AccountViewModel"
+             Padding="10"
              scaffold:Scaffold.Title="Account"
-             Spacing="15"
-             Padding="10">
+             Spacing="15">
 
     <Scaffold.MenuItems>
+        <ScaffoldMenuItem ImageSource="cog.png"
+                          Text="Edit profile"/>
+
+
+        <ScaffoldMenuItem ImageSource="cog.png"
+                          Text="Edit profile"/>
+
+        <ScaffoldMenuItem ImageSource="cog.png"
+                          Text="Edit profile"/>
+
         <ScaffoldMenuItem ImageSource="cog.png"
                           Text="Edit profile"/>
     </Scaffold.MenuItems>
 
     <Grid>
-        <Border Stroke="{StaticResource Primary}"
+        <Border HeightRequest="150"
+                WidthRequest="150"
+                VerticalOptions="Start"
+                Stroke="{StaticResource Primary}"
                 StrokeShape="RoundRectangle 75"
                 StrokeThickness="5"
-                ZIndex="10"
-                WidthRequest="150"
-                HeightRequest="150"
-                VerticalOptions="Start">
+                ZIndex="10">
             <Image Source="user_avatar.jpg"/>
         </Border>
 
-        <Border StrokeShape="RoundRectangle 10"
-                StrokeThickness="0"
-                Margin="0,70,0,0">
+        <Border Margin="0,70,0,0"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="0">
             <StackLayout Margin="0,70,0,0"
                          Padding="10">
 
@@ -50,14 +60,14 @@
                 </Label>
 
                 <!--e-mail-->
-                <Label Text="samjo1987@gmail.com"
-                       TextColor="Gray"
-                       HorizontalOptions="Center"/>
+                <Label HorizontalOptions="Center"
+                       Text="samjo1987@gmail.com"
+                       TextColor="Gray"/>
 
-                <Line BackgroundColor="Gray"
+                <Line HeightRequest="0.35"
+                      HorizontalOptions="FillAndExpand"
                       Margin="-10,10"
-                      HeightRequest="0.35"
-                      HorizontalOptions="FillAndExpand"/>
+                      BackgroundColor="Gray"/>
 
                 <!--phone number-->
                 <Label Text="Phone number"/>
@@ -65,20 +75,20 @@
                        TextColor="Gray"/>
 
                 <!--birthday-->
-                <Label Text="Birthday"
-                       Margin="0,10,0,0"/>
+                <Label Margin="0,10,0,0"
+                       Text="Birthday"/>
                 <Label Text="1987/03/08"
                        TextColor="Gray"/>
 
                 <!--address-->
-                <Label Text="Default delivery address"
-                       Margin="0,10,0,0"/>
+                <Label Margin="0,10,0,0"
+                       Text="Default delivery address"/>
                 <Label Text="Uffington, 37 Caradon Hill"
                        TextColor="Gray"/>
 
                 <!--bank cards-->
-                <Label Text="Connected bank cards"
-                       Margin="0,10,0,0"/>
+                <Label Margin="0,10,0,0"
+                       Text="Connected bank cards"/>
                 <Label Text="*** 8761"
                        TextColor="Gray"/>
             </StackLayout>
@@ -86,32 +96,32 @@
     </Grid>
 
     <!--logout-->
-    <sam:Button BackgroundColor="{StaticResource Primary}"
-                TapCommand="{Binding CommandLogout}"
-                Padding="8">
-        <StackLayout Orientation="Horizontal"
-                     Spacing="10"
-                     HorizontalOptions="CenterAndExpand">
+    <sam:Button Padding="8"
+                BackgroundColor="{StaticResource Primary}"
+                TapCommand="{Binding CommandLogout}">
+        <StackLayout HorizontalOptions="CenterAndExpand"
+                     Orientation="Horizontal"
+                     Spacing="10">
             <toolkit:ImageTint Source="exit_to_app.png"
                                TintColor="White"/>
-            <Label Text="Logout"
-                   TextColor="#FFF"
-                   VerticalTextAlignment="Center"/>
+            <Label VerticalTextAlignment="Center"
+                   Text="Logout"
+                   TextColor="#FFF"/>
         </StackLayout>
     </sam:Button>
 
-    <Label FontSize="12"
+    <Label HorizontalTextAlignment="Center"
+           FontSize="12"
            Text="Or you can delete account with all saved data"
-           TextColor="Gray"
-           HorizontalTextAlignment="Center"/>
+           TextColor="Gray"/>
 
     <!--delete account-->
     <sam:Button BackgroundColor="DarkRed"
                 TapCommand="{Binding CommandDeleteAccount}">
-        <Label Text="Delete account"
-               TextColor="#FFF"
+        <Label HorizontalOptions="CenterAndExpand"
                VerticalTextAlignment="Center"
-               HorizontalOptions="CenterAndExpand"/>
+               Text="Delete account"
+               TextColor="#FFF"/>
     </sam:Button>
 
 </StackLayout>

@@ -103,7 +103,7 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         Padding = padding;
     }
 
-    public async Task OnShow(CancellationToken cancel)
+    public Task OnShow(CancellationToken cancel)
     {
 #if IOS
         isBusy = true;
@@ -113,7 +113,7 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
         var originFrame = stackView.Frame;
         stackView.Frame = originFrame.OffsetBy(0, originFrame.Height);
 
-        double dur = (double)250 / 1000.0;
+        double dur = 250.0 / 1000.0;
         var animator = new UIViewPropertyAnimator(dur, UIViewAnimationCurve.EaseInOut,
         () =>
         {
@@ -128,21 +128,61 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             tsc.SetResult();
         });
         animator.StartAnimation();
-        await tsc.Task;
-        isBusy = false;
+
+        using var _ = cancel.Register(() => 
+        {
+            animator.StopAnimation(true);
+            animator.FinishAnimation(UIViewAnimatingPosition.Current);
+            tsc.TrySetResult();
+        });
+
+        return tsc.Task;
+#else
+        return Task.CompletedTask;
 #endif
     }
 
-    public async Task OnHide(CancellationToken cancel)
+    // todo Для ios отладить скрытие алерта
+    public Task OnHide(CancellationToken cancel)
     {
-        isBusy = true;
-        this.CancelAnimations();
+        var t1 = this.AnimateTo(
+            start: Opacity,
+            end: 1,
+            name: "hide1",
+            updateAction: (v, value) =>
+            {
+                v.Opacity = value;
+            },
+            length: 190,
+            cancel: cancel);
 
-        await Task.WhenAll(
-            this.FadeTo(0, 190),
-            rootStackLayout.TranslateTo(0, Height, 190, Easing.SinInOut)
-        );
-        isBusy = false;
+        var t2 = rootStackLayout.AnimateTo(
+            start: 0,
+            end: Height,
+            name: "hide2",
+            updateAction: (v, value) =>
+            {
+                v.TranslationY = value;
+            },
+            length: 190,
+            easing: Easing.SinInOut,
+            cancel: cancel);
+        return Task.WhenAll(t1, t2);
+    }
+
+    public void OnShow()
+    {
+        Opacity = 1;
+        rootStackLayout.TranslationX = 0;
+        rootStackLayout.TranslationY = 0;
+    }
+
+    // todo Для ios отладить скрытие алерта
+    public void OnHide()
+    {
+        Opacity = 0;
+        rootStackLayout.TranslationX = 0;
+        rootStackLayout.TranslationY = 0;
     }
 
     public void OnRemoved()

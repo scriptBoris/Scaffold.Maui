@@ -51,6 +51,16 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
         isBusy = false;
     }
 
+    public void OnShow()
+    {
+        Opacity = 1;
+    }
+
+    public void OnHide()
+    {
+        Opacity = 0;
+    }
+
     public void OnRemoved()
     {
     }

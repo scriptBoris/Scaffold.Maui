@@ -17,7 +17,7 @@
                          Margin="5"
                          Padding="6">
             <toolkit:ImageTint x:Name="imageBackButton"
-                               Source="ic_arrow_left.png"
+                               Source="scaffoldlib_arrow_left.png"
                                WidthRequest="18"
                                HeightRequest="18"/>
         </internal:Button>
@@ -54,7 +54,7 @@
                          VerticalOptions="FillAndExpand"
                          HorizontalOptions="Start">
             <toolkit:ImageTint x:Name="imageMenu"
-                               Source="ic_menu_down.png"
+                               Source="scaffoldlib_toolbar_menu.png"
                                TintColor="{Binding ForegroundColor, Source={Reference navBar}}"
                                WidthRequest="22"
                                HeightRequest="22"/>
