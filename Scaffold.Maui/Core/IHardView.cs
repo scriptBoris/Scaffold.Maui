@@ -2,5 +2,5 @@
 
 public interface IHardView
 {
-    Task ReadyToPush { get; }
+    Task ReadyToPush(CancellationToken cancellation);
 }

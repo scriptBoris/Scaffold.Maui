@@ -157,103 +157,33 @@ internal static class Extensions
         if (handler == null)
             return;
 
-
-        var tsc = new TaskCompletionSource();
-        view.Animate("checkisload",
-            callback: (x) => { },
-            rate: 1,
-            //length: 10,
-            length: 1,
-            easing: null,
-            finished: (x, isFail) =>
-            {
-                //await Task.Delay(25);
-                tsc.SetResult();
-            }
-        );
-
-        //var uiview = view.Handler?.PlatformView as UIKit.UIView;
-        //var animator = new UIKit.UIViewPropertyAnimator(20, 16f, () => { });
-        //animator.AddCompletion((pos) =>
-        //{
-        //    tsc.SetResult(true);
-        //});
-
-        await tsc.Task.WithCancelation(cancellation);
+        try
+        {
+            if (view is IHardView hardv)
+                await hardv.ReadyToPush(cancellation);
+        }
+        catch (Exception)
+        {
+        }
     }
 #endif
 
 #if ANDROID
     private static async Task AwaitReadyDroid(View view, CancellationToken cancel)
     {
-        var readyLayout = new TaskCompletionSource<bool>();
-        var readyDraw = new TaskCompletionSource<bool>();
-        var readyGlobalDraw = new TaskCompletionSource<bool>();
         var h = await AwaitHandler(view, cancel);
         if (h == null)
             return;
-
-        Android.Views.View av = (Android.Views.View)h.PlatformView!;
-        Android.Views.ViewTreeObserver? vto = null;
-
         try
         {
-            vto = av?.ViewTreeObserver;
+            if (view is IHardView hardv)
+                await hardv.ReadyToPush(cancel);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return;
         }
 
-        if (vto == null)
-            return;
-
-        var time = DateTime.Now;
-
-        void Change(object? o, Android.Views.View.LayoutChangeEventArgs e)
-        {
-            if (av.MeasuredHeight > 0 || av.MeasuredWidth > 0)
-            {
-                readyLayout.TrySetResult(true);
-            }
-        }
-        void Draw(object? o, EventArgs e)
-        {
-            readyDraw.TrySetResult(true);
-        }
-        void GlobalDraw(object? o, EventArgs e)
-        {
-            readyGlobalDraw.TrySetResult(true);
-        }
-
-        vto.PreDraw += Draw;
-        vto.GlobalLayout += GlobalDraw;
-        av.LayoutChange += Change;
-
-        await Task.WhenAll(readyLayout.Task, readyDraw.Task, readyGlobalDraw.Task).WithCancelation(cancel);
-
-        if (vto.IsAlive)
-        {
-            vto.PreDraw -= Draw;
-            vto.GlobalLayout -= GlobalDraw;
-        }
-        av.LayoutChange -= Change;
-
-        if (cancel.IsCancellationRequested)
-        {
-            readyLayout.TrySetCanceled();
-            readyDraw.TrySetCanceled();
-            readyGlobalDraw.TrySetCanceled();
-        }
-
-        var lat = DateTime.Now - time;
-        if (lat > TimeSpan.FromMilliseconds(45))
-        {
-            if (view is IHardView hard)
-                await hard.ReadyToPush.WithCancelation(cancel);
-            else
-                await Task.Delay(250).WithCancelation(cancel);
-        }
+        return;
     }
 #endif
 
@@ -410,7 +340,7 @@ internal static class Extensions
     internal static Task RunAny(Task? task1, Task? task2, Task? task3)
     {
         var tasks = new List<Task>();
-        
+
         if (task1 != null)
             tasks.Add(task1);
 
