@@ -17,13 +17,6 @@
             StrokeShape="RoundRectangle 8"
             StrokeThickness="0">
 
-        <!--<Border.Shadow>
-            <Shadow Brush="black"
-                    Offset="0,0"
-                    Opacity="0.4"
-                    Radius="{AppThemeBinding Light=40, Dark=20}"/>
-        </Border.Shadow>-->
-
         <StackLayout x:Name="stackMenu"
                      BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
                      MinimumWidthRequest="130"
@@ -38,22 +31,6 @@
                                              TapCommandParameter="{Binding .}"
                                              Text="{Binding Text}"
                                              UseOriginalColor="{Binding UseOriginalColor}"/>
-                    <!--<sam:Button TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
-                                TapCommandParameter="{Binding .}"
-                                CornerRadius="0"
-                                Padding="10"
-                                BackgroundColor="Transparent">
-                        <HorizontalStackLayout Spacing="10">
-                            <internal:ImageTint Source="{Binding ImageSource}"
-                                                HeightRequest="24"
-                                                WidthRequest="24"
-                                                TintColor="{AppThemeBinding Light=#444, Dark=#CCC}"/>
-                            <Label Text="{Binding Text}"
-                                   TextColor="{AppThemeBinding Light=#111, Dark=#FFF}"
-                                   Margin="0,0,10,0"
-                                   VerticalTextAlignment="Center"/>
-                        </HorizontalStackLayout>
-                    </sam:Button>-->
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>

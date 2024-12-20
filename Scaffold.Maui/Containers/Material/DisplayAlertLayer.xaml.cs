@@ -14,13 +14,7 @@ public partial class DisplayAlertLayer : IDisplayAlert
     public DisplayAlertLayer(ICreateDisplayAlertArgs args)
     {
         InitializeComponent();
-        border.Opacity = 0;
-        border.Scale = 0.95;
-
-        GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = new Command(() => Close(false)),
-        });
+        OnHide();
 
         buttonOk.TapCommand = new Command(() => Close(true));
         buttonCancel.TapCommand = new Command(() => Close(false));
@@ -54,8 +48,8 @@ public partial class DisplayAlertLayer : IDisplayAlert
 
     public Task OnShow(CancellationToken cancel)
     {
-        return border.AnimateTo(
-            start: border.Opacity,
+        return this.AnimateTo(
+            start: Opacity,
             end: 1,
             name: nameof(OnShow),
             updateAction: (v, value) =>
@@ -70,8 +64,8 @@ public partial class DisplayAlertLayer : IDisplayAlert
 
     public Task OnHide(CancellationToken cancel)
     {
-        return border.AnimateTo(
-            start: border.Opacity,
+        return this.AnimateTo(
+            start: Opacity,
             end: 0,
             name: nameof(OnHide),
             updateAction: (v, value) =>
@@ -85,18 +79,23 @@ public partial class DisplayAlertLayer : IDisplayAlert
 
     public void OnShow()
     {
-        border.Opacity = 1;
-        border.Scale = 1;
+        this.Opacity = 1;
+        this.Scale = 1;
     }
 
     public void OnHide()
     {
-        border.Opacity = 0;
-        border.Scale = 0.95;
+        this.Opacity = 0;
+        this.Scale = 0.95;
     }
 
     public void OnRemoved()
     {
         _taskCompletionSource.TrySetResult(prepareResult ?? false);
+    }
+
+    public void OnTapToOutside()
+    {
+        DeatachLayer?.Invoke();
     }
 }

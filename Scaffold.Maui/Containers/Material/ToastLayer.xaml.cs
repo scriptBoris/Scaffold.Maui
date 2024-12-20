@@ -18,7 +18,7 @@ public partial class ToastLayer : IToast
         labelTitle.Text = args.Title;
         labelTitle.IsVisible = args.Title != null;
         labelMessage.Text = args.Message;
-        frame.TranslationY = 1500;
+        OnHide();
         this.Dispatcher.StartTimer(args.ShowTime, () =>
         {
             DeatachLayer?.Invoke();
@@ -33,13 +33,14 @@ public partial class ToastLayer : IToast
 
     public Task OnShow(CancellationToken cancellation)
     {
-        return frame.AnimateTo(
+        return this.AnimateTo(
             start: _progressShow,
             end: 1,
             name: nameof(OnShow),
             updateAction: (view, value) =>
             {
                 _progressShow = value;
+                view.Opacity = 1;
                 if (view.Height >= 0)
                     view.TranslationY = double.Lerp(view.Height, 0, value);
             },
@@ -50,13 +51,14 @@ public partial class ToastLayer : IToast
 
     public Task OnHide(CancellationToken cancellation)
     {
-        return frame.AnimateTo(
+        return this.AnimateTo(
             start: _progressShow,
             end: 0,
             name: nameof(OnHide),
             updateAction: (view, value) =>
             {
                 _progressShow = value;
+                view.Opacity = value;
                 if (view.Height >= 0)
                     view.TranslationY = double.Lerp(view.Height, 0, value);
             },
@@ -66,14 +68,14 @@ public partial class ToastLayer : IToast
 
     public void OnShow()
     {
-        Opacity = 1;
-        frame.TranslationY = 0;
+        this.TranslationY = 0;
+        this.Opacity = 1;
     }
 
     public void OnHide()
     {
-        Opacity = 0;
-        frame.TranslationY = 500;
+        this.TranslationY = 500;
+        this.Opacity = 0;
     }
 
     public Task GetResult()
@@ -84,5 +86,9 @@ public partial class ToastLayer : IToast
     public void OnRemoved()
     {
         _tsc.TrySetResult(true);
+    }
+
+    public void OnTapToOutside()
+    {
     }
 }

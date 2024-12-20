@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ScaffoldLib.Maui.Containers.Material.ToastLayer">
-    <Border x:Name="frame"
-            VerticalOptions="End"
-            Margin="14"
-            Padding="10"
-            BackgroundColor="#FFF"
-            StrokeShape="RoundRectangle 7"
-            StrokeThickness="0">
-        <Border.GestureRecognizers>
-            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-        </Border.GestureRecognizers>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="ScaffoldLib.Maui.Containers.Material.ToastLayer"
+        x:Name="toast"
+        VerticalOptions="End"
+        Margin="14"
+        Padding="10"
+        BackgroundColor="#FFF"
+        StrokeShape="RoundRectangle 7"
+        StrokeThickness="0">
+    <Border.GestureRecognizers>
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+    </Border.GestureRecognizers>
 
-        <StackLayout>
-            <Label x:Name="labelTitle"
-                   FontSize="Body"
-                   TextColor="#777"/>
-            <Label x:Name="labelMessage"
-                   FontSize="Medium"
-                   TextColor="#222"/>
-        </StackLayout>
-    </Border>
-</ContentView>
+    <StackLayout>
+        <Label x:Name="labelTitle"
+               FontFamily="Roboto-Medium"
+               FontSize="16"
+               TextColor="#777"/>
+        <Label x:Name="labelMessage"
+               FontFamily="Roboto"
+               FontSize="16"
+               TextColor="#222"/>
+    </StackLayout>
+</Border>

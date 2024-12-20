@@ -87,4 +87,9 @@ public partial class DisplayAlertLayer : IDisplayAlert
     {
         _taskCompletionSource.TrySetResult(prepareResult ?? false);
     }
+
+    public void OnTapToOutside()
+    {
+        DeatachLayer?.Invoke();
+    }
 }

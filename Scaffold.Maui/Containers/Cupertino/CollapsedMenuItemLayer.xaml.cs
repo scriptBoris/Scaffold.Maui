@@ -64,6 +64,11 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
     {
         border.ScaleTo(0, 200, Easing.SinInOut);
     }
+
+    public void OnTapToOutside()
+    {
+        DeatachLayer?.Invoke();
+    }
 }
 
 public class ButtonCollapsedMenu : ButtonSam.Maui.Button

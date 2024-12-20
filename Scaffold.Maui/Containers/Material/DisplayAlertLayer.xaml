@@ -1,45 +1,51 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-      x:Class="ScaffoldLib.Maui.Containers.Material.DisplayAlertLayer"
-      BackgroundColor="Transparent">
-    <Border x:Name="border"
-            WidthRequest="250"
-            HorizontalOptions="Center"
-            VerticalOptions="Center"
-            Padding="10"
-            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
-            Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
-            StrokeShape="RoundRectangle 10">
-        <Border.GestureRecognizers>
-            <TapGestureRecognizer/>
-        </Border.GestureRecognizers>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+        x:Class="ScaffoldLib.Maui.Containers.Material.DisplayAlertLayer"
+        x:Name="displayAlert"
+        WidthRequest="250"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Padding="15"
+        BackgroundColor="{AppThemeBinding Light=#ece6f0, Dark=#2b292f}"
+        StrokeShape="RoundRectangle 10">
+    <Border.GestureRecognizers>
+        <TapGestureRecognizer/>
+    </Border.GestureRecognizers>
 
-        <StackLayout Spacing="7">
-            <Label x:Name="labelTitle"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+    <StackLayout Spacing="7">
+        <Label x:Name="labelTitle"
+               FontFamily="Roboto-Medium"
+               FontSize="18"
+               TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
 
-            <Label x:Name="labelDescription"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+        <Label x:Name="labelDescription"
+               TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
 
-            <sam:Button x:Name="buttonOk"
-                        Padding="10"
-                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
-                <Label x:Name="labelButtonOk"
-                       Margin="0,0,10,0"
-                       HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-            </sam:Button>
-
+        <StackLayout HorizontalOptions="End"
+                     Orientation="Horizontal"
+                     Spacing="5">
+            <!--cancel-->
             <sam:Button x:Name="buttonCancel"
                         Padding="10"
-                        BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+                        BackgroundColor="Transparent"
+                        MinimumWidthRequest="55">
                 <Label x:Name="labelButtonCancel"
-                       Margin="0,0,10,0"
-                       HorizontalTextAlignment="End"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+                       FontFamily="Roboto-Medium"
+                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+            </sam:Button>
+
+            <!--ok-->
+            <sam:Button x:Name="buttonOk"
+                        Padding="10"
+                        BackgroundColor="Transparent"
+                        MinimumWidthRequest="55">
+                <Label x:Name="labelButtonOk"
+                       HorizontalTextAlignment="Center"
+                       FontFamily="Roboto-Medium"
+                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
             </sam:Button>
         </StackLayout>
-    </Border>
-</Grid>
+    </StackLayout>
+</Border>

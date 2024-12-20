@@ -14,4 +14,5 @@ public class CreateDisplayActionSheet
     public string? ItemDisplayBinding { get; set; }
     public required object[] Items { get; set; }
     public object? Payload { get; set; }
+    public int? SelectedItemId { get; set; }
 }

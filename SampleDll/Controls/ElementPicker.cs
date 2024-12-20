@@ -123,18 +123,28 @@ public class ElementPicker : BaseView
     {
         base.OnTapCompleted();
 
+        int? selectedItemId = null;
         var items = new List<object>();
         if (ItemsSource is IEnumerable src)
         {
+            int i = 0;
             foreach (var item in src)
+            {
                 items.Add(item);
+
+                if (item == SelectedItem)
+                    selectedItemId = i;
+                i++;
+            }
         }
 
         var res = await Scaffold.GetRootScaffold()!.DisplayActionSheet(new ScaffoldLib.Maui.Args.DisplayActionSheet
         {
             Title = Placeholder,
             Cancel = "Cancel",
+            Destruction = "Restore",
             Items = items.ToArray(),
+            SelectedItemId = selectedItemId,
         });
         if (res.IsDestruction)
         {

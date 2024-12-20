@@ -40,6 +40,7 @@ public static class Initializer
         {
 #if ANDROID
             h.AddHandler(typeof(ImageTint), typeof(Platforms.Android.ImageTintHandler));
+            h.AddHandler(typeof(Toolkit.RadioButton), typeof(Platforms.Android.ToolkitRadioButtonHandler));
 #elif IOS
             h.AddHandler(typeof(ImageTint), typeof(Platforms.iOS.ImageTintHandler));
 #elif WINDOWS

@@ -18,31 +18,43 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
     private bool isDestruction;
     private int? prepareInt;
     private object? prepareSelectedItem;
+    private SheetDialogItem? selectedItemByInit;
 
     public DisplayActionSheetLayer(CreateDisplayActionSheet args)
     {
         _originalItems = args.Items;
-        CommandTapItem = new Command((param) =>
-        {
-            if (!isBusy && param is KeyValuePair<int, string> kvp)
-            {
-                prepareInt = kvp.Key;
-                prepareSelectedItem = _originalItems[kvp.Key];
-                DeatachLayer?.Invoke();
-            }
-        });
+        CommandTapItem = new Command<SheetDialogItem>(OnItemSelected);
         InitializeComponent();
-        border.Opacity = 0;
-        border.Scale = 0.95;
+        OnHide();
 
         itemList.BindingContext = this;
-        var items = new Dictionary<int, string>();
+        var items = new List<SheetDialogItem>();
         for (int i = 0; i < args.Items.Length; i++)
-            items.Add(i, args.Items[i].GetDisplayItemText(args.ItemDisplayBinding));
+        {
+            string text = args.Items[i].GetDisplayItemText(args.ItemDisplayBinding);
+            var item = new SheetDialogItem
+            {
+                LogicElementIndex = i,
+                LogicItem = args.Items[i],
+                DisplayedText = text,
+                TapCommand = CommandTapItem,
+                IsSelected = args.SelectedItemId == i,
+            };
+
+            if (item.IsSelected)
+                selectedItemByInit = item;
+            
+            items.Add(item);
+        }
         BindableLayout.SetItemsSource(itemList, items);
 
         labelTitle.IsVisible = args.Title != null;
         labelTitle.Text = args.Title;
+        labelTitleUnderline.IsVisible = args.Title != null;
+        if (labelTitleUnderline.IsVisible)
+        {
+            labelTitleUnderline.HeightRequest = 1 / DeviceDisplay.Current.MainDisplayInfo.Density;
+        }
 
         labelButtonCancel.Text = args.Cancel;
         buttonCancel.IsVisible = args.Cancel != null;
@@ -66,31 +78,37 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             }
         });
 
-        this.GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = new Command(() =>
-            {
-                if (!isBusy)
-                {
-                    isCanceled = true;
-                    DeatachLayer?.Invoke();
-                }
-            }),
-        });
-
         if (args.Destruction == null && args.Cancel == null)
-            rootStackLayout.Padding = new Thickness(0, 10, 0, 0);
+            buttonsContainer.IsVisible = false;
     }
 
-    public ICommand CommandTapItem { get; private set; }
+    public ICommand CommandTapItem { get; }
 
     public event VoidDelegate? DeatachLayer;
+
+    private async void OnItemSelected(SheetDialogItem item)
+    {
+        if (isBusy)
+            return;
+
+        isBusy = true;
+
+        if (selectedItemByInit != null)
+            selectedItemByInit.IsSelected = false;
+
+        prepareInt = item.LogicElementIndex;
+        prepareSelectedItem = item.LogicItem;
+        item.IsSelected = true;
+
+        await Task.Delay(250);
+        DeatachLayer?.Invoke();
+    }
 
     public async Task OnShow(CancellationToken cancel)
     {
         isBusy = true;
-        await border.AnimateTo(
-            start: border.Opacity,
+        await this.AnimateTo(
+            start: Opacity,
             end: 1,
             name: nameof(OnShow),
             updateAction: (v, value) =>
@@ -107,8 +125,8 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
     public async Task OnHide(CancellationToken cancel)
     {
         isBusy = true;
-        await border.AnimateTo(
-            start: border.Opacity,
+        await this.AnimateTo(
+            start: Opacity,
             end: 0,
             name: nameof(OnHide),
             updateAction: (v, value) =>
@@ -123,14 +141,14 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
     public void OnShow()
     {
-        border.Opacity = 1;
-        border.Scale = 1;
+        this.Opacity = 1;
+        this.Scale = 1;
     }
 
     public void OnHide()
     {
-        border.Opacity = 0;
-        border.Scale = 0.95;
+        this.Opacity = 0;
+        this.Scale = 0.95;
     }
 
     public Task<IDisplayActionSheetResult> GetResult()
@@ -147,5 +165,11 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
             SelectedItemId = prepareInt,
             SelectedItem = prepareSelectedItem,
         });
+    }
+
+    public void OnTapToOutside()
+    {
+        isCanceled = true;
+        DeatachLayer?.Invoke();
     }
 }

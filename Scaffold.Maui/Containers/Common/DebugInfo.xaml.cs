@@ -32,4 +32,8 @@ public partial class DebugInfo : IZBufferLayout
     public void OnRemoved()
     {
     }
+
+    public void OnTapToOutside()
+    {
+    }
 }

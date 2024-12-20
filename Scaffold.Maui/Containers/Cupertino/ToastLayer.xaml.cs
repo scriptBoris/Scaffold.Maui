@@ -76,4 +76,8 @@ public partial class ToastLayer : IToast
     {
         DeatachLayer?.Invoke();
     }
+
+    public void OnTapToOutside()
+    {
+    }
 }

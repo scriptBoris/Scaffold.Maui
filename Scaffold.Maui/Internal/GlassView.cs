@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ScaffoldLib.Maui.Internal;
 
 [ContentProperty(nameof(Content))]
-internal class GlassView : View, IContentView, IVisualTreeElement
+public class GlassView : View, IContentView, IVisualTreeElement
 {
     private readonly List<IVisualTreeElement> _children = new();
 

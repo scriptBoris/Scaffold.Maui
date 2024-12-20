@@ -3,16 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
         x:Class="ScaffoldLib.Maui.Containers.Cupertino.ToastLayer"
+        VerticalOptions="End"
+        Margin="14"
+        Padding="10"
         BackgroundColor="#FFF"
         Shadow="{Shadow Brush=#000,
                         Opacity=0.3,
                         Radius=10,
                         Offset='0,10'}"
         StrokeShape="RoundRectangle 7"
-        StrokeThickness="0"
-        Margin="14"
-        Padding="10"
-        VerticalOptions="End">
+        StrokeThickness="0">
     <Border.GestureRecognizers>
         <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
     </Border.GestureRecognizers>

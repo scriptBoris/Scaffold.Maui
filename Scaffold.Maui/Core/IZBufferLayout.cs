@@ -14,4 +14,5 @@ public interface IZBufferLayout : IView
     void OnHide();
     Task OnHide(CancellationToken cancel);
     void OnRemoved();
+    void OnTapToOutside();
 }

@@ -16,7 +16,7 @@ public class ViewFactory
     public Func<ICreateDisplayAlertArgs, IDisplayAlert>? OverrideDisplayAlert { get; set; }
     public Func<CreateDisplayActionSheet, IDisplayActionSheet>? OverrideDisplayActionSheet { get; set; }
     public Func<CreateToastArgs, IToast>? OverrideToast { get; set; }
-    public Func<CreateZBufferBackgroundLayer, IZBufferLayout>? OverrideCreateZBufferBackgroundLayer { get; set; }
+    public Func<CreateSharedModalBackground, ISharedModalBackground>? OverrideCreateSharedModalBackground { get; set; }
 
     internal IAgent CreateAgent(CreateAgentArgs args)
     {
@@ -133,17 +133,17 @@ public class ViewFactory
         return res;
     }
 
-    internal IZBufferLayout? CreateZBufferBackgroundLayer(CreateZBufferBackgroundLayer args)
+    internal ISharedModalBackground? CreateSharedModalBackground(CreateSharedModalBackground args)
     {
-        var res = OverrideCreateZBufferBackgroundLayer?.Invoke(args);
+        var res = OverrideCreateSharedModalBackground?.Invoke(args);
         if (res == null)
         {
             if (args.ZIndex == IScaffold.AlertIndexZ)
-                res = new Common.AlertZBufferBackgroundLayer();
+                res = new Common.SharedModalBackgroundLayer();
         }
 
         if (res != null)
-            CreateZBufferBackgroundLayer(res);
+            OnSharedModalBackgroundCreated(res);
 
         return res;
     }
@@ -155,5 +155,5 @@ public class ViewFactory
     protected virtual void OnDisplayAlertCreated(IDisplayAlert alert) { }
     protected virtual void OnDisplayActionSheetCreated(IDisplayActionSheet actionSheet) { }
     protected virtual void OnToastCreated(IToast toast) { }
-    protected virtual void CreateZBufferBackgroundLayer(IZBufferLayout backgroundLayer) { }
+    protected virtual void OnSharedModalBackgroundCreated(ISharedModalBackground backgroundLayer) { }
 }

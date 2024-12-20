@@ -1,70 +1,67 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-      x:Class="ScaffoldLib.Maui.Containers.Cupertino.DisplayAlertLayer"
-      BackgroundColor="#88000000">
+<internal:GlassView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+                    x:Class="ScaffoldLib.Maui.Containers.Cupertino.DisplayAlertLayer"
+                    WidthRequest="250"
+                    VerticalOptions="Center"
+                    Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
+                    CornerRadius="13">
+    <internal:GlassView.GestureRecognizers>
+        <TapGestureRecognizer/>
+    </internal:GlassView.GestureRecognizers>
 
-    <internal:GlassView WidthRequest="250"
-                        VerticalOptions="Center"
-                        Appearance="{AppThemeBinding Light=Light, Dark=Dark}"
-                        CornerRadius="13">
-        <internal:GlassView.GestureRecognizers>
-            <TapGestureRecognizer/>
-        </internal:GlassView.GestureRecognizers>
+    <StackLayout Spacing="0">
 
-        <StackLayout Spacing="0">
+        <StackLayout Margin="10,18">
+            <Label x:Name="labelTitle"
+                   HorizontalTextAlignment="Center"
+                   FontSize="17"
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
-            <StackLayout Margin="10,18">
-                <Label x:Name="labelTitle"
+            <Label x:Name="labelDescription"
+                   HorizontalTextAlignment="Center"
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+        </StackLayout>
+
+        <!--horizontal line-->
+        <ContentView HeightRequest="0.35"
+                     Background="#666"/>
+
+        <StackLayout HorizontalOptions="FillAndExpand"
+                     Orientation="Horizontal"
+                     Spacing="0">
+            <internal:Button x:Name="buttonOk"
+                             HorizontalOptions="FillAndExpand"
+                             Padding="13"
+                             BackgroundColor="Transparent"
+                             CornerRadius="0"
+                             TapColor="#666">
+                <Label x:Name="labelButtonOk"
                        HorizontalTextAlignment="Center"
                        FontSize="17"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+                       TextColor="#0A84FF"/>
+            </internal:Button>
 
-                <Label x:Name="labelDescription"
+            <!--vertical line-->
+            <ContentView x:Name="lineButtons"
+                         WidthRequest="0.35"
+                         VerticalOptions="FillAndExpand"
+                         BackgroundColor="#666"/>
+
+            <internal:Button x:Name="buttonCancel"
+                             HorizontalOptions="FillAndExpand"
+                             Padding="13"
+                             BackgroundColor="Transparent"
+                             CornerRadius="0"
+                             TapColor="#666">
+                <Label x:Name="labelButtonCancel"
                        HorizontalTextAlignment="Center"
-                       FontSize="13"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-            </StackLayout>
-
-            <!--horizontal line-->
-            <ContentView HeightRequest="0.35"
-                         Background="#666"/>
-
-            <StackLayout HorizontalOptions="FillAndExpand"
-                         Orientation="Horizontal"
-                         Spacing="0">
-                <internal:Button x:Name="buttonOk"
-                                 HorizontalOptions="FillAndExpand"
-                                 Padding="13"
-                                 BackgroundColor="Transparent"
-                                 CornerRadius="0"
-                                 TapColor="#666">
-                    <Label x:Name="labelButtonOk"
-                           HorizontalTextAlignment="Center"
-                           FontSize="17"
-                           TextColor="#0A84FF"/>
-                </internal:Button>
-
-                <!--vertical line-->
-                <ContentView x:Name="lineButtons"
-                             WidthRequest="0.35"
-                             VerticalOptions="FillAndExpand"
-                             BackgroundColor="#666"/>
-
-                <internal:Button x:Name="buttonCancel"
-                                 HorizontalOptions="FillAndExpand"
-                                 Padding="13"
-                                 BackgroundColor="Transparent"
-                                 CornerRadius="0"
-                                 TapColor="#666">
-                    <Label x:Name="labelButtonCancel"
-                           HorizontalTextAlignment="Center"
-                           FontSize="17"
-                           TextColor="#0A84FF"/>
-                </internal:Button>
-            </StackLayout>
-
+                       FontSize="17"
+                       TextColor="#0A84FF"/>
+            </internal:Button>
         </StackLayout>
-    </internal:GlassView>
-</Grid>
+
+    </StackLayout>
+</internal:GlassView>

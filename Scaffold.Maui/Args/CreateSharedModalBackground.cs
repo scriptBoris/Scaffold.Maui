@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Args;
 
-public class CreateZBufferBackgroundLayer
+public class CreateSharedModalBackground
 {
     public int ZIndex { get; set; }
 }

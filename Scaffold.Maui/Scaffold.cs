@@ -737,6 +737,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
             Destruction = args.Destruction,
             ItemDisplayBinding = args.ItemDisplayBinding,
             Payload = args.Payload,
+            SelectedItemId = args.SelectedItemId,
         };
         var alert = ViewFactory.CreateDisplayActionSheet(createArgs);
 

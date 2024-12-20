@@ -200,4 +200,10 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
     {
         return _tsc.Task;
     }
+
+    public void OnTapToOutside()
+    {
+        isCanceled = true;
+        DeatachLayer?.Invoke();
+    }
 }

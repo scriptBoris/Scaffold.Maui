@@ -2,6 +2,7 @@
 
 namespace ScaffoldLib.Maui.Toolkit;
 
+// todo зачем этот контроллер нужен?
 [ContentProperty("Content")]
 public class ContentView : Layout, ILayoutManager
 {

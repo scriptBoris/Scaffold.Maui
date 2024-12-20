@@ -9,6 +9,10 @@ namespace ScaffoldLib.Maui.Toolkit;
 
 public static class StaticTools
 {
+    /// <summary>
+    /// Позволяет управлять прозрачностью для нажатий у указанного элемента, даже если
+    /// из коробки, MAUI это не позволяет из-за багов
+    /// </summary>
     public static readonly BindableProperty InputTransparentProperty = BindableProperty.CreateAttached(
         "TK_InputTransparent",
         typeof(bool?),

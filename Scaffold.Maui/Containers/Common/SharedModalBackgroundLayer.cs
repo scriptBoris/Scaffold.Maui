@@ -3,15 +3,27 @@ using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.Common;
 
-public class AlertZBufferBackgroundLayer : Grid, IZBufferLayout
+public class SharedModalBackgroundLayer : Grid, ISharedModalBackground
 {
     public event VoidDelegate? DeatachLayer;
+    public event SharedModalBackgroundTapped? TappedToOutside;
+    private readonly TapGestureRecognizer _tapGestureRecognizer;
 
-    public AlertZBufferBackgroundLayer()
+    public SharedModalBackgroundLayer()
     {
         BackgroundColor = Color.FromRgba(0, 0, 0, 100);
         Opacity = 0;
-        InputTransparent = false;
+
+        _tapGestureRecognizer = new TapGestureRecognizer();
+        _tapGestureRecognizer.Tapped += _tapGestureRecognizer_Tapped;
+        GestureRecognizers.Add(_tapGestureRecognizer);
+    }
+
+    public int ZBufferIndex { get; set; }
+
+    private void _tapGestureRecognizer_Tapped(object? sender, TappedEventArgs e)
+    {
+        TappedToOutside?.Invoke(this, e);
     }
 
     public void OnHide()

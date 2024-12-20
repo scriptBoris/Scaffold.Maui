@@ -64,4 +64,9 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
     public void OnRemoved()
     {
     }
+
+    public void OnTapToOutside()
+    {
+        DeatachLayer?.Invoke();
+    }
 }

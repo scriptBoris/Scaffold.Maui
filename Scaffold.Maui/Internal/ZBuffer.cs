@@ -252,7 +252,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         }
         else
         {
-            var layer = _scaffold.ViewFactory.CreateZBufferBackgroundLayer(new Args.CreateZBufferBackgroundLayer
+            var layer = _scaffold.ViewFactory.CreateSharedModalBackground(new Args.CreateSharedModalBackground
             {
                 ZIndex = zindex
             });
@@ -264,6 +264,8 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
                     layerBG = new LayerItem(layer, zindex, this);
                     _backgrounds.Add(zindex, layerBG);
                     Children.Insert(0, layerBG.View);
+                    layer.ZBufferIndex = zindex;
+                    layer.TappedToOutside += Layer_TappedToOutside;
                 }
                 catch (Exception ex)
                 {
@@ -287,7 +289,7 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         }
         else
         {
-            var layer = _scaffold.ViewFactory.CreateZBufferBackgroundLayer(new Args.CreateZBufferBackgroundLayer
+            var layer = _scaffold.ViewFactory.CreateSharedModalBackground(new Args.CreateSharedModalBackground
             {
                 ZIndex = zindex
             });
@@ -299,6 +301,8 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
                     layerBG = new LayerItem(layer, zindex, this);
                     _backgrounds.Add(zindex, layerBG);
                     Children.Insert(0, layerBG.View);
+                    layer.ZBufferIndex = zindex;
+                    layer.TappedToOutside += Layer_TappedToOutside;
                 }
                 catch (Exception ex)
                 {
@@ -331,19 +335,84 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         }
     }
 
+    private void Layer_TappedToOutside(ISharedModalBackground invoker, EventArgs e)
+    { 
+        int index = invoker.ZBufferIndex;
+        var visible = _items.LastOrDefault(x => x.Index == index);
+        if (visible != null)
+        {
+            visible.ZView.OnTapToOutside();
+        }
+    }
+
     public Size ArrangeChildren(Rect bounds)
     {
         foreach (var item in Children)
         {
             item.Arrange(bounds);
         }
-
         return bounds.Size;
+        //foreach (var item in _backgrounds)
+        //{
+        //    item.Value.View.Arrange(bounds);
+        //}
+
+        //foreach (var item in _items)
+        //{
+        //    double x;
+        //    double y;
+        //    double width;
+        //    double height;
+        //    var view = item.View;
+        //    switch (item.MauiView.VerticalOptions.Alignment)
+        //    {
+        //        case LayoutAlignment.Start:
+        //            y = 0;
+        //            height = view.DesiredSize.Height;
+        //            break;
+        //        case LayoutAlignment.Center:
+        //            y = (bounds.Height / 2) - (view.DesiredSize.Height / 2);
+        //            height = view.DesiredSize.Height;
+        //            break;
+        //        case LayoutAlignment.End:
+        //            y = bounds.Height - view.DesiredSize.Height;
+        //            height = view.DesiredSize.Height;
+        //            break;
+        //        default:
+        //            y = 0;
+        //            height = bounds.Height;
+        //            break;
+        //    }
+
+        //    switch (item.MauiView.HorizontalOptions.Alignment)
+        //    {
+        //        case LayoutAlignment.Start:
+        //            x = 0;
+        //            width = view.DesiredSize.Width;
+        //            break;
+        //        case LayoutAlignment.Center:
+        //            x = (bounds.Width / 2) - (view.DesiredSize.Width / 2);
+        //            width = view.DesiredSize.Width;
+        //            break;
+        //        case LayoutAlignment.End:
+        //            x = bounds.Width - view.DesiredSize.Width;
+        //            width = view.DesiredSize.Width;
+        //            break;
+        //        default:
+        //            x = 0;
+        //            width = bounds.Width;
+        //            break;
+        //    }
+
+        //    var r = new Rect(x, y, width, height);
+        //    view.Arrange(r);
+        //}
+        //return bounds.Size;
     }
 
     public Size Measure(double widthConstraint, double heightConstraint)
     {
-        foreach (View item in Children)
+        foreach (var item in Children)
         {
             item.Measure(widthConstraint, heightConstraint);
         }
