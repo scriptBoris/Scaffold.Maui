@@ -860,6 +860,41 @@ public static class ScaffoldExtensions
         return Scaffold.GetScaffoldContext(view);
     }
 
+    /// <summary>
+    /// Finding the IScaffold of a child page element
+    /// </summary>
+    /// <param name="view">Page or child page element</param>
+    /// <param name="throwExceptionIfSoMuch">If true, an exception will be thrown if the search takes too long</param>
+    public static IScaffold? FindContext(this View view, bool throwExceptionIfSoMuch = true)
+    {
+        var match = Scaffold.GetScaffoldContext(view);
+        if (match != null)
+            return match;
+
+        View? parent = view;
+        // Если это дочерний элемент страницы, то ищем вверх
+        for (int i = 0; i < 400; i++)
+        {
+            parent = parent.Parent as View;
+            
+            // если родитель не View, то скорее всего родитель 
+            // это служебный класс и найти скаффорд уже не удастся
+            if (parent == null)
+                return null;
+
+            if (parent is IAgent agent)
+            {
+                return agent.Context;
+            }
+        }
+
+        if (throwExceptionIfSoMuch)
+            throw new InvalidOperationException($"Cant find the IScaffold by {view.GetType().Name}, " +
+                $"maybe the UI tree is too big?");
+
+        return null;
+    }
+
     public static IAgent GetAgent(this View view)
     {
         var sc = (Scaffold)Scaffold.GetScaffoldContext(view)!;
@@ -867,6 +902,7 @@ public static class ScaffoldExtensions
         return agent;
     }
 
+    // todo исправить на более надежный поиск по IAgent
     public static View? GetPage(this View view)
     {
         if (view.GetContext() != null)

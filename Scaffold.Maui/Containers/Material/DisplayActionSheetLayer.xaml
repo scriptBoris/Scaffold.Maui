@@ -49,9 +49,9 @@
                                     CornerRadius="0"
                                     TapCommand="{Binding TapCommand}"
                                     TapCommandParameter="{Binding .}">
-                            <Grid ColumnDefinitions="Auto, *">
-                                <toolkit:RadioButton CheckedColor="#7a757f"
-                                                     InputTransparent="True"
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="10">
+                                <toolkit:RadioButton InputTransparent="True"
                                                      IsChecked="{Binding IsSelected}"
                                                      MinimumHeightRequest="10"
                                                      MinimumWidthRequest="10"
