@@ -19,28 +19,7 @@ public class AgentWinUI : Agent, IWindowsBehavior
     public AgentWinUI(CreateAgentArgs args) : base(args)
     {
         _context = args.Context;
-        //_flytoutButton = new ButtonSam.Maui.Button
-        //{
-        //    Margin = 5,
-        //    Padding = 6,
-        //    BackgroundColor = Colors.Transparent,
-        //    CornerRadius = 5,
-        //    HorizontalOptions = LayoutOptions.Start,
-        //    Content = new ImageTint
-        //    {
-        //        HeightRequest = 18,
-        //        WidthRequest = 18,
-        //        Source = "ic_scaffold_menu.png",
-        //    },
-        //    IsVisible = false,
-        //    TapCommand = new Command(() =>
-        //    {
-        //        if (flyoutBehavior != null)
-        //            flyoutBehavior.InvokeChangePresented();
-        //    }),
-        //};
-        //Children.Insert(2, _flytoutButton);
-
+        
         var flyout = args.Behaviors.FirstOrDefault(x => x is FlyoutViewWinUI.FlyoutBehavior) as FlyoutViewWinUI.FlyoutBehavior;
         if (flyout != null)
             OnBehaiorAdded(flyout);
@@ -97,43 +76,9 @@ public class AgentWinUI : Agent, IWindowsBehavior
 
     public override Size ArrangeChildren(Rect bounds)
     {
-        double offsetY = 0;
-
-        if (NavigationBar is IView bar)
-        {
-            double off = 0;
-            if (flyoutBehavior != null)
-                off = flyoutBehavior.NavigationBarOffset;
-                //off = flyoutBehavior.ViewOffset;
-
-            offsetY = bar.DesiredSize.Height;
-            bar.Arrange(new Rect(-off, 0, bounds.Width + off, bar.DesiredSize.Height));
-        }
-
-        if (_flytoutButton is IView flyoutButton)
-        {
-            flyoutButton.Arrange(new Rect(0, 0, 
-                _flytoutButton.DesiredSize.Width,
-                _flytoutButton.DesiredSize.Height));
-        }
-
-        if (Scaffold.GetIsContentUnderNavigationBar(ViewWrapper.View))
-            offsetY = 0;
-
-        if (ViewWrapper is IView view)
-        {
-            double h = bounds.Height - offsetY;
-            view.Arrange(new Rect(0, offsetY, bounds.Width, h));
-        }
-
-        if (ZBuffer is IView zbuffer)
-        {
-            zbuffer.Arrange(bounds);
-        }
-
+        var res = base.ArrangeChildren(bounds);
         Scaffold.PlatformSpec.UpdateDesktopDragArea();
-
-        return bounds.Size;
+        return res;
     }
 
     public override Size Measure(double widthConstraint, double heightConstraint)
@@ -225,21 +170,5 @@ public class AgentWinUI : Agent, IWindowsBehavior
 
     private void SetupFlyoutOffsets(FlyoutViewWinUI.FlyoutBehavior flyout)
     {
-        //if (NavigationBar is IView bar)
-        //{
-        //    double off = flyout.ViewOffset;
-        //    bar.Arrange(new Rect(-off, 0, Width + off, bar.DesiredSize.Height));
-        //}
-
-        //if (NavigationBar is Layout nav)
-        //    nav.Padding = new Thickness(
-        //        flyout.NavigationBarOffset,
-        //        nav.Padding.Top,
-        //        nav.Padding.Right,
-        //        nav.Padding.Bottom
-        //    );
-
-        //if (ViewWrapper is Layout wrapper)
-        //    wrapper.Margin = new Thickness(flyout.ViewOffset, 0, 0, 0);
     }
 }

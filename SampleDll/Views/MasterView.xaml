@@ -14,24 +14,24 @@
                     Detail="{Binding SelectedMenuButton.View}"
                     IsPresented="{Binding IsPresented}">
     <StackLayout>
-        <ContentView BackgroundColor="#6200EE"
+        <ContentView HeightRequest="40"
+                     BackgroundColor="#6200EE"
                      IsVisible="{OnIdiom Desktop=False,
-                                         Default=True}"
-                     HeightRequest="40"/>
+                                         Default=True}"/>
 
-        <StackLayout BindableLayout.ItemsSource="{Binding Menus}"
-                     Spacing="5"
+        <StackLayout VerticalOptions="FillAndExpand"
                      Padding="{OnIdiom Desktop=5,
                                        Default=10}"
-                     VerticalOptions="FillAndExpand">
+                     BindableLayout.ItemsSource="{Binding Menus}"
+                     Spacing="5">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="models:MasterMenuItem">
-                    <controls:MenuButton Image="{Binding ImageSource}"
+                    <controls:MenuButton VerticalOptions="{Binding LayoutOptions}"
+                                         Image="{Binding ImageSource}"
                                          IsSelected="{Binding IsSelected}"
                                          TapCommand="{Binding BindingContext.CommandSelectMenu, Source={Reference root}}"
                                          TapCommandParameter="{Binding .}"
-                                         Text="{Binding Title}"
-                                         VerticalOptions="{Binding LayoutOptions}"/>
+                                         Text="{Binding Title}"/>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
 

@@ -8,20 +8,23 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
     private FlyoutBehavior? currentBehavior;
     private const int Min = 40;
     private const int Max = 200;
-    private ButtonSam.Maui.Button btn;
+    private readonly ButtonSam.Maui.Button _flyoutButton;
+    private readonly ImageTint _flyoutImage;
+    private double _flyoutPanelShowPercent;
+
     public FlyoutViewWinUI()
     {
         InitializeComponent();
         Scaffold.SetHasNavigationBar(this, false);
 
-        btn = new ButtonSam.Maui.Button
+        _flyoutButton = new ButtonSam.Maui.Button
         {
             Margin = 5,
             Padding = 6,
             BackgroundColor = Colors.Transparent,
             CornerRadius = 5,
             HorizontalOptions = LayoutOptions.Start,
-            Content = new ImageTint
+            Content = _flyoutImage = new ImageTint
             {
                 HeightRequest = 18,
                 WidthRequest = 18,
@@ -32,12 +35,16 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
                 IsPresented = !IsPresented;
             }),
         };
-        gridRoot.Children.Add(btn);
+        _flyoutImage.SetAppTheme(ImageTint.TintColorProperty, Colors.Gray, Colors.White);
+        panelFlyout.Children.Insert(0, _flyoutButton);
+
+        if (IsPresented)
+            _flyoutPanelShowPercent = 1;
     }
 
     public Rect[] UndragArea => new Rect[]
     {
-        new Rect(0,0, btn.Width, btn.Height),
+        new Rect(0,0, _flyoutButton.Width, _flyoutButton.Height),
     };
 
     protected override void PrepareAnimateSetupDetail(View newDetail, View oldDetail)
@@ -118,9 +125,9 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
         }
 
         if (IsPresented)
-            OffsetScaffold(Min, Max);
+            OffsetScaffold(Min, 1);
         else
-            OffsetScaffold(Min, Min);
+            OffsetScaffold(Min, 0);
 
         panelDetail.Children.Add(detail);
     }
@@ -132,7 +139,7 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
 
     protected override void AttachFlyout(View? flyout)
     {
-        panelFlyout.Content = flyout;
+        panelFlyout_customContent.Content = flyout;
     }
 
     protected override IBackButtonBehavior? BackButtonBehaviorFactory()
@@ -154,8 +161,8 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
         {
             OffsetScaffold(Min, x);
         },
-        start: panelFlyout.WidthRequest,
-        end: Max,
+        start: _flyoutPanelShowPercent,
+        end: 1,
         length: 200);
     }
 
@@ -165,15 +172,27 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
         {
             OffsetScaffold(Min, x);
         },
-        start: panelFlyout.WidthRequest,
-        end: Min,
+        start: _flyoutPanelShowPercent,
+        end: 0,
         length: 200);
     }
 
-    private void OffsetScaffold(double navBarOffset, double viewOffset)
+    private void OffsetScaffold(double navBarOffset, double showPercent)
     {
+        _flyoutPanelShowPercent = showPercent;
+        double viewOffset = double.Lerp(Min, Max, showPercent);
         panelFlyout.WidthRequest = viewOffset;
-        currentBehavior?.Set(navBarOffset, viewOffset);
+        panelFlyout_blocker.Opacity = showPercent;
+
+        if (showPercent > 0)
+            panelFlyout_blocker.IsVisible = true;
+        else
+            panelFlyout_blocker.IsVisible = false;
+    }
+
+    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    {
+        IsPresented = false;
     }
 
     public class FlyoutBehavior : IBehavior

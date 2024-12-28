@@ -6,35 +6,43 @@
                         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
                         xmlns:winuiContainers="clr-namespace:ScaffoldLib.Maui.Containers.WinUI"
                         x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewWinUI"
+                        HorizontalOptions="Fill"
                         VerticalOptions="Fill"
-                        HorizontalOptions="Fill">
+                        BackgroundColor="{AppThemeBinding Light=#DDD, Dark=#333}">
     <toolkit:FlyoutViewBase.Children>
         <Grid x:Name="gridRoot"
-              ColumnDefinitions="Auto, *"
+              ColumnDefinitions="40, *"
               ColumnSpacing="0"
-              RowDefinitions="40, *"
               RowSpacing="0">
-
-            <!--<winuiContainers:ButtonMenu>
-                <toolkit:ImageTint Source="ic_scaffold_menu.png"
-                                   WidthRequest="18"
-                                   HeightRequest="18"/>
-            </winuiContainers:ButtonMenu>-->
 
             <!--detail-->
             <Grid x:Name="panelDetail"
-                  Grid.Row="0"
-                  Grid.RowSpan="2"
                   Grid.Column="1"
-                  VerticalOptions="Fill"
-                  HorizontalOptions="Fill"/>
+                  HorizontalOptions="Fill"
+                  VerticalOptions="Fill"/>
+
+            <!--touch layer-->
+            <Grid x:Name="panelFlyout_blocker"
+                  Grid.ColumnSpan="2"
+                  BackgroundColor="#80000000"
+                  IsVisible="False">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </Grid.GestureRecognizers>
+            </Grid>
 
             <!--flyout-->
-            <ContentView x:Name="panelFlyout"
-                         Grid.Row="1"
-                         Grid.Column="0"
-                         WidthRequest="30"
-                         HorizontalOptions="Start"/>
+            <Grid x:Name="panelFlyout"
+                  Grid.ColumnSpan="2"
+                  WidthRequest="40"
+                  HorizontalOptions="Start"
+                  BackgroundColor="{AppThemeBinding Light=#DDD, Dark=#333}"
+                  RowDefinitions="Auto, *">
+
+                <ContentView x:Name="panelFlyout_customContent"
+                             Grid.Row="1"
+                             HorizontalOptions="Start"/>
+            </Grid>
 
         </Grid>
     </toolkit:FlyoutViewBase.Children>
