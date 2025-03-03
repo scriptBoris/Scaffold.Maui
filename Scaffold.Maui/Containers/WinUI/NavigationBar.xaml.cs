@@ -135,4 +135,10 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
         Scaffold.PlatformSpec.UpdateDesktopDragArea();
         return res;
     }
+
+    public void UpdateTitleView(View? titleView)
+    {
+        // TODO Not implement
+        throw new NotImplementedException();
+    }
 }

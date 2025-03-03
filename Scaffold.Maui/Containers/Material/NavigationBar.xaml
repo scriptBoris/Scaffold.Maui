@@ -1,74 +1,78 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:common="clr-namespace:ScaffoldLib.Maui.Containers.Common"
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
       xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
       xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
       x:Class="ScaffoldLib.Maui.Containers.Material.NavigationBar"
       x:DataType="local:NavigationBar"
-      x:Name="navigationBar">
+      x:Name="navigationBar"
+      ColumnDefinitions="Auto, *, Auto"
+      RowDefinitions="56">
 
-    <StackLayout HeightRequest="56"
-                 Margin="7,0"
-                 Orientation="Horizontal"
-                 Spacing="0">
-        <!--back button-->
-        <internal:Button x:Name="backButton"
-                         HorizontalOptions="Start"
-                         VerticalOptions="Center"
-                         Margin="0,0,0,0"
-                         Padding="8"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20">
-            <toolkit:ImageTint x:Name="imageBackButton"
-                               HeightRequest="24"
-                               WidthRequest="24"
-                               Source="scaffoldlib_arrow_left.png">
-            </toolkit:ImageTint>
-        </internal:Button>
-
-        <!--title-->
-        <Label x:Name="labelTitle"
-               HorizontalOptions="FillAndExpand"
-               Margin="13,0,0,0"
-               VerticalTextAlignment="Center"
-               FontSize="22"
-               LineBreakMode="TailTruncation"/>
-
-        <!--menu items-->
-        <StackLayout x:Name="stackMenu"
+    <!--back button-->
+    <internal:Button x:Name="backButton"
+                     Grid.Column="0"
+                     HorizontalOptions="Start"
+                     VerticalOptions="Center"
                      Margin="0,0,0,0"
-                     Orientation="Horizontal"
-                     Spacing="5">
-            <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
-                    <local:ButtonMenu VerticalOptions="Center"
-                                      BackgroundColor="Transparent"
-                                      ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
-                                      ImageSource="{Binding ImageSource}"
-                                      ImageSourcePadding="{Binding ImageSourcePadding}"
-                                      MenuItemColor="{Binding Color}"
-                                      TapColor="{Binding TapColor, Source={Reference navigationBar}}"
-                                      TapCommand="{Binding Command}"
-                                      Text="{Binding Text}"
-                                      UseOriginalColor="{Binding UseOriginalColor}"/>
-                </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </StackLayout>
+                     Padding="8"
+                     BackgroundColor="Transparent"
+                     CornerRadius="20">
+        <toolkit:ImageTint x:Name="imageBackButton"
+                           HeightRequest="24"
+                           WidthRequest="24"
+                           Source="scaffoldlib_arrow_left.png">
+        </toolkit:ImageTint>
+    </internal:Button>
 
-        <!--menu button-->
-        <internal:Button x:Name="buttonMenu"
-                         HorizontalOptions="Start"
-                         VerticalOptions="Center"
-                         Margin="5,0,0,0"
-                         Padding="8"
-                         BackgroundColor="Transparent"
-                         CornerRadius="20">
-            <toolkit:ImageTint x:Name="imageMenu"
-                               HeightRequest="24"
-                               WidthRequest="24"
-                               Source="scaffoldlib_toolbar_menu.png"/>
-        </internal:Button>
-    </StackLayout>
+    <!--title-->
+    <Label x:Name="labelTitle"
+           Grid.Column="1"
+           Margin="13,0,0,0"
+           VerticalTextAlignment="Center"
+           FontSize="22"
+           LineBreakMode="TailTruncation"/>
+
+    <!--menu items-->
+    <common:MenuItemsLayout x:Name="menuItemsLayout"
+                            Grid.Column="2"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center"
+                            ItemsSpacing="5">
+        <common:MenuItemsLayout.ItemTemplate>
+            <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+                <local:ButtonMenu VerticalOptions="Center"
+                                  BackgroundColor="Transparent"
+                                  ForegroundColor="{Binding ForegroundColor, Source={Reference navigationBar}}"
+                                  ImageSource="{Binding ImageSource}"
+                                  ImageSourcePadding="{Binding ImageSourcePadding}"
+                                  MenuItemColor="{Binding Color}"
+                                  TapColor="{Binding TapColor, Source={Reference navigationBar}}"
+                                  TapCommand="{Binding Command}"
+                                  Text="{Binding Text}"
+                                  UseOriginalColor="{Binding UseOriginalColor}"/>
+            </DataTemplate>
+        </common:MenuItemsLayout.ItemTemplate>
+
+        <common:MenuItemsLayout.MenuButtonTemplate>
+            <DataTemplate>
+                <!--menu button-->
+                <internal:Button VerticalOptions="Center"
+                                 Padding="8"
+                                 BackgroundColor="Transparent"
+                                 CornerRadius="20"
+                                 TapColor="{Binding TapColor}"
+                                 TapCommand="{Binding CommandMenu}">
+                    <toolkit:ImageTint HeightRequest="24"
+                                       WidthRequest="24"
+                                       Source="scaffoldlib_toolbar_menu.png"
+                                       TintColor="{Binding ForegroundColor}"/>
+                </internal:Button>
+            </DataTemplate>
+        </common:MenuItemsLayout.MenuButtonTemplate>
+    </common:MenuItemsLayout>
+
 </Grid>

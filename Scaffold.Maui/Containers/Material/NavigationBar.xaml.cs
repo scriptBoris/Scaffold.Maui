@@ -3,7 +3,7 @@ using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
-using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
+using System.Windows.Input;
 
 namespace ScaffoldLib.Maui.Containers.Material;
 
@@ -12,19 +12,22 @@ public partial class NavigationBar : INavigationBar, IDisposable
     private readonly IAgent _agent;
     private readonly View _view;
     private readonly IScaffold _context;
-    private MenuItemCollection? menuItems;
     private IBackButtonBehavior? backButtonBehavior;
     private Color _foregroundColor = Colors.Black;
     private Color _tapColor = Colors.Black;
+    private Thickness _defaultPadding = new Thickness(7, 0);
+    private View? _titleView;
 
     public NavigationBar(CreateNavigationBarArgs args)
     {
         _view = args.View;
         _agent = args.Agent;
         _context = args.Agent.Context;
+        Padding = _defaultPadding;
         InitializeComponent();
         backButton.TapCommand = new Command(OnBackButton);
-        buttonMenu.TapCommand = new Command(OnMenuButton);
+        CommandMenu = new Command(OnMenuButton);
+        BindingContext = this;
     }
 
     public Color ForegroundColor
@@ -47,11 +50,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
     }
 
-    private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        int count = menuItems?.CollapsedItems?.Count ?? 0;
-        buttonMenu.IsVisible = count > 0;
-    }
+    public ICommand CommandMenu { get; }
 
     private void OnBackButton()
     {
@@ -70,18 +69,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     public void UpdateMenuItems(Core.MenuItemCollection menu)
     {
-        if (menuItems != null)
-        {
-            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
-            menuItems.Dispose();
-        }
-
-        menuItems = menu;
-        menuItems.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
-        bool colapseVisible = menuItems.CollapsedItems.Count > 0;
-
-        BindableLayout.SetItemsSource(stackMenu, menuItems.VisibleItems);
-        buttonMenu.IsVisible = colapseVisible;
+        menuItemsLayout.ItemsSource = menu;
     }
 
     public void UpdateNavigationBarVisible(bool visible)
@@ -115,7 +103,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
             tapColor = Color.FromRgba(100, 100, 100, 100);
 
         backButton.TapColor = tapColor;
-        buttonMenu.TapColor = tapColor;
         TapColor = tapColor;
     }
 
@@ -123,24 +110,17 @@ public partial class NavigationBar : INavigationBar, IDisposable
     {
         imageBackButton.TintColor = color;
         labelTitle.TextColor = color;
-        imageMenu.TintColor = color;
         ForegroundColor = color;
     }
 
     public void UpdateSafeArea(Thickness safeArea)
     {
-        Padding = new Thickness(safeArea.Left, safeArea.Top, safeArea.Right, 0);
+        var safeAreaPadding = new Thickness(safeArea.Left, safeArea.Top, safeArea.Right, 0);
+        Padding = _defaultPadding + safeAreaPadding;
     }
 
     public void Dispose()
     {
-        if (menuItems != null)
-        {
-            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
-            menuItems.Dispose();
-            menuItems = null;
-        }
-
         var all = this.GetDeepAllChildren();
         foreach (var item in all)
         {
@@ -148,5 +128,31 @@ public partial class NavigationBar : INavigationBar, IDisposable
                 disposable.Dispose();
         }
         Handler = null;
+    }
+
+    public void UpdateTitleView(View? titleView)
+    {
+        var old = _titleView;
+        var nev = titleView;
+
+        // ignore
+        if (old == nev)
+            return;
+
+        if (old != null)
+        {
+            Children.Remove(_titleView);
+            _titleView = null;
+        }
+        
+        if (nev != null)
+        {
+            Grid.SetColumn(nev, 1);
+            Children.Add(nev);
+            _titleView = nev;
+            _titleView.BindingContext = _view.BindingContext;
+        }
+
+        labelTitle.IsVisible = _titleView == null;
     }
 }

@@ -151,4 +151,10 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
         Handler = null;
     }
+
+    public void UpdateTitleView(View? titleView)
+    {
+        // TODO Not implement
+        throw new NotImplementedException();
+    }
 }

@@ -5,25 +5,45 @@
              xmlns:vm="clr-namespace:SampleDll.ViewModels"
              x:Class="SampleDll.Views.InfoView"
              x:DataType="vm:InfoViewModel"
-             scaffold:Scaffold.Title="About app"
+             VerticalOptions="Center"
              Padding="20"
-             VerticalOptions="CenterAndExpand">
-    <Image Source="scaffold_icon.png"
-           Margin="0,0,0,20"
+             scaffold:Scaffold.Title="About app"
+             Scaffold.NavigationBarBackgroundColor="#111">
+
+    <Scaffold.TitleView>
+        <Grid ColumnDefinitions="Auto, *, Auto">
+            <Image HeightRequest="36"
+                   WidthRequest="36"
+                   Margin="10,0,0,0"
+                   Source="scaffold_icon.png"/>
+            <Label Grid.Column="1"
+                   Margin="20,0,0,0"
+                   VerticalTextAlignment="Center"
+                   FontSize="18"
+                   Text="About app"/>
+            <Button Grid.Column="2"
+                    VerticalOptions="Center"
+                    Command="{Binding CommandGoRepo}"
+                    Text="Share"/>
+        </Grid>
+    </Scaffold.TitleView>
+
+    <Image HeightRequest="100"
            WidthRequest="100"
-           HeightRequest="100"/>
+           Margin="0,0,0,20"
+           Source="scaffold_icon.png"/>
 
-    <Label FontSize="22"
-           Text="Scaffold.Maui"
-           HorizontalOptions="Center"/>
+    <Label HorizontalOptions="Center"
+           FontSize="22"
+           Text="Scaffold.Maui"/>
 
-    <Label Text="This is sample app for demonstration drawing on whole display"
+    <Label HorizontalOptions="Center"
            HorizontalTextAlignment="Center"
-           HorizontalOptions="Center"/>
+           Text="This is sample app for demonstration drawing on whole display"/>
 
     <StackLayout HorizontalOptions="Center">
-        <Label Text="Source Repository"
-               Margin="0,15,0,0"/>
+        <Label Margin="0,15,0,0"
+               Text="Source Repository"/>
         <Label Text="https://github.com/scriptboris/scaffold.maui"
                TextColor="BlueViolet">
             <Label.GestureRecognizers>

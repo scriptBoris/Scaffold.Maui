@@ -12,4 +12,5 @@ public interface INavigationBar
     void UpdateBackButtonVisibility(bool isVisible);
     void UpdateBackButtonBehavior(IBackButtonBehavior? behavior);
     void UpdateSafeArea(Thickness safeArea);
+    void UpdateTitleView(View? titleView);
 }

@@ -296,6 +296,30 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     public static bool GetIsContentUnderNavigationBar(BindableObject b) =>
         (bool)b.GetValue(IsContentUnderNavigationBarProperty);
 
+    // title view
+    public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached(
+        "TitleView",
+        typeof(View),
+        typeof(Scaffold),
+        null,
+        propertyChanged: (b, o, n) =>
+        {
+            if (GetScaffoldContext(b) is Scaffold context)
+            {
+                var agent = context
+                    ._navigationController
+                    .Agents
+                    .LastOrDefault(x => x.ViewWrapper.View == b && x.IsAppear);
+                if (agent is IAgent a)
+                    a.NavigationBar?.UpdateTitleView(n as View);
+            }
+        }
+    );
+    public static void SetTitleView(BindableObject b, View? value) =>
+        b.SetValue(TitleViewProperty, value);
+    public static View? GetTitleView(BindableObject b) =>
+        b.GetValue(TitleViewProperty) as View;
+
     // view factory
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
         nameof(ViewFactory),

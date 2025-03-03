@@ -250,6 +250,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
                     navBar.UpdateNavigationBarForegroundColor(NavigationBarForegroundColor);
                     navBar.UpdateNavigationBarBackgroundColor(NavigationBarBackgroundColor);
                     navBar.UpdateBackButtonVisibility(IndexInNavigationStack > 0);
+                    navBar.UpdateTitleView(Scaffold.GetTitleView(_view));
                     navBar.UpdateTitle(Scaffold.GetTitle(_view));
                     navBar.UpdateMenuItems(Scaffold.GetMenuItems(_view));
                     navBar.UpdateBackButtonBehavior(BackButtonBehavior);
