@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Layouts;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Containers.Common;
 
-public class MenuItemsLayout : Layout, ILayoutManager
+public class MenuItemsLayout : Layout, ILayoutManager, IDisposable
 {
     private List<IView>? _visibleItems;
     private IView? _menuView;
@@ -23,6 +24,9 @@ public class MenuItemsLayout : Layout, ILayoutManager
         {
             if (b is MenuItemsLayout self)
             {
+                if (o is INotifyCollectionChanged old)
+                    old.CollectionChanged -= self.Notify_CollectionChanged;
+
                 self.TryUpdate();
             }
         }
@@ -127,16 +131,26 @@ public class MenuItemsLayout : Layout, ILayoutManager
             notify.CollectionChanged += Notify_CollectionChanged;
         }
 
-        int forLimit = Math.Min(MaxVisibleItems, ItemsSource.Count);
-        for (int i = 0; i < forLimit; i++)
+        int visibleItems = 0;
+        int i = -1;
+        foreach (var item in ItemsSource)
         {
+            i++;
+
+            if (!item.IsVisible)
+                continue;
+
             var itemView = (View)ItemTemplate.CreateContent();
             itemView.BindingContext = ItemsSource[i];
             _visibleItems.Add(itemView);
             Children.Add(itemView);
+
+            // TODO Реализвать обработку на IsVisible у каждого элемента колекции
+
+            visibleItems++;
         }
 
-        if (ItemsSource.Count > MaxVisibleItems)
+        if (visibleItems > MaxVisibleItems)
         {
             var menuView = (View)MenuButtonTemplate.CreateContent();
             menuView.BindingContext = BindingContext;
@@ -153,7 +167,76 @@ public class MenuItemsLayout : Layout, ILayoutManager
 
     private void Notify_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (sender is not IList list)
+            return;
 
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                object added = e.NewItems![0]!;
+                int addedId = e.NewStartingIndex;
+
+                // ignore
+                if (_visibleItems != null && _visibleItems.Count >= MaxVisibleItems)
+                    return;
+
+                if (_visibleItems == null)
+                    _visibleItems = new List<IView>(MaxVisibleItems);
+
+                // Вставляем элемент в правильном порядке
+                int i = 0;
+                bool isAdded = false;
+                foreach (var item in _visibleItems)
+                {
+                    var binding = ((Element)item).BindingContext;
+                    int index = list.IndexOf(binding);
+
+                    if (addedId < index)
+                    {
+                        InsertItemView(added, i);
+                        isAdded = true;
+                        break;
+                    }
+                    i++;
+                }
+
+                if (!isAdded)
+                    InsertItemView(added, _visibleItems.Count);
+
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                // TODO Реализовать удаление элементов в колекции
+                //int oldDelId = e.OldStartingIndex;
+                //var oldDel = e.OldItems![0]!;
+                //var visibleDelete = _visibleItems?.LastOrDefault(x => ((Element)x).BindingContext == oldDel);
+                //if (visibleDelete == null)
+                //    return;
+                throw new NotImplementedException();
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                // TODO реализовать замену элементов в колекции
+                throw new NotImplementedException();
+                break;
+            case NotifyCollectionChangedAction.Move:
+                // TODO реализовать перемещение элементов по колекции
+                throw new NotImplementedException();
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                Children.Clear();
+                _visibleItems = null;
+                _menuView = null;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void InsertItemView(object context, int i)
+    {
+        var view = (View)ItemTemplate.CreateContent();
+        view.BindingContext = context;
+        _visibleItems.Insert(i, view);
+        Children.Add(view);
     }
 
     public Size ArrangeChildren(Rect bounds)
@@ -220,5 +303,11 @@ public class MenuItemsLayout : Layout, ILayoutManager
     protected override ILayoutManager CreateLayoutManager()
     {
         return this;
+    }
+
+    public void Dispose()
+    {
+        if (ItemsSource is INotifyCollectionChanged n)
+            n.CollectionChanged -= Notify_CollectionChanged;
     }
 }
