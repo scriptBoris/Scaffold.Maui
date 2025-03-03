@@ -16,7 +16,7 @@ public class CartViewModelKey
 {
 }
 
-public class CartViewModel : BaseViewModel<CartViewModelKey>, IRemovedFromNavigation
+public class CartViewModel : BaseViewModel<CartViewModelKey>, INavigationMember
 {
     private readonly ICartService _cartService;
 
@@ -29,9 +29,6 @@ public class CartViewModel : BaseViewModel<CartViewModelKey>, IRemovedFromNaviga
 
         CommandItemMinus = new Command<CartItem>(ActionItemMinus);
         CommandItemPlus = new Command<CartItem>(ActionItemPlus);
-
-        _cartService.TotalItemsChanged += CartService_TotalItemsChanged;
-        _cartService.TotalPriceChanged += CartService_TotalPriceChanged;
     }
 
     #region props
@@ -64,7 +61,13 @@ public class CartViewModel : BaseViewModel<CartViewModelKey>, IRemovedFromNaviga
         TotalItems = _cartService.TotalItems;
     }
 
-    public void OnRemovedFromNavigation()
+    public void OnConnectedToNavigation()
+    {
+        _cartService.TotalItemsChanged += CartService_TotalItemsChanged;
+        _cartService.TotalPriceChanged += CartService_TotalPriceChanged;
+    }
+
+    public void OnDisconnectedFromNavigation()
     {
         _cartService.TotalItemsChanged -= CartService_TotalItemsChanged;
         _cartService.TotalPriceChanged -= CartService_TotalPriceChanged;

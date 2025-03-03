@@ -21,13 +21,20 @@ public partial class FlyoutViewMaterial : FlyoutViewBase
     private bool isFirst = true;
     public override Size Measure(double widthConstraint, double heightConstraint)
     {
-        var w = widthConstraint * 0.7;
-        _panelFlyout.WidthRequest = w;
+        double flyoutWidth = widthConstraint * 0.7;
+        if (widthConstraint < 200)
+            flyoutWidth = widthConstraint * 0.9;
+        else if (widthConstraint < 400)
+            flyoutWidth = widthConstraint * 0.7;
+        else 
+            flyoutWidth = 300;
+
+        _panelFlyout.WidthRequest = flyoutWidth;
 
         //if (!IsPresented)
         if (isFirst && !IsPresented)
         {
-            _panelFlyout.TranslationX = -w;
+            _panelFlyout.TranslationX = -flyoutWidth;
             isFirst = false;
         }
 

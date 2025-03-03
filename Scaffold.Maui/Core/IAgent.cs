@@ -10,8 +10,9 @@ using System.Diagnostics;
 
 namespace ScaffoldLib.Maui.Core;
 
-public interface IAgent : IRemovedFromNavigation, IDisposable, IAppear, IDisappear
+public interface IAgent : INavigationMember, IDisposable, IAppear, IDisappear
 {
+    event EventHandler? ConnectedToNavigation;
     event EventHandler? RemovedFromNavigation;
     event EventHandler? Appeared;
     event EventHandler? Disappeared;
@@ -55,8 +56,10 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
     private Color _navigationBarForegroundColor;
     private int _indexInNavigationStack;
     private IBackButtonBehavior? _backButtonBehavior;
-    private bool isBackButtonPressed;
+    private bool _isBackButtonPressed;
+    private bool _isConnectedToUINavigation;
 
+    public event EventHandler? ConnectedToNavigation;
     public event EventHandler? RemovedFromNavigation;
     public event EventHandler? Appeared;
     public event EventHandler? Disappeared;
@@ -280,14 +283,14 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
 
     public virtual async void OnBackButton()
     {
-        if (isBackButtonPressed)
+        if (_isBackButtonPressed)
             return;
 
-        isBackButtonPressed = true;
+        _isBackButtonPressed = true;
 
         if (BackButtonBehavior?.OverrideSoftwareBackButtonAction(this, Context) == true)
         {
-            isBackButtonPressed = false;
+            _isBackButtonPressed = false;
             return;
         }
 
@@ -307,7 +310,7 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
             if (canPop)
                 _ = Context.PopAsync().ConfigureAwait(false);
         });
-        isBackButtonPressed = false;
+        _isBackButtonPressed = false;
     }
 
     public virtual void OnMenuButton()
@@ -342,8 +345,21 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
             Disappeared?.Invoke(this, EventArgs.Empty);
     }
 
-    public virtual void OnRemovedFromNavigation()
+    public virtual void OnConnectedToNavigation()
     {
+        if (_isConnectedToUINavigation)
+            return;
+
+        _isConnectedToUINavigation = true;
+        ConnectedToNavigation?.Invoke(this, EventArgs.Empty);
+    }
+
+    public virtual void OnDisconnectedFromNavigation()
+    {
+        if (!_isConnectedToUINavigation)
+            return;
+
+        _isConnectedToUINavigation = false;
         RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
     }
 

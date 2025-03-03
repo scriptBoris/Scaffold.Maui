@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ScaffoldLib.Maui.Toolkit;
 
-public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDisappear, IRemovedFromNavigation
+public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDisappear, INavigationMember
 {
     private bool isInitialized = true;
     private CancellationTokenSource cancellationTokenSource = new();
@@ -178,9 +178,15 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
         Detail?.TryDisappearing(isComplete);
     }
 
-    public virtual void OnRemovedFromNavigation()
+    public virtual void OnConnectedToNavigation()
     {
-        if (Detail is IRemovedFromNavigation rm)
-            rm.OnRemovedFromNavigation();
+        if (Detail is INavigationMember member)
+            member.OnConnectedToNavigation();
+    }
+
+    public virtual void OnDisconnectedFromNavigation()
+    {
+        if (Detail is INavigationMember rm)
+            rm.OnDisconnectedFromNavigation();
     }
 }

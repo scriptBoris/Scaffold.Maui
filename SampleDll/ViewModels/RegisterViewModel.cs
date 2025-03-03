@@ -15,7 +15,7 @@ public class RegisterViewModelKey
 {
 }
 
-public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButtonListener, IRemovedFromNavigation
+public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButtonListener, INavigationMember
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -51,7 +51,12 @@ public class RegisterViewModel : BaseViewModel<RegisterViewModelKey>, IBackButto
         return res;
     }
 
-    public void OnRemovedFromNavigation()
+    public void OnConnectedToNavigation()
+    {
+        Debug.WriteLine("Registration has been opened");
+    }
+
+    public void OnDisconnectedFromNavigation()
     {
         Debug.WriteLine("Registration has been closed");
     }

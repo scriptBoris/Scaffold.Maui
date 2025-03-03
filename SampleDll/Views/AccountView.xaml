@@ -13,17 +13,16 @@
 
     <Scaffold.MenuItems>
         <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile"/>
-
-
-        <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile"/>
+                          Text="Edit profile 1"/>
 
         <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile"/>
+                          Text="Edit profile 2"/>
 
         <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile"/>
+                          Text="Edit profile 3"/>
+
+        <ScaffoldMenuItem ImageSource="cog.png"
+                          Text="Edit profile 4"/>
     </Scaffold.MenuItems>
 
     <Grid>

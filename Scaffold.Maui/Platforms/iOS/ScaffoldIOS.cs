@@ -28,6 +28,7 @@ internal static class ScaffoldIOS
                     if (scaffold != null)
                     {
                         scaffold.TryDrawDebugLabel();
+                        scaffold.OnConnectedToNavigation();
                         scaffold.OnAppear(false);
                         scaffold.OnAppear(true);
                     }

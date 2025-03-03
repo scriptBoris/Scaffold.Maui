@@ -64,6 +64,7 @@ internal class NavigationController : IDisposable
 
         Scaffold.TryHideKeyboard();
         oldAgent?.TryDisappearing(false, AppearingStl);
+        newAgent.TryNotifyNavigationConnect();
         newAgent.TryAppearing(false, AppearingStl, bgColor);
 
         if (!isAnimated)
@@ -136,6 +137,7 @@ internal class NavigationController : IDisposable
         _navigationStack.Insert(index, view);
         _agents.Insert(index, newAgent);
         _scaffold.Children.Insert(index, newAgentView);
+        newAgent.TryNotifyNavigationConnect();
     }
 
     internal async Task ReplaceView(View view, bool isAnimated)
@@ -169,6 +171,7 @@ internal class NavigationController : IDisposable
 
         Scaffold.TryHideKeyboard();
         oldAgent.TryDisappearing(false, AppearingStl);
+        newAgent.TryNotifyNavigationConnect();
         newAgent.TryAppearing(false, AppearingStl, bgColor);
 
         if (isAnimated)
@@ -201,6 +204,7 @@ internal class NavigationController : IDisposable
 
         oldAgent.TryDisappearing(true, AppearingStl);
         newAgent.TryAppearing(true, AppearingStl);
+        oldAgent.TryNotifyNavigationDisconnect();
         oldAgent.Dispose();
 
         if (!isAnimated)
@@ -252,7 +256,7 @@ internal class NavigationController : IDisposable
         currentAgent.TryDisappearing(true, AppearingStl);
         previosAgent.TryAppearing(true, AppearingStl);
         previosAgent.RestoreVisualState();
-        currentAgent.TryRemoveFromNavigation();
+        currentAgent.TryNotifyNavigationDisconnect();
         currentAgent.Dispose();
 
         return true;
@@ -276,7 +280,7 @@ internal class NavigationController : IDisposable
         if (isIntantPop)
             agent.TryDisappearing(true, AppearingStl);
 
-        agent.TryRemoveFromNavigation();
+        agent.TryNotifyNavigationDisconnect();
         agent.Dispose();
 
         if (isIntantPop)

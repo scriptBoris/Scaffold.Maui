@@ -25,6 +25,7 @@ public static class ScaffoldAndroid
                     if (scaffold != null)
                     {
                         scaffold.TryDrawDebugLabel();
+                        scaffold.OnConnectedToNavigation();
                         scaffold.OnAppear(false);
                         scaffold.OnAppear(true);
                     }

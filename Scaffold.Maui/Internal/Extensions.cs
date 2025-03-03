@@ -32,8 +32,8 @@ internal static class Extensions
 
     public static void TryRemoveFromNavigation(this IView iview)
     {
-        if (iview is IRemovedFromNavigation rm)
-            rm.OnRemovedFromNavigation();
+        if (iview is INavigationMember rm)
+            rm.OnDisconnectedFromNavigation();
     }
 
     public static void TryAppearing(this IAgent agent, bool isComplete, AppearingStates parentStl, Color? navigationBarBgColor = null)
@@ -79,11 +79,20 @@ internal static class Extensions
         agent.ViewWrapper.View.TryDisappearing(isComplete);
     }
 
-    public static void TryRemoveFromNavigation(this IAgent agent)
+    public static void TryNotifyNavigationConnect(this IAgent agent)
     {
-        agent.ViewWrapper.View.TryRemoveFromNavigation();
-        if (agent is IRemovedFromNavigation rm)
-            rm.OnRemovedFromNavigation();
+        if (agent.ViewWrapper.View is INavigationMember member)
+            member.OnConnectedToNavigation();
+
+        agent.OnConnectedToNavigation();
+    }
+
+    public static void TryNotifyNavigationDisconnect(this IAgent agent)
+    {
+        if (agent.ViewWrapper.View is INavigationMember member)
+            member.OnDisconnectedFromNavigation();
+
+        agent.OnDisconnectedFromNavigation();
     }
 
     public static void ResolveStatusBarColor(this IAgent frame)

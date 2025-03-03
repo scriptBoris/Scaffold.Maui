@@ -139,6 +139,5 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
     public void UpdateTitleView(View? titleView)
     {
         // TODO Not implement
-        throw new NotImplementedException();
     }
 }

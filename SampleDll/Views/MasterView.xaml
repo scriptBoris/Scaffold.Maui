@@ -13,6 +13,8 @@
                     scaffold:Scaffold.Title="Master view"
                     Detail="{Binding SelectedMenuButton.View}"
                     IsPresented="{Binding IsPresented}">
+
+    <!--FlyoutPanel-->
     <StackLayout>
         <ContentView HeightRequest="40"
                      BackgroundColor="#6200EE"

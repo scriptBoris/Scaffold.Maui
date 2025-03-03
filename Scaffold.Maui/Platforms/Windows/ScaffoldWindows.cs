@@ -56,6 +56,9 @@ internal static class ScaffoldWindows
                         }
                     }
 #endif
+                    rootScaffold.OnConnectedToNavigation();
+                    rootScaffold.OnAppear(false);
+                    rootScaffold.OnAppear(true);
                 });
             });
         });

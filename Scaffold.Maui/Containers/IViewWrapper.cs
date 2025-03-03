@@ -80,11 +80,11 @@ public class ViewWrapper : Layout, ILayoutManager, IViewWrapper
 
     public virtual void Dispose()
     {
-        if (View is IRemovedFromNavigation vrm)
-            vrm.OnRemovedFromNavigation();
+        if (View is INavigationMember vrm)
+            vrm.OnDisconnectedFromNavigation();
 
-        if (View.BindingContext is IRemovedFromNavigation vmrm)
-            vmrm.OnRemovedFromNavigation();
+        if (View.BindingContext is INavigationMember vmrm)
+            vmrm.OnDisconnectedFromNavigation();
 
         Handler = null;
     }

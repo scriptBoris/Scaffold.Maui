@@ -131,26 +131,30 @@ public class MenuItemsLayout : Layout, ILayoutManager, IDisposable
             notify.CollectionChanged += Notify_CollectionChanged;
         }
 
-        int visibleItems = 0;
+        int realVisibleItems = 0;
+        int potencialVisibleItems = 0;
         int i = -1;
         foreach (var item in ItemsSource)
         {
             i++;
 
-            if (!item.IsVisible)
+            if (!item.IsVisible || item.IsCollapsed)
                 continue;
 
-            var itemView = (View)ItemTemplate.CreateContent();
-            itemView.BindingContext = ItemsSource[i];
-            _visibleItems.Add(itemView);
-            Children.Add(itemView);
+            if (realVisibleItems < MaxVisibleItems)
+            {
+                var itemView = (View)ItemTemplate.CreateContent();
+                itemView.BindingContext = ItemsSource[i];
+                _visibleItems.Add(itemView);
+                Children.Add(itemView);
+                realVisibleItems++;
+            }
 
-            // TODO Реализвать обработку на IsVisible у каждого элемента колекции
-
-            visibleItems++;
+            // TODO Реализвать обработку на IsVisible и IsCollapsed у каждого элемента колекции
+            potencialVisibleItems++;
         }
 
-        if (visibleItems > MaxVisibleItems)
+        if (potencialVisibleItems > MaxVisibleItems)
         {
             var menuView = (View)MenuButtonTemplate.CreateContent();
             menuView.BindingContext = BindingContext;
@@ -173,11 +177,14 @@ public class MenuItemsLayout : Layout, ILayoutManager, IDisposable
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                object added = e.NewItems![0]!;
+                var added = (ScaffoldMenuItem)e.NewItems![0]!;
                 int addedId = e.NewStartingIndex;
 
                 // ignore
                 if (_visibleItems != null && _visibleItems.Count >= MaxVisibleItems)
+                    return;
+
+                if (!added.IsVisible || added.IsCollapsed)
                     return;
 
                 if (_visibleItems == null)

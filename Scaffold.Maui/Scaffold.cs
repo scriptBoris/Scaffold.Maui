@@ -41,7 +41,7 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
     void AddCustomLayer(IZBufferLayout layer, int zIndex, View parentView);
 }
 
-public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, IRemovedFromNavigation
+public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackButtonListener, IAppear, IDisappear, INavigationMember
 {
     public const ushort AnimationTime = 180;
 
@@ -51,6 +51,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
     private IBackButtonBehavior? _backButtonBehavior;
     private static Thickness _deviceSafeArea;
     private Thickness _safeArea;
+    private bool _isConnectedToUITree;
 
     public static event EventHandler<Thickness>? DeviceSafeAreaChanged;
 
@@ -821,15 +822,31 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         f?.TryDisappearing(isComplete, stl);
     }
 
-    public void OnRemovedFromNavigation()
+    public void OnConnectedToNavigation()
     {
+        if (_isConnectedToUITree)
+            return;
+
+        _isConnectedToUITree = true;
+
+        foreach (var frame in _navigationController.Agents)
+            frame.TryNotifyNavigationConnect();
+    }
+
+    public void OnDisconnectedFromNavigation()
+    {
+        if (!_isConnectedToUITree)
+            return;
+
+        _isConnectedToUITree = false;
+
         foreach (var frame in _navigationController.Agents.Reverse())
-            frame.TryRemoveFromNavigation();
+            frame.TryNotifyNavigationDisconnect();
     }
 
     public void Dispose()
     {
-        OnRemovedFromNavigation();
+        OnDisconnectedFromNavigation();
         DeviceSafeAreaChanged -= OnSafeAreaChanged;
         _navigationController.Dispose();
         ExternalBevahiors.AsNotifyObs().CollectionChanged -= Scaffold_CollectionChanged;
