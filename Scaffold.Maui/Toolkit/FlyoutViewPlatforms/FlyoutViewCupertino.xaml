@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<toolkit:FlyoutViewBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-                        xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-                        xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
-                        x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewCupertino"
-                        HorizontalOptions="Fill"
-                        VerticalOptions="Fill">
+<toolkitPlatform:FlyoutViewBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                                xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+                                xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+                                xmlns:toolkitPlatform="clr-namespace:ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms"
+                                x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewCupertino"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill">
 
-    <toolkit:FlyoutViewBase.Children>
-        <!--  WTF???? ZLayout no attached in children, but default grid is fine????!!  -->
-        <!--  detail  -->
+    <toolkitPlatform:FlyoutViewBase.Children>
+        <!--WTF???? ZLayout no attached in children, but default grid is fine????!!-->
+        <!--detail-->
         <!--<internal:ZLayout
             x:Name="panelDetail"
             VerticalOptions="Fill"
@@ -18,9 +18,9 @@
 
         <Grid x:Name="panelDetail"
               HorizontalOptions="Fill"
-              VerticalOptions="Fill" />
+              VerticalOptions="Fill"/>
 
-        <!--  flyout background  -->
+        <!--flyout background-->
         <HorizontalStackLayout x:Name="_panelFlyoutBackground"
                                HorizontalOptions="Fill"
                                VerticalOptions="Fill"
@@ -28,16 +28,16 @@
                                IsVisible="False"
                                Opacity="0">
             <HorizontalStackLayout.GestureRecognizers>
-                <!--  WTF Event not worked, but command is fine  -->
-                <TapGestureRecognizer x:Name="gestureTap" />
+                <!--WTF Event not worked, but command is fine-->
+                <TapGestureRecognizer x:Name="gestureTap"/>
             </HorizontalStackLayout.GestureRecognizers>
         </HorizontalStackLayout>
 
-        <!--  flyout  -->
+        <!--flyout-->
         <ContentView x:Name="_panelFlyout"
                      HorizontalOptions="Start"
                      VerticalOptions="Fill"
                      BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#000}"
-                     IsVisible="False" />
-    </toolkit:FlyoutViewBase.Children>
-</toolkit:FlyoutViewBase>
+                     IsVisible="False"/>
+    </toolkitPlatform:FlyoutViewBase.Children>
+</toolkitPlatform:FlyoutViewBase>

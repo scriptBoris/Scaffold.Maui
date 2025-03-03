@@ -1,10 +1,10 @@
-﻿using ButtonSam.Maui.Core;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Containers;
 using ScaffoldLib.Maui.Core;
+using ScaffoldLib.Maui.StaticLibs.ButtonSam.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

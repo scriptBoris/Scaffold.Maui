@@ -2,7 +2,6 @@
 <Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-        xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
         x:Class="ScaffoldLib.Maui.Containers.Material.DisplayActionSheetLayer"
         x:Name="displayActionSheetLayer"
@@ -43,12 +42,12 @@
                          Spacing="0">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="internal:SheetDialogItem">
-                        <sam:Button Margin="0"
-                                    Padding="10,6"
-                                    BackgroundColor="Transparent"
-                                    CornerRadius="0"
-                                    TapCommand="{Binding TapCommand}"
-                                    TapCommandParameter="{Binding .}">
+                        <internal:RawButton Margin="0"
+                                            Padding="10,6"
+                                            BackgroundColor="Transparent"
+                                            CornerRadius="0"
+                                            TapCommand="{Binding TapCommand}"
+                                            TapCommandParameter="{Binding .}">
                             <Grid ColumnDefinitions="Auto, *"
                                   ColumnSpacing="10">
                                 <toolkit:RadioButton InputTransparent="True"
@@ -62,7 +61,7 @@
                                        Text="{Binding DisplayedText}"
                                        TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
                             </Grid>
-                        </sam:Button>
+                        </internal:RawButton>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </StackLayout>
@@ -71,27 +70,27 @@
         <StackLayout x:Name="buttonsContainer"
                      Margin="0,10"
                      Orientation="Horizontal">
-            <sam:Button x:Name="buttonDestruction"
-                        HorizontalOptions="StartAndExpand"
-                        Margin="10,0"
-                        Padding="10"
-                        BackgroundColor="Transparent">
+            <internal:RawButton x:Name="buttonDestruction"
+                                HorizontalOptions="StartAndExpand"
+                                Margin="10,0"
+                                Padding="10"
+                                BackgroundColor="Transparent">
                 <Label x:Name="labelButtonDestruction"
                        HorizontalTextAlignment="End"
                        FontFamily="Roboto-Medium"
                        TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
-            </sam:Button>
+            </internal:RawButton>
 
-            <sam:Button x:Name="buttonCancel"
-                        HorizontalOptions="EndAndExpand"
-                        Margin="10,0"
-                        Padding="10"
-                        BackgroundColor="Transparent">
+            <internal:RawButton x:Name="buttonCancel"
+                                HorizontalOptions="EndAndExpand"
+                                Margin="10,0"
+                                Padding="10"
+                                BackgroundColor="Transparent">
                 <Label x:Name="labelButtonCancel"
                        HorizontalTextAlignment="Center"
                        FontFamily="Roboto-Medium"
                        TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
-            </sam:Button>
+            </internal:RawButton>
         </StackLayout>
     </StackLayout>
 </Border>

@@ -6,7 +6,7 @@
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
-
+		
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -16,7 +16,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Scaffold.Maui</Title>
-		<Version>0.10.0-beta</Version>
+		<Version>0.10.1-beta</Version>
 		<Authors>Boris Krit</Authors>
 		<Copyright>MIT</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -33,17 +33,16 @@
 	<ItemGroup>
 		<PackageReference Include="SkiaSharp" Version="2.88.9" />
 		<PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
-		<PackageReference Include="ButtonSam.Maui" Version="8.1.3" />
 	</ItemGroup>
 
 	<!--win-->
 	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-		<MauiImage Include="Resources\Images\win\*"/>
+		<MauiImage Include="Resources\Images\win\*" />
 	</ItemGroup>
 
 	<!--ios-->
 	<ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
-		<MauiImage Include="Resources\Images\ios\*"/>
+		<MauiImage Include="Resources\Images\ios\*" />
 	</ItemGroup>
 
 	<!--android (use native icons)-->

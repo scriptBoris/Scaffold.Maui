@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-        xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
         x:Class="ScaffoldLib.Maui.Containers.WinUI.DisplayAlertLayer"
         WidthRequest="250"
@@ -22,22 +22,22 @@
         <Label x:Name="labelDescription"
                TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
-        <sam:Button x:Name="buttonOk"
-                    Padding="10"
-                    BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+        <internal:Button x:Name="buttonOk"
+                         Padding="10"
+                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
             <Label x:Name="labelButtonOk"
                    Margin="0,0,10,0"
                    HorizontalTextAlignment="End"
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-        </sam:Button>
+        </internal:Button>
 
-        <sam:Button x:Name="buttonCancel"
-                    Padding="10"
-                    BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
+        <internal:Button x:Name="buttonCancel"
+                         Padding="10"
+                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
             <Label x:Name="labelButtonCancel"
                    Margin="0,0,10,0"
                    HorizontalTextAlignment="End"
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-        </sam:Button>
+        </internal:Button>
     </StackLayout>
 </Border>

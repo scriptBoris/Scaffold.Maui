@@ -13,7 +13,7 @@ namespace ScaffoldLib.Maui.Containers.WinUI;
 public class AgentWinUI : Agent, IWindowsBehavior
 {
     private readonly IScaffold _context;
-    private readonly ButtonSam.Maui.Button? _flytoutButton;
+    private readonly StaticLibs.ButtonSam.Button? _flytoutButton;
     private FlyoutViewWinUI.FlyoutBehavior? flyoutBehavior;
 
     public AgentWinUI(CreateAgentArgs args) : base(args)

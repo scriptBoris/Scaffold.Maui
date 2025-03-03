@@ -35,18 +35,18 @@
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <StackLayout Spacing="0">
-                                <internal:Button Margin="0"
-                                                 Padding="18"
-                                                 BackgroundColor="Transparent"
-                                                 CornerRadius="0"
-                                                 TapColor="#666"
-                                                 TapCommand="{Binding CommandTapItem, Source={Reference root}}"
-                                                 TapCommandParameter="{Binding .}">
+                                <internal:RawButton Margin="0"
+                                                    Padding="18"
+                                                    BackgroundColor="Transparent"
+                                                    CornerRadius="0"
+                                                    TapColor="#666"
+                                                    TapCommand="{Binding CommandTapItem, Source={Reference root}}"
+                                                    TapCommandParameter="{Binding .}">
                                     <Label HorizontalTextAlignment="Center"
                                            FontSize="17"
                                            Text="{Binding Value}"
                                            TextColor="#0A84FF"/>
-                                </internal:Button>
+                                </internal:RawButton>
                                 <ContentView HeightRequest="0.33"
                                              BackgroundColor="#666"/>
                             </StackLayout>
@@ -65,17 +65,17 @@
             <TapGestureRecognizer/>
         </internal:GlassView.GestureRecognizers>
 
-        <internal:Button x:Name="buttonDestruction"
-                         HorizontalOptions="FillAndExpand"
-                         Padding="18"
-                         BackgroundColor="Transparent"
-                         TapColor="#666">
+        <internal:RawButton x:Name="buttonDestruction"
+                            HorizontalOptions="FillAndExpand"
+                            Padding="18"
+                            BackgroundColor="Transparent"
+                            TapColor="#666">
             <Label x:Name="labelButtonDestruction"
                    HorizontalTextAlignment="Center"
                    FontAttributes="Bold"
                    FontSize="17"
                    TextColor="#FF3B30"/>
-        </internal:Button>
+        </internal:RawButton>
     </internal:GlassView>
 
     <!--Cancel-->
@@ -86,17 +86,17 @@
             <TapGestureRecognizer/>
         </internal:GlassView.GestureRecognizers>
 
-        <internal:Button x:Name="buttonCancel"
-                         HorizontalOptions="FillAndExpand"
-                         Padding="18"
-                         BackgroundColor="Transparent"
-                         CornerRadius="0"
-                         TapColor="#666">
+        <internal:RawButton x:Name="buttonCancel"
+                            HorizontalOptions="FillAndExpand"
+                            Padding="18"
+                            BackgroundColor="Transparent"
+                            CornerRadius="0"
+                            TapColor="#666">
             <Label x:Name="labelButtonCancel"
                    HorizontalTextAlignment="Center"
                    FontAttributes="Bold"
                    FontSize="17"
                    TextColor="#0A84FF"/>
-        </internal:Button>
+        </internal:RawButton>
     </internal:GlassView>
 </StackLayout>

@@ -1,5 +1,5 @@
-﻿using ButtonSam.Maui;
-using ScaffoldLib.Maui.Args;
+﻿using ScaffoldLib.Maui.Args;
+using ScaffoldLib.Maui.StaticLibs.ButtonSam;
 using ScaffoldLib.Maui.Toolkit;
 using System.Diagnostics;
 
@@ -48,7 +48,7 @@ public static class Initializer
 #endif
         });
 
-        builder.UseButtonSam(configArgs.UseDebugInfo);
+        builder.UseButtonSam();
 
         IsInitialized = true;
         return builder;

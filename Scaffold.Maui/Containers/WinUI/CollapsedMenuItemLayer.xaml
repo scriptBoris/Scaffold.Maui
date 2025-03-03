@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
-        xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
         xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
         x:Class="ScaffoldLib.Maui.Containers.WinUI.CollapsedMenuItemLayer"
         HorizontalOptions="End"
@@ -14,6 +13,7 @@
         StrokeShape="RoundRectangle 8"
         StrokeThickness="0">
 
+    <!--TODO Есть баг, когда при отображении даного слоя, он незапрещает инпут запределы себя-->
     <Border.Shadow>
         <Shadow Brush="black"
                 Opacity="0.4"

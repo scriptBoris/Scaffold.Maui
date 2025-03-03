@@ -4,7 +4,6 @@
         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
         xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Cupertino"
-        xmlns:sam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
         xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
         x:Class="ScaffoldLib.Maui.Containers.Cupertino.CollapsedMenuItemLayer"
         x:Name="border"

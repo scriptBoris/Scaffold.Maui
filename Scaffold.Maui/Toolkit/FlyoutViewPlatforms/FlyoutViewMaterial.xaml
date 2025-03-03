@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<toolkit:FlyoutViewBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-                        xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-                        xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
-                        x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewMaterial"
-                        HorizontalOptions="Fill"
-                        VerticalOptions="Fill">
+<toolkitPlatform:FlyoutViewBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                                xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+                                xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+                                xmlns:toolkitPlatform="clr-namespace:ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms"
+                                x:Class="ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms.FlyoutViewMaterial"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill">
 
-    <toolkit:FlyoutViewBase.Children>
+    <toolkitPlatform:FlyoutViewBase.Children>
         <!--WTF???? ZLayout no attached in children, but default grid is fine????!!-->
         <!--detail-->
         <!--<internal:ZLayout
@@ -24,7 +24,7 @@
         <HorizontalStackLayout x:Name="_panelFlyoutBackground"
                                HorizontalOptions="Fill"
                                VerticalOptions="Fill"
-                               BackgroundColor="#66666666"
+                               BackgroundColor="#66000000"
                                IsVisible="False"
                                Opacity="0">
             <HorizontalStackLayout.GestureRecognizers>
@@ -39,5 +39,5 @@
                      VerticalOptions="Fill"
                      BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#000}"
                      IsVisible="False"/>
-    </toolkit:FlyoutViewBase.Children>
-</toolkit:FlyoutViewBase>
+    </toolkitPlatform:FlyoutViewBase.Children>
+</toolkitPlatform:FlyoutViewBase>

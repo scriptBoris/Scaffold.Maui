@@ -32,17 +32,17 @@
         <StackLayout HorizontalOptions="FillAndExpand"
                      Orientation="Horizontal"
                      Spacing="0">
-            <internal:Button x:Name="buttonOk"
-                             HorizontalOptions="FillAndExpand"
-                             Padding="13"
-                             BackgroundColor="Transparent"
-                             CornerRadius="0"
-                             TapColor="#666">
+            <internal:RawButton x:Name="buttonOk"
+                                HorizontalOptions="FillAndExpand"
+                                Padding="13"
+                                BackgroundColor="Transparent"
+                                CornerRadius="0"
+                                TapColor="#666">
                 <Label x:Name="labelButtonOk"
                        HorizontalTextAlignment="Center"
                        FontSize="17"
                        TextColor="#0A84FF"/>
-            </internal:Button>
+            </internal:RawButton>
 
             <!--vertical line-->
             <ContentView x:Name="lineButtons"
@@ -50,17 +50,17 @@
                          VerticalOptions="FillAndExpand"
                          BackgroundColor="#666"/>
 
-            <internal:Button x:Name="buttonCancel"
-                             HorizontalOptions="FillAndExpand"
-                             Padding="13"
-                             BackgroundColor="Transparent"
-                             CornerRadius="0"
-                             TapColor="#666">
+            <internal:RawButton x:Name="buttonCancel"
+                                HorizontalOptions="FillAndExpand"
+                                Padding="13"
+                                BackgroundColor="Transparent"
+                                CornerRadius="0"
+                                TapColor="#666">
                 <Label x:Name="labelButtonCancel"
                        HorizontalTextAlignment="Center"
                        FontSize="17"
                        TextColor="#0A84FF"/>
-            </internal:Button>
+            </internal:RawButton>
         </StackLayout>
 
     </StackLayout>

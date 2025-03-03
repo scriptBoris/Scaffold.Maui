@@ -8,7 +8,7 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
     private FlyoutBehavior? currentBehavior;
     private const int Min = 40;
     private const int Max = 200;
-    private readonly ButtonSam.Maui.Button _flyoutButton;
+    private readonly StaticLibs.ButtonSam.Button _flyoutButton;
     private readonly ImageTint _flyoutImage;
     private double _flyoutPanelShowPercent;
 
@@ -17,7 +17,7 @@ public partial class FlyoutViewWinUI : FlyoutViewBase, IWindowsBehavior
         InitializeComponent();
         Scaffold.SetHasNavigationBar(this, false);
 
-        _flyoutButton = new ButtonSam.Maui.Button
+        _flyoutButton = new StaticLibs.ButtonSam.Button
         {
             Margin = 5,
             Padding = 6,

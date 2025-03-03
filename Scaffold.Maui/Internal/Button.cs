@@ -1,6 +1,6 @@
 ﻿namespace ScaffoldLib.Maui.Internal;
 
-internal class Button : ButtonSam.Maui.Button
+internal class Button : StaticLibs.ButtonSam.Button
 {
 #if ANDROID
     protected override void AnimationPressedStart(float x, float y)

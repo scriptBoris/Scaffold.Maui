@@ -10,7 +10,7 @@ namespace ScaffoldLib.Maui.Containers.Material;
 /// <summary>
 /// Button menu on popup dialog (show collapsed menu items)
 /// </summary>
-internal class ButtonMenuOnPopup : ButtonSam.Maui.Button
+internal class ButtonMenuOnPopup : StaticLibs.ButtonSam.Button
 {
     private readonly ImageTint _icon;
     private readonly Label _label;

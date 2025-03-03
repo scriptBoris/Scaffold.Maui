@@ -1,7 +1,7 @@
-using ButtonSam.Maui.Core;
 using Microsoft.Maui.Controls;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.StaticLibs.ButtonSam.Core;
 
 namespace ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 

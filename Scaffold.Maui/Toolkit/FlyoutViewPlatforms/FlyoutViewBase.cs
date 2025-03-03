@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ScaffoldLib.Maui.Toolkit;
+namespace ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 
 public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDisappear, INavigationMember
 {
@@ -104,7 +104,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
     {
         isInitialized = true;
 
-        this.BatchBegin();
+        BatchBegin();
 
         if (initialIsPresented != null)
             UpdateFlyoutMenuPresented(initialIsPresented.Value);
@@ -115,7 +115,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
         if (initialDetail != null)
             UpdateDetail(initialDetail, null);
 
-        this.BatchCommit();
+        BatchCommit();
     }
 
     private async void UpdateDetail(View? newDetail, View? oldDetail)
@@ -128,7 +128,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
             scaffold.BackButtonBehavior ??= BackButtonBehaviorFactory();
 
         // Start
-        this.BatchBegin();
+        BatchBegin();
 
         bool isAnimate = oldDetail != null;
         oldDetail?.TryDisappearing();
@@ -138,7 +138,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
             // Very important!
             // if detail just view (without binding context) then
             // disable pass current binding context to detail
-            if (newDetail.BindingContext == default(object))
+            if (newDetail.BindingContext == default)
                 newDetail.BindingContext = null;
 
             AttachDetail(newDetail);
@@ -148,7 +148,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
             {
                 PrepareAnimateSetupDetail(newDetail, oldDetail!);
                 
-                this.BatchCommit();
+                BatchCommit();
 
                 await newDetail.AwaitReady(cancel);
                 var task = AnimateSetupDetail(newDetail, oldDetail!, cancel);
@@ -165,7 +165,7 @@ public abstract class FlyoutViewBase : ZLayout, IScaffoldProvider, IAppear, IDis
         }
 
         if (!isAnimate)
-            this.BatchCommit();
+            BatchCommit();
     }
 
     public void OnAppear(bool isComplete)

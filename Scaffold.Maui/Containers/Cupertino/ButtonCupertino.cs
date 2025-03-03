@@ -1,9 +1,9 @@
-﻿using ButtonSam.Maui.Core;
+﻿using ScaffoldLib.Maui.StaticLibs.ButtonSam.Core;
 using ScaffoldLib.Maui.Toolkit;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
-public class ButtonCupertino : ButtonSam.Maui.Button
+public class ButtonCupertino : StaticLibs.ButtonSam.Button
 {
     private readonly ImageTint _iconImage;
     private Color releasedAnimColor = Colors.Blue;

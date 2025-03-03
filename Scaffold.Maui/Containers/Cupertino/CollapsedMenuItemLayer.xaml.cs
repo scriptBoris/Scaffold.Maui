@@ -1,5 +1,3 @@
-using ButtonSam.Maui;
-using ButtonSam.Maui.Core;
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Toolkit;
@@ -71,7 +69,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
     }
 }
 
-public class ButtonCollapsedMenu : ButtonSam.Maui.Button
+public class ButtonCollapsedMenu : StaticLibs.ButtonSam.Button
 {
     private readonly StackLayout _stackLayout = new()
     {

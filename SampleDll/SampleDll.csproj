@@ -19,6 +19,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="ButtonSam.Maui" Version="8.1.2" />
 	  <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
 	</ItemGroup>
 

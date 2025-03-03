@@ -1,5 +1,4 @@
-﻿using ButtonSam.Maui.Core;
-using Microsoft.Maui.Animations;
+﻿using Microsoft.Maui.Animations;
 using ScaffoldLib.Maui.Toolkit;
 
 #if IOS
@@ -8,7 +7,7 @@ using UIKit;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
-public class ButtonMenu : ButtonSam.Maui.Button
+public class ButtonMenu : StaticLibs.ButtonSam.Button
 {
     private const double ButtonSize = 50;
     private ImageTint? _iconImage;
