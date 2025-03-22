@@ -3,6 +3,7 @@ using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit.FlyoutViewPlatforms;
 using System.Collections;
+using System.Windows.Input;
 
 namespace ScaffoldLib.Maui.Containers.WinUI;
 
@@ -27,11 +28,6 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
         buttonBack.TapCommand = new Command(() =>
         {
             args.Agent.OnBackButton();
-        });
-
-        buttonMenu.TapCommand = new Command(() =>
-        {
-            args.Agent.OnMenuButton();
         });
     }
 
@@ -64,15 +60,17 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
             if (buttonBack.IsVisible)
                 rects.Add(buttonBack.AbsRect());
 
-            if (buttonMenu.IsVisible)
-                rects.Add(buttonMenu.AbsRect());
-
-            foreach (View item in stackMenu)
-                rects.Add(item.AbsRect());
+            foreach (var item in menuItems.UndragAreas)
+                rects.Add(item);
 
             return rects.ToArray();
         }
     }
+
+    public ICommand CommandMenu => new Command(() =>
+    {
+        _agent.OnMenuButton();
+    });
 
     public void UpdateTitle(string? title)
     {
@@ -84,16 +82,9 @@ public partial class NavigationBar : INavigationBar, IWindowsBehavior
         backButtonBehavior = behavior;
     }
 
-    public void UpdateMenuItems(Core.MenuItemCollection menu)
+    public void UpdateMenuItems(IList<ScaffoldMenuItem>? menu)
     {
-        BindableLayout.SetItemsSource(stackMenu, menu.VisibleItems);
-        menu.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
-        IsVisibleButtonMoreMenu = menu.CollapsedItems.Count > 0;
-    }
-
-    private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        IsVisibleButtonMoreMenu = ((IList)sender!).Count > 0;
+        menuItems.ItemsSource = menu;
     }
 
     public void UpdateNavigationBarBackgroundColor(Color color)

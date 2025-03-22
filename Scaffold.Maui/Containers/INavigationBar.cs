@@ -4,7 +4,7 @@ namespace ScaffoldLib.Maui.Containers;
 
 public interface INavigationBar
 {
-    void UpdateMenuItems(Core.MenuItemCollection menuItems);
+    void UpdateMenuItems(IList<ScaffoldMenuItem>? menuItems);
     void UpdateTitle(string? title);
     void UpdateNavigationBarVisible(bool visible);
     void UpdateNavigationBarBackgroundColor(Color color);

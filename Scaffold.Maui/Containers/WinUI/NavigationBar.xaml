@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:common="clr-namespace:ScaffoldLib.Maui.Containers.Common"
       xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
       xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.WinUI"
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
@@ -27,12 +28,14 @@
                VerticalTextAlignment="Center"
                MaxLines="1"/>
 
-        <StackLayout x:Name="stackMenu"
-                     Orientation="Horizontal"
-                     Spacing="0">
-            <BindableLayout.ItemTemplate>
+        <common:MenuItemsLayout x:Name="menuItems"
+                                HorizontalOptions="End"
+                                VerticalOptions="Center"
+                                ItemsSpacing="5">
+            <common:MenuItemsLayout.ItemTemplate>
                 <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
                     <local:ButtonMenu VerticalOptions="Center"
+                                      CornerRadius="3"
                                       BackgroundColor="Transparent"
                                       ForegroundColor="{Binding ForegroundColor, Source={Reference navBar}}"
                                       ImageSource="{Binding ImageSource}"
@@ -42,22 +45,29 @@
                                       Text="{Binding Text}"
                                       UseOriginalColor="{Binding UseOriginalColor}"/>
                 </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </StackLayout>
+            </common:MenuItemsLayout.ItemTemplate>
 
-        <internal:Button x:Name="buttonMenu"
-                         HorizontalOptions="Start"
-                         VerticalOptions="FillAndExpand"
-                         Margin="0,0,0,0"
-                         Padding="5"
-                         BackgroundColor="Transparent"
-                         CornerRadius="0"
-                         IsVisible="{Binding IsVisibleButtonMoreMenu, Source={Reference navBar}}">
-            <toolkit:ImageTint x:Name="imageMenu"
-                               HeightRequest="22"
-                               WidthRequest="22"
-                               Source="scaffoldlib_toolbar_menu.png"
-                               TintColor="{Binding ForegroundColor, Source={Reference navBar}}"/>
-        </internal:Button>
+            <common:MenuItemsLayout.MenuButtonTemplate>
+                <DataTemplate>
+                    <internal:Button x:DataType="local:NavigationBar"
+                                     x:Name="buttonMenu"
+                                     HorizontalOptions="Start"
+                                     VerticalOptions="Fill"
+                                     Margin="0,0,0,0"
+                                     Padding="5"
+                                     BackgroundColor="Transparent"
+                                     BindingContext="{Reference navBar}"
+                                     CornerRadius="3"
+                                     TapCommand="{Binding CommandMenu}">
+                        <toolkit:ImageTint x:Name="imageMenu"
+                                           HeightRequest="22"
+                                           WidthRequest="22"
+                                           Source="scaffoldlib_toolbar_menu.png"
+                                           TintColor="{Binding ForegroundColor}"/>
+                    </internal:Button>
+                </DataTemplate>
+            </common:MenuItemsLayout.MenuButtonTemplate>
+        </common:MenuItemsLayout>
+
     </StackLayout>
 </Grid>

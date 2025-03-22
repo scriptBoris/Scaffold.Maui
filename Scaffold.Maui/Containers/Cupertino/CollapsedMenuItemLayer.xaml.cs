@@ -23,7 +23,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
             Command = new Command(() => DeatachLayer?.Invoke())
         });
 
-        var obs = Scaffold.GetMenuItems(args.View).CollapsedItems;
+        var obs = Scaffold.GetMenuItems(args.View).Where(x => x.IsVisible && x.IsCollapsed);
         BindableLayout.SetItemsSource(stackMenu, obs);
     }
 

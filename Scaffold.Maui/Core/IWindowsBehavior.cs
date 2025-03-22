@@ -8,5 +8,6 @@ namespace ScaffoldLib.Maui.Core;
 
 public interface IWindowsBehavior
 {
+    // TODO Переделать на IEnumerable, и реализацию через yield return, чтобы уменьшить аллокации
     Rect[] UndragArea { get; }
 }

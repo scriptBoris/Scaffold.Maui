@@ -111,6 +111,9 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
                     Children.Add((IView)_navigationBar);
                 else
                     Children.Insert(1, (IView)_navigationBar);
+
+                if (_navigationBar is View vnavbar)
+                    vnavbar.BindingContext = _view.BindingContext;
             }
         }
     }

@@ -12,17 +12,24 @@
              Spacing="15">
 
     <Scaffold.MenuItems>
-        <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile 1"/>
+        <ScaffoldMenuItem ImageSource="account.png"
+                          IsCollapsed="False"
+                          IsVisible="False"
+                          Text="Account (1)"/>
+
+        <ScaffoldMenuItem ImageSource="cart_outline.png"
+                          IsCollapsed="True"
+                          IsVisible="True"
+                          Text="Cart (2)"/>
+
+        <ScaffoldMenuItem ImageSource="chrome.png"
+                          IsVisible="False"
+                          Text="Chome (3)"
+                          UseOriginalColor="True"/>
 
         <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile 2"/>
-
-        <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile 3"/>
-
-        <ScaffoldMenuItem ImageSource="cog.png"
-                          Text="Edit profile 4"/>
+                          IsVisible="True"
+                          Text="Settings (4)"/>
     </Scaffold.MenuItems>
 
     <Grid>

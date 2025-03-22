@@ -22,7 +22,7 @@ public partial class CollapsedMenuItemLayer : IZBufferLayout
         });
         Opacity = 0;
 
-        var obs = Scaffold.GetMenuItems(args.View).CollapsedItems;
+        var obs = Scaffold.GetMenuItems(args.View).Where(x => x.IsVisible && x.IsCollapsed);
         BindableLayout.SetItemsSource(stackMenu, obs);
 	}
 

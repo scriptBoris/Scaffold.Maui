@@ -7,7 +7,6 @@
       xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
       xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
       x:Class="ScaffoldLib.Maui.Containers.Material.NavigationBar"
-      x:DataType="local:NavigationBar"
       x:Name="navigationBar"
       ColumnDefinitions="Auto, *, Auto"
       RowDefinitions="56">
@@ -60,9 +59,11 @@
         <common:MenuItemsLayout.MenuButtonTemplate>
             <DataTemplate>
                 <!--menu button-->
-                <internal:Button VerticalOptions="Center"
+                <internal:Button x:DataType="local:NavigationBar"
+                                 VerticalOptions="Center"
                                  Padding="8"
                                  BackgroundColor="Transparent"
+                                 BindingContext="{Reference navigationBar}"
                                  CornerRadius="20"
                                  TapColor="{Binding TapColor}"
                                  TapCommand="{Binding CommandMenu}">

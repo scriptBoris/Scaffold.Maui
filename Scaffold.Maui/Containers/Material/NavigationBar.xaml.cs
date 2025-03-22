@@ -27,7 +27,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
         InitializeComponent();
         backButton.TapCommand = new Command(OnBackButton);
         CommandMenu = new Command(OnMenuButton);
-        BindingContext = this;
     }
 
     public Color ForegroundColor
@@ -67,7 +66,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
         labelTitle.Text = title;
     }
 
-    public void UpdateMenuItems(Core.MenuItemCollection menu)
+    public void UpdateMenuItems(IList<ScaffoldMenuItem>? menu)
     {
         menuItemsLayout.ItemsSource = menu;
     }
@@ -119,17 +118,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
         Padding = _defaultPadding + safeAreaPadding;
     }
 
-    public void Dispose()
-    {
-        var all = this.GetDeepAllChildren();
-        foreach (var item in all)
-        {
-            if (item is IDisposable disposable)
-                disposable.Dispose();
-        }
-        Handler = null;
-    }
-
     public void UpdateTitleView(View? titleView)
     {
         var old = _titleView;
@@ -154,5 +142,16 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
 
         labelTitle.IsVisible = _titleView == null;
+    }
+
+    public void Dispose()
+    {
+        var all = this.GetDeepAllChildren();
+        foreach (var item in all)
+        {
+            if (item is IDisposable disposable)
+                disposable.Dispose();
+        }
+        Handler = null;
     }
 }

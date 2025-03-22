@@ -91,8 +91,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         DeviceSafeAreaChanged += OnSafeAreaChanged;
     }
 
-
-    #region bindable props
+    #region static bindable props
     // scaffold context
     public static readonly BindableProperty ScaffoldContextProperty = BindableProperty.CreateAttached(
         "ScaffoldContext",
@@ -226,16 +225,22 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
 
     // menu items
     public static readonly BindableProperty MenuItemsProperty = BindableProperty.CreateAttached(
-        "ScaffoldMenuItems",
-        typeof(Core.MenuItemCollection),
+        "MenuItems",
+        typeof(ScaffoldMenuItems),
         typeof(Scaffold),
         null,
         defaultValueCreator: b =>
         {
-            return new Core.MenuItemCollection(b);
+            return new ScaffoldMenuItems
+            {
+                BindableObject = b,
+            };
         },
         propertyChanged: (b, o, n) =>
         {
+            if (n is ScaffoldMenuItems nev)
+                nev.BindableObject = b;
+
             if (GetScaffoldContext(b) is Scaffold context)
             {
                 context
@@ -243,13 +248,13 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
                     .Agents
                     .LastOrDefault(x => x.ViewWrapper.View == b)?
                     .NavigationBar?
-                    .UpdateMenuItems(n as Core.MenuItemCollection);
+                    .UpdateMenuItems(n as IList<ScaffoldMenuItem>);
             }
         }
     );
-    public static Core.MenuItemCollection GetMenuItems(BindableObject b)
+    public static ScaffoldMenuItems GetMenuItems(BindableObject b)
     {
-        return (Core.MenuItemCollection)b.GetValue(MenuItemsProperty);
+        return (ScaffoldMenuItems)b.GetValue(MenuItemsProperty);
     }
 
     // status bar foreground color
@@ -320,7 +325,9 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         b.SetValue(TitleViewProperty, value);
     public static View? GetTitleView(BindableObject b) =>
         b.GetValue(TitleViewProperty) as View;
+    #endregion static bindable props
 
+    #region bindable props
     // view factory
     public static readonly BindableProperty ViewFactoryProperty = BindableProperty.Create(
         nameof(ViewFactory),

@@ -6,13 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
 namespace ScaffoldLib.Maui;
 
 public class ScaffoldMenuItem : BindableObject
 {
-    private MenuItemCollection? parent;
+    public event EventHandler<ChangedArgs>? AdvancedPropertyChanged;
 
     #region bindable props
     // text
@@ -89,7 +88,16 @@ public class ScaffoldMenuItem : BindableObject
         propertyChanged: (b, o, n) =>
         {
             if (b is ScaffoldMenuItem self)
-                self.parent?.ResolveItem(self, self.IsVisible, (bool)o);
+            {
+                //self.parent?.ResolveItem(self, self.IsVisible, (bool)o);
+
+                self.AdvancedPropertyChanged?.Invoke(self, new ChangedArgs
+                {
+                    Type = PropertyTypes.IsCollapsed,
+                    OldValue = (bool)o,
+                    NewValue = (bool)n,
+                });
+            }
         }
     );
     public bool IsCollapsed
@@ -107,7 +115,16 @@ public class ScaffoldMenuItem : BindableObject
         propertyChanged: (b, o, n) =>
         {
             if (b is ScaffoldMenuItem self)
-                self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
+            {
+                //self.parent?.ResolveItem(self, (bool)o, self.IsCollapsed);
+
+                self.AdvancedPropertyChanged?.Invoke(self, new ChangedArgs
+                {
+                    Type = PropertyTypes.IsVisible,
+                    OldValue = (bool)o,
+                    NewValue = (bool)n,
+                });
+            }
         }
     );
     public bool IsVisible
@@ -136,8 +153,19 @@ public class ScaffoldMenuItem : BindableObject
     }
 #endregion bindable props
 
-    internal void SetParent(MenuItemCollection? parent)
+    internal int SortIndex { get; set; }
+    internal object? Parent { get; set; }
+
+    public struct ChangedArgs
     {
-        this.parent = parent;
+        public required PropertyTypes Type { get; set; }
+        public required bool OldValue { get; set; }
+        public required bool NewValue { get; set; }
+    }
+
+    public enum PropertyTypes
+    {
+        IsCollapsed,
+        IsVisible,
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.Maui.Controls;
 using ScaffoldLib.Maui.Args;
 using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
-using MenuItemCollection = ScaffoldLib.Maui.Core.MenuItemCollection;
 
 namespace ScaffoldLib.Maui.Containers.Cupertino;
 
@@ -14,7 +13,7 @@ public partial class NavigationBar : INavigationBar, IDisposable
     private Color _foregroundColor = Colors.Black;
     private Color _tapColor = Colors.Black;
     private IBackButtonBehavior? backButtonBehavior;
-    private MenuItemCollection? menuItems;
+    private ScaffoldMenuItems? menuItems;
 
     public NavigationBar(CreateNavigationBarArgs args)
 	{
@@ -49,12 +48,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
         }
     }
 
-    private void CollapsedItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        int count = menuItems?.CollapsedItems?.Count ?? 0;
-        buttonMenu.IsVisible = count > 0;
-    }
-
     private void OnBackButton()
     {
         _agent.OnBackButton();
@@ -80,20 +73,11 @@ public partial class NavigationBar : INavigationBar, IDisposable
         backButton.IsVisible = visible ?? isVisible;
     }
 
-    public void UpdateMenuItems(Core.MenuItemCollection menu)
+    public void UpdateMenuItems(IList<ScaffoldMenuItem>? menu)
     {
-        if (menuItems != null)
-        {
-            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
-            menuItems.Dispose();
-        }
-
-        menuItems = menu;
-        menuItems.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
-        bool colapseVisible = menuItems.CollapsedItems.Count > 0;
-
-        BindableLayout.SetItemsSource(stackMenu, menuItems.VisibleItems);
-        buttonMenu.IsVisible = colapseVisible;
+        // TODO Использовать продвинутыйы MenuItemsLayout вместо ручной реализации на каждой платформе
+        //menuItems = menu;
+        //menuItems.CollapsedItems.CollectionChanged += CollapsedItems_CollectionChanged;
     }
 
     public void UpdateNavigationBarBackgroundColor(Color color)
@@ -136,13 +120,6 @@ public partial class NavigationBar : INavigationBar, IDisposable
 
     public void Dispose()
     {
-        if (menuItems != null)
-        {
-            menuItems.CollapsedItems.CollectionChanged -= CollapsedItems_CollectionChanged;
-            menuItems.Dispose();
-            menuItems = null;
-        }
-
         var all = this.GetDeepAllChildren();
         foreach (var item in all)
         {
