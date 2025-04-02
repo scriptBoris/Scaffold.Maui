@@ -205,7 +205,6 @@ internal class NavigationController : IDisposable
         oldAgent.TryDisappearing(true, AppearingStl);
         newAgent.TryAppearing(true, AppearingStl);
         oldAgent.TryNotifyNavigationDisconnect();
-        oldAgent.Dispose();
 
         if (!isAnimated)
         {
@@ -257,7 +256,6 @@ internal class NavigationController : IDisposable
         previosAgent.TryAppearing(true, AppearingStl);
         previosAgent.RestoreVisualState();
         currentAgent.TryNotifyNavigationDisconnect();
-        currentAgent.Dispose();
 
         return true;
     }
@@ -281,7 +279,6 @@ internal class NavigationController : IDisposable
             agent.TryDisappearing(true, AppearingStl);
 
         agent.TryNotifyNavigationDisconnect();
-        agent.Dispose();
 
         if (isIntantPop)
         {

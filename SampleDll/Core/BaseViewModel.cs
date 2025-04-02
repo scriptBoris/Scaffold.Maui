@@ -135,10 +135,13 @@ public abstract class BaseViewModel : BaseNotify
         return View.GetContext()!.ReplaceView(View, viewModel.View);
     }
 
-    public Task GoTo(object viewModelKey)
+    public Task<BaseViewModel> GoTo(object viewModelKey)
     {
         var vm = ServiceProvider.GetRequiredService<INavigationMap>().Resolve(viewModelKey);
-        return View.GetContext()!.PushAsync(vm.View);
+        return View
+            .GetContext()!
+            .PushAsync(vm.View)
+            .ContinueWith(x => vm);
     }
 
     public Task GoTo(BaseViewModel viewModel)

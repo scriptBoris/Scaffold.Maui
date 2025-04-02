@@ -20,6 +20,12 @@ public class ViewFactory
 
     internal IAgent CreateAgent(CreateAgentArgs args)
     {
+        if (args.View.Parent is IViewWrapper viewWrapper)
+        {
+            var agent = (IAgent)args.View.Parent.Parent;
+            return agent;
+        }
+
         var result = OverrideAgent?.Invoke(args);
         if (result == null)
         {

@@ -17,6 +17,8 @@ public class HomeViewModelKey
 
 public class HomeViewModel : BaseViewModel<HomeViewModelKey>
 {
+    private bool isBusy;
+
     public HomeViewModel(IWaresService waresService)
     {
         CommandSelectPizza = new Command<PizzaItem>(ActionSelectPizza);
@@ -53,11 +55,27 @@ public class HomeViewModel : BaseViewModel<HomeViewModelKey>
     });
 
     public ICommand CommandSelectPizza { get; set; }
-    private void ActionSelectPizza(PizzaItem item)
+    private async void ActionSelectPizza(PizzaItem item)
     {
-        GoTo(new PizzaViewModelKey()
+        if (isBusy)
+            return;
+
+        isBusy = true;
+
+        if (_instances.TryGetValue(item, out var instance))
         {
-            PizzaItem = item
-        });
+            await GoTo(instance);
+        }
+        else
+        {
+            var vm = await GoTo(new PizzaViewModelKey()
+            {
+                PizzaItem = item
+            });
+            _instances.Add(item, vm);
+        }
+        isBusy = false;
     }
+
+    private readonly Dictionary<PizzaItem, BaseViewModel> _instances = [];
 }

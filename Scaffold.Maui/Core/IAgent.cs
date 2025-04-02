@@ -326,10 +326,18 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
         ZBuffer.AddLayer(overlay, IScaffold.MenuItemsIndexZ, true);
     }
 
-    public virtual async void Dispose()
+    public virtual void Dispose()
     {
-        await Task.Delay(500);
-        DestroyView(this);
+        if (NavigationBar is IDisposable disNavbar)
+            disNavbar.Dispose();
+
+        if (ZBuffer is IDisposable disZBuffer)
+            disZBuffer.Dispose();
+
+        if (ViewWrapper is IDisposable disViewWrapper)
+            disViewWrapper.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 
     public virtual void OnAppear(bool isComplete)
@@ -364,47 +372,5 @@ public abstract class Agent : Layout, IAgent, ILayoutManager, IDisposable
 
         _isConnectedToUINavigation = false;
         RemovedFromNavigation?.Invoke(this, EventArgs.Empty);
-    }
-
-    public static void DestroyView(View vroot)
-    {
-        var items = vroot.GetVisualTreeDescendants();
-
-        for (int i = items.Count - 1; i >= 0; i--)
-        {
-            var item = items[i];
-            if (item == vroot)
-                continue;
-
-            if (item is View vitem)
-            {
-                // todo Почему то здесь рандомно вываливается ObjectDisposedExpection
-                //try
-                //{
-                //    vitem.Handler = null;
-                //    vitem.Parent = null;
-                //    vitem.BindingContext = new object();
-                //}
-                //catch (Exception ex)
-                //{
-                //}
-
-                try
-                {
-                    if (item is IDisposable dis)
-                    {
-                        dis.Dispose();
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        vroot.BindingContext = null;
-        vroot.Parent = null;
-        vroot.Handler = null;
-        GC.Collect();
     }
 }
