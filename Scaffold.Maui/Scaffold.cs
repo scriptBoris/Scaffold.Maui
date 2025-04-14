@@ -19,10 +19,14 @@ public interface IScaffold : IScaffoldProvider, IWindowsBehavior
     public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
     public const int ToastIndexZ = 997;
+    public const int PopupIndexZ = 800;
 
     ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
     ViewFactory ViewFactory { get; }
+    IZBuffer ZBuffer { get; }
+    IAgent? CurrentAgent { get; }
+    IBackButtonBehavior? BackButtonBehavior { get; }
 
     Task PushAsync(View view, bool isAnimating = true);
     Task<bool> PopAsync(bool isAnimated = true);
@@ -422,8 +426,8 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         }
     }
 
-    internal ZBuffer ZBuffer => _zBufer;
-    internal IAgent? CurrentAgent => _navigationController.CurrentAgent;
+    public IZBuffer ZBuffer => _zBufer;
+    public IAgent? CurrentAgent => _navigationController.CurrentAgent;
     internal static Color DefaultNavigationBarBackgroundColor => Color.FromArgb("#6200EE");
     internal static Color DefaultNavigationBarForegroundColor => Colors.White;
 
@@ -488,18 +492,36 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         return list.ToArray();
     }
 
-    internal async Task<bool> HardwareBackButtonInternal()
+    /// <summary>
+    /// Handle back button (hardware or gesture back)
+    /// </summary>
+    /// <returns>
+    /// true - stop processing back button sequence
+    /// false - continue sequence
+    /// </returns>
+    internal async Task<bool> HardwareBackButtonInternal(IAgent agent)
     {
-        var current = _navigationController.CurrentAgent?.ViewWrapper.View;
-        if (current == null)
-            return true;
+        var currentView = agent.ViewWrapper.View;
+        var modal = agent.ZBuffer.GetActualModalLayer();
+        if (modal != null)
+        {
+            if (modal is IBackButtonListener modalBBListener)
+            {
+                bool allowClose = await modalBBListener.OnBackButton();
+                if (allowClose)
+                    await agent.ZBuffer.RemoveLayer(modal, true);
+            }
+            else
+            {
+                await agent.ZBuffer.RemoveLayer(modal, true);
+            }
 
-        if (_navigationController.CurrentAgent!.ZBuffer.TryPopModal(true))
             return true;
+        }
 
         bool canPop = await BackButtonListener.OnBackButton();
         if (canPop)
-            return await RemoveView(current, true);
+            return await RemoveView(currentView, true);
         else
             return true;
     }

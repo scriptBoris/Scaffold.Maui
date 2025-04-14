@@ -50,5 +50,8 @@
                 <TapGestureRecognizer Command="{Binding CommandGoRepo}"/>
             </Label.GestureRecognizers>
         </Label>
+
+        <Button Text="Send feedback"
+                Command="{Binding CommandFeedback}"/>
     </StackLayout>
 </StackLayout>

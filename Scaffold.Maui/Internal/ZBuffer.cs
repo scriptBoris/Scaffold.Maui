@@ -112,14 +112,32 @@ internal class ZBuffer : Layout, IZBuffer, ILayoutManager, IDisposable
         await TryHideBackgroundLayerAsync(zIndex, animation);
     }
 
-
-    public bool TryPopModal(bool animation)
+    public IZBufferLayout? GetActualModalLayer()
     {
-        var lastModal = _items.LastOrDefault(x => x.View is IModalLayout);
-        if (lastModal == null)
-            return false;
+        var match = _items.LastOrDefault(x => x.View is IModalLayout);
+        if (match == null)
+        {
+            return null;
+        }
+        else
+        {
+            return match.ZView;
+        }
+    }
 
-        RemoveLayer(lastModal, animation);
+    public async Task<bool?> TryPopModal(bool animation)
+    {
+        var modal = GetActualModalLayer();
+        if (modal == null)
+            return null;
+
+        if (modal is IBackButtonListener bblistener)
+        {
+            if (!await bblistener.OnBackButton())
+                return false;
+        }
+
+        await RemoveLayer(modal, animation);
         return true;
     }
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit;assembly=Scaffold.Maui"
+        x:Class="SampleDll.Views.Popups.UpdatePopup"
+        WidthRequest="300"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Padding="10"
+        BackgroundColor="{AppThemeBinding Dark=#222, Light=#FFF}"
+        StrokeShape="RoundRectangle 18">
+    <VerticalStackLayout Spacing="5">
+        <Label Text="MOCKUP POPUP"
+               TextColor="Gray"/>
+
+        <toolkit:ImageTint HeightRequest="34"
+                           WidthRequest="34"
+                           Source="information_slab_circle.png"
+                           TintColor="#666"/>
+        <Label HorizontalTextAlignment="Center"
+               Text="Update please this App"/>
+
+        <Grid ColumnDefinitions="*, *"
+              ColumnSpacing="5">
+            <Button Text="Update"
+                    Clicked="Button_Clicked"/>
+            <Button Grid.Column="1"
+                    Clicked="Button_Clicked"
+                    Text="Update and Rate"/>
+        </Grid>
+    </VerticalStackLayout>
+</Border>

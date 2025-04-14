@@ -1,41 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
-        xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
-        xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
-        x:Class="ScaffoldLib.Maui.Containers.WinUI.CollapsedMenuItemLayer"
-        HorizontalOptions="End"
-        VerticalOptions="Start"
-        Margin="0,40,20,0"
-        Padding="0"
-        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
-        StrokeShape="RoundRectangle 8"
-        StrokeThickness="0">
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
+      xmlns:local="clr-namespace:ScaffoldLib.Maui.Containers.Material"
+      xmlns:scaffold="clr-namespace:ScaffoldLib.Maui"
+      x:Class="ScaffoldLib.Maui.Containers.WinUI.CollapsedMenuItemLayer">
 
-    <!--TODO Есть баг, когда при отображении даного слоя, он незапрещает инпут запределы себя-->
-    <Border.Shadow>
-        <Shadow Brush="black"
-                Opacity="0.4"
-                Radius="{AppThemeBinding Light=40, Dark=20}"
-                Offset="0,0"/>
-    </Border.Shadow>
+    <Border HorizontalOptions="End"
+            VerticalOptions="Start"
+            Margin="0,40,20,0"
+            Padding="5"
+            BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2c2c2c}"
+            StrokeShape="RoundRectangle 7"
+            StrokeThickness="0">
 
-    <StackLayout x:Name="stackMenu"
-                 WidthRequest="140"
-                 BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#111}"
-                 Spacing="0">
-        <BindableLayout.ItemTemplate>
-            <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
-                <local:ButtonMenuOnPopup Padding="5"
-                                         BackgroundColor="Transparent"
-                                         CornerRadius="0"
-                                         ImageSource="{Binding ImageSource}"
-                                         TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
-                                         TapCommandParameter="{Binding .}"
-                                         Text="{Binding Text}"
-                                         UseOriginalColor="{Binding UseOriginalColor}"/>
-            </DataTemplate>
-        </BindableLayout.ItemTemplate>
-    </StackLayout>
-</Border>
+        <Border.Shadow>
+            <Shadow Brush="black"
+                    Opacity="0.4"
+                    Radius="{AppThemeBinding Light=40, Dark=20}"
+                    Offset="0,0"/>
+        </Border.Shadow>
+
+        <StackLayout x:Name="stackMenu"
+                     WidthRequest="140"
+                     Spacing="0">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="scaffold:ScaffoldMenuItem">
+
+                    <!--todo: color on hover 383838-->
+                    <local:ButtonMenuOnPopup Padding="5"
+                                             BackgroundColor="Transparent"
+                                             CornerRadius="4"
+                                             ImageSource="{Binding ImageSource}"
+                                             TapCommand="{Binding BindingContext.CommandSelectedMenu, Source={Reference root}}"
+                                             TapCommandParameter="{Binding .}"
+                                             Text="{Binding Text}"
+                                             UseOriginalColor="{Binding UseOriginalColor}"/>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+    </Border>
+</Grid>

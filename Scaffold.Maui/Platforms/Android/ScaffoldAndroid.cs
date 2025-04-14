@@ -2,6 +2,7 @@
 using Android.OS;
 using Android.Views;
 using Microsoft.Maui.LifecycleEvents;
+using ScaffoldLib.Maui.Core;
 using ScaffoldLib.Maui.Internal;
 using MView = Microsoft.Maui.Controls.View;
 
@@ -85,26 +86,45 @@ public static class ScaffoldAndroid
                     .Reverse()
                     .ToArray();
 
-                foreach (var item in nested)
+                // First trying pop to modal popups
+                foreach (var scaffold in nested)
                 {
-                    if (item is not Scaffold scaffold)
-                        continue;
+                    var zbuffer = scaffold.ZBuffer;
+                    var modalPopup = scaffold.ZBuffer.GetActualModalLayer();
+                    if (modalPopup != null)
+                    {
+                        if (modalPopup is IBackButtonListener popupBackButtonListener)
+                        {
+                            bool allowClose = await popupBackButtonListener.OnBackButton();
+                            if (allowClose)
+                            {
+                                await zbuffer.RemoveLayer(modalPopup, true);
+                            }
+                        }
+                        else
+                        {
+                            await zbuffer.RemoveLayer(modalPopup, true);
+                        }
 
-                    if (scaffold.ZBuffer.TryPopModal(true))
                         return;
+                    }
                 }
 
-                foreach (var item in nested)
+                // Then trying pop agents
+                foreach (var scaffold in nested)
                 {
-                    if (item is not Scaffold scaffold)
+                    var agent = scaffold.CurrentAgent;
+                    if (agent == null) 
                         continue;
 
-                    var agent = scaffold.CurrentAgent;
-                    if (scaffold.BackButtonBehavior?.OverrideHardwareBackButtonAction(agent, item) == true)
+                    if (agent.BackButtonBehavior?.OverrideHardwareBackButtonAction(agent, scaffold) == true)
                         return;
 
-                    if (await scaffold.HardwareBackButtonInternal())
-                        return;
+                    if (scaffold is Scaffold scaffoldInternal)
+                    {
+                        if (await scaffoldInternal.HardwareBackButtonInternal(agent))
+                            return;
+                    }
                 }
 
                 a.MoveTaskToBack(true);

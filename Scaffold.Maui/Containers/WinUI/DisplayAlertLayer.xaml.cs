@@ -31,6 +31,9 @@ public partial class DisplayAlertLayer : IDisplayAlert
         // single button
         if (args.Cancel == null)
         {
+            buttonOk.HorizontalOptions = LayoutOptions.End;
+            buttonOk.MinimumWidthRequest = 100;
+            Grid.SetColumnSpan(buttonOk, 2);
             buttonCancel.IsVisible = false;
         }
         // two button

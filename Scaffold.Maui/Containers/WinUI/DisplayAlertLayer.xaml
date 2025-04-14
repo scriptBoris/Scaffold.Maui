@@ -4,40 +4,69 @@
         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
         x:Class="ScaffoldLib.Maui.Containers.WinUI.DisplayAlertLayer"
-        WidthRequest="250"
+        WidthRequest="300"
         HorizontalOptions="Center"
         VerticalOptions="Center"
-        Padding="10"
-        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#191919}"
-        Stroke="{AppThemeBinding Light=#CCC, Dark=#262626}"
-        StrokeShape="RoundRectangle 10">
-    <Border.GestureRecognizers>
-        <TapGestureRecognizer/>
-    </Border.GestureRecognizers>
+        Padding="0"
+        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2b2b2b}"
+        Stroke="{AppThemeBinding Light=#404040, Dark=#666}"
+        StrokeShape="RoundRectangle 8"
+        StrokeThickness="0.4">
 
-    <StackLayout Spacing="7">
-        <Label x:Name="labelTitle"
-               TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+    <Grid RowDefinitions="Auto, 1, Auto">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer/>
+        </Grid.GestureRecognizers>
 
-        <Label x:Name="labelDescription"
-               TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+        <!--content-->
+        <VerticalStackLayout Padding="25"
+                             Spacing="7">
 
-        <internal:Button x:Name="buttonOk"
-                         Padding="10"
-                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
-            <Label x:Name="labelButtonOk"
-                   Margin="0,0,10,0"
-                   HorizontalTextAlignment="End"
+            <Label x:Name="labelTitle"
+                   FontSize="20"
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-        </internal:Button>
 
-        <internal:Button x:Name="buttonCancel"
-                         Padding="10"
-                         BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
-            <Label x:Name="labelButtonCancel"
-                   Margin="0,0,10,0"
-                   HorizontalTextAlignment="End"
+            <Label x:Name="labelDescription"
                    TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
-        </internal:Button>
-    </StackLayout>
+
+        </VerticalStackLayout>
+
+        <HorizontalStackLayout Grid.Row="1"
+                               BackgroundColor="{AppThemeBinding Dark=#1d1d1d, Light=#e5e5e5}"/>
+
+        <!--buttons-->
+        <Grid Grid.Row="2"
+              Padding="25"
+              BackgroundColor="{AppThemeBinding Dark=#202020, Light=#f3f3f3}"
+              ColumnDefinitions="*, *"
+              ColumnSpacing="8">
+            <internal:Button x:Name="buttonOk"
+                             Padding="5"
+                             BackgroundColor="{AppThemeBinding Light=#f6f6f6, Dark=#343434}"
+                             BorderColor="{AppThemeBinding Dark=#353535, Light=#CCC}"
+                             BorderWidth="1"
+                             CornerRadius="3">
+                <Label x:Name="labelButtonOk"
+                       Margin="0,0,0,0"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            </internal:Button>
+
+            <internal:Button x:Name="buttonCancel"
+                             Grid.Column="1"
+                             Padding="5"
+                             BackgroundColor="{AppThemeBinding Light=#f6f6f6, Dark=#343434}"
+                             BorderColor="{AppThemeBinding Dark=#353535, Light=#CCC}"
+                             BorderWidth="1"
+                             CornerRadius="3">
+                <Label x:Name="labelButtonCancel"
+                       Margin="0,0,0,0"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            </internal:Button>
+        </Grid>
+    </Grid>
+
 </Border>

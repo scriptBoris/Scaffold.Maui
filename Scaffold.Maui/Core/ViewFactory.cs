@@ -144,7 +144,8 @@ public class ViewFactory
         var res = OverrideCreateSharedModalBackground?.Invoke(args);
         if (res == null)
         {
-            if (args.ZIndex == IScaffold.AlertIndexZ)
+            if (args.ZIndex == IScaffold.AlertIndexZ ||
+                args.ZIndex == IScaffold.PopupIndexZ)
                 res = new Common.SharedModalBackgroundLayer();
         }
 
