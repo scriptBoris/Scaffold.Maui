@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         xmlns:toolkit="clr-namespace:ScaffoldLib.Maui.Toolkit"
         x:Class="ScaffoldLib.Maui.Containers.Cupertino.ToastLayer"
         VerticalOptions="End"
@@ -18,11 +19,11 @@
     </Border.GestureRecognizers>
 
     <StackLayout>
-        <Label x:Name="labelTitle"
-               FontSize="Body"
-               TextColor="#777"/>
-        <Label x:Name="labelMessage"
-               FontSize="Medium"
-               TextColor="#222"/>
+        <internal:LabelNative x:Name="labelTitle"
+                              FontSize="Body"
+                              TextColor="#777"/>
+        <internal:LabelNative x:Name="labelMessage"
+                              FontSize="Medium"
+                              TextColor="#222"/>
     </StackLayout>
 </Border>

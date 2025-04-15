@@ -28,12 +28,13 @@
     </internal:Button>
 
     <!--title-->
-    <Label x:Name="labelTitle"
-           Grid.Column="1"
-           Margin="13,0,0,0"
-           VerticalTextAlignment="Center"
-           FontSize="22"
-           LineBreakMode="TailTruncation"/>
+    <internal:LabelNative x:Name="labelTitle"
+                          Grid.Column="1"
+                          Margin="13,0,0,0"
+                          VerticalTextAlignment="Center"
+                          FontSize="22"
+                          LineBreakMode="TailTruncation"
+                          StyleAttribute="NavigationTitle"/>
 
     <!--menu items-->
     <common:MenuItemsLayout x:Name="menuItemsLayout"

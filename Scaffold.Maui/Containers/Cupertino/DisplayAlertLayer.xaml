@@ -14,15 +14,17 @@
     <StackLayout Spacing="0">
 
         <StackLayout Margin="10,18">
-            <Label x:Name="labelTitle"
-                   HorizontalTextAlignment="Center"
-                   FontSize="17"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            <internal:LabelNative x:Name="labelTitle"
+                                  HorizontalTextAlignment="Center"
+                                  FontSize="17"
+                                  StyleAttribute="AlertTitle"
+                                  TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
-            <Label x:Name="labelDescription"
-                   HorizontalTextAlignment="Center"
-                   FontSize="13"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            <internal:LabelNative x:Name="labelDescription"
+                                  HorizontalTextAlignment="Center"
+                                  FontSize="13"
+                                  StyleAttribute="AlertDescription"
+                                  TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
         </StackLayout>
 
         <!--horizontal line-->
@@ -38,10 +40,11 @@
                                 BackgroundColor="Transparent"
                                 CornerRadius="0"
                                 TapColor="#666">
-                <Label x:Name="labelButtonOk"
-                       HorizontalTextAlignment="Center"
-                       FontSize="17"
-                       TextColor="#0A84FF"/>
+                <internal:LabelNative x:Name="labelButtonOk"
+                                      HorizontalTextAlignment="Center"
+                                      FontSize="17"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="#0A84FF"/>
             </internal:RawButton>
 
             <!--vertical line-->
@@ -56,10 +59,11 @@
                                 BackgroundColor="Transparent"
                                 CornerRadius="0"
                                 TapColor="#666">
-                <Label x:Name="labelButtonCancel"
-                       HorizontalTextAlignment="Center"
-                       FontSize="17"
-                       TextColor="#0A84FF"/>
+                <internal:LabelNative x:Name="labelButtonCancel"
+                                      HorizontalTextAlignment="Center"
+                                      FontSize="17"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="#0A84FF"/>
             </internal:RawButton>
         </StackLayout>
 

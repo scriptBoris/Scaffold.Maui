@@ -132,7 +132,7 @@ public class ElementPicker : BaseView
             {
                 items.Add(item);
 
-                if (item == SelectedItem)
+                if (item.Equals(SelectedItem))
                     selectedItemId = i;
                 i++;
             }

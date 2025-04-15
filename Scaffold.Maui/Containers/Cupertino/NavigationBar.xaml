@@ -7,6 +7,8 @@
       x:Class="ScaffoldLib.Maui.Containers.Cupertino.NavigationBar"
       x:DataType="local:NavigationBar"
       x:Name="navBar">
+
+    <!--todo переделать под новый layout navbar-->
     <StackLayout HeightRequest="50"
                  Orientation="Horizontal">
         <!--back button-->
@@ -57,13 +59,14 @@
     </StackLayout>
 
     <!--title-->
-    <Label x:Name="labelTitle"
-           HorizontalOptions="FillAndExpand"
-           HorizontalTextAlignment="Center"
-           VerticalTextAlignment="Center"
-           BackgroundColor="{x:Null}"
-           FontSize="18"
-           InputTransparent="True"
-           LineBreakMode="TailTruncation"/>
+    <internal:LabelNative x:Name="labelTitle"
+                          HorizontalOptions="FillAndExpand"
+                          HorizontalTextAlignment="Center"
+                          VerticalTextAlignment="Center"
+                          BackgroundColor="{x:Null}"
+                          FontSize="18"
+                          InputTransparent="True"
+                          LineBreakMode="TailTruncation"
+                          StyleAttribute="NavigationTitle"/>
 
 </Grid>

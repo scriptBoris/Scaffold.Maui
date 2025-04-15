@@ -20,14 +20,16 @@
 
         <!--content-->
         <VerticalStackLayout Padding="25"
-                             Spacing="7">
+                             Spacing="12">
 
-            <Label x:Name="labelTitle"
-                   FontSize="20"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            <internal:LabelNative x:Name="labelTitle"
+                                  FontSize="20"
+                                  StyleAttribute="AlertTitle"
+                                  TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
-            <Label x:Name="labelDescription"
-                   TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+            <internal:LabelNative x:Name="labelDescription"
+                                  StyleAttribute="AlertDescription"
+                                  TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
 
         </VerticalStackLayout>
 
@@ -46,12 +48,13 @@
                              BorderColor="{AppThemeBinding Dark=#353535, Light=#CCC}"
                              BorderWidth="1"
                              CornerRadius="3">
-                <Label x:Name="labelButtonOk"
-                       Margin="0,0,0,0"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+                <internal:LabelNative x:Name="labelButtonOk"
+                                      Margin="0,0,0,0"
+                                      HorizontalTextAlignment="Center"
+                                      VerticalTextAlignment="Center"
+                                      FontSize="14"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </internal:Button>
 
             <internal:Button x:Name="buttonCancel"
@@ -61,10 +64,11 @@
                              BorderColor="{AppThemeBinding Dark=#353535, Light=#CCC}"
                              BorderWidth="1"
                              CornerRadius="3">
-                <Label x:Name="labelButtonCancel"
-                       Margin="0,0,0,0"
-                       HorizontalTextAlignment="Center"
-                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
+                <internal:LabelNative x:Name="labelButtonCancel"
+                                      Margin="0,0,0,0"
+                                      HorizontalTextAlignment="Center"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"/>
             </internal:Button>
         </Grid>
     </Grid>

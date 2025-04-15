@@ -15,36 +15,37 @@
     </Border.GestureRecognizers>
 
     <StackLayout Spacing="7">
-        <Label x:Name="labelTitle"
-               FontFamily="Roboto-Medium"
-               FontSize="18"
-               TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+        <internal:LabelNative x:Name="labelTitle"
+                              FontSize="18"
+                              StyleAttribute="AlertTitle"
+                              TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
 
-        <Label x:Name="labelDescription"
-               TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
+        <internal:LabelNative x:Name="labelDescription"
+                              StyleAttribute="AlertDescription"
+                              TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
 
         <StackLayout HorizontalOptions="End"
                      Orientation="Horizontal"
                      Spacing="5">
             <!--cancel-->
             <internal:RawButton x:Name="buttonCancel"
-                        Padding="10"
-                        BackgroundColor="Transparent"
-                        MinimumWidthRequest="55">
-                <Label x:Name="labelButtonCancel"
-                       FontFamily="Roboto-Medium"
-                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                                Padding="10"
+                                BackgroundColor="Transparent"
+                                MinimumWidthRequest="55">
+                <internal:LabelNative x:Name="labelButtonCancel"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
             </internal:RawButton>
 
             <!--ok-->
             <internal:RawButton x:Name="buttonOk"
-                        Padding="10"
-                        BackgroundColor="Transparent"
-                        MinimumWidthRequest="55">
-                <Label x:Name="labelButtonOk"
-                       HorizontalTextAlignment="Center"
-                       FontFamily="Roboto-Medium"
-                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                                Padding="10"
+                                BackgroundColor="Transparent"
+                                MinimumWidthRequest="55">
+                <internal:LabelNative x:Name="labelButtonOk"
+                                      HorizontalTextAlignment="Center"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
             </internal:RawButton>
         </StackLayout>
     </StackLayout>

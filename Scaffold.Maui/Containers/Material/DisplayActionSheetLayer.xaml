@@ -10,7 +10,8 @@
         VerticalOptions="Center"
         Padding="0"
         BackgroundColor="{AppThemeBinding Light=#ece6f0, Dark=#2b292f}"
-        StrokeShape="RoundRectangle 10">
+        StrokeShape="RoundRectangle 10"
+        StrokeThickness="0">
     <Border.GestureRecognizers>
         <TapGestureRecognizer/>
     </Border.GestureRecognizers>
@@ -19,12 +20,12 @@
                  Spacing="0">
 
         <!--title-->
-        <Label x:Name="labelTitle"
-               Margin="15,10"
-               VerticalTextAlignment="Center"
-               FontAutoScalingEnabled="False"
-               FontSize="20"
-               TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+        <internal:LabelNative x:Name="labelTitle"
+                              Margin="15,10"
+                              VerticalTextAlignment="Center"
+                              FontSize="20"
+                              StyleAttribute="AlertTitle"
+                              TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
 
         <!--todo добавить поддержку description-->
         <!--<Label Margin="15,0,15,5"
@@ -50,16 +51,16 @@
                                             TapCommandParameter="{Binding .}">
                             <Grid ColumnDefinitions="Auto, *"
                                   ColumnSpacing="10">
-                                <toolkit:RadioButton InputTransparent="True"
+                                <toolkit:RadioButton CheckedColor="#ac99ea"
+                                                     InputTransparent="True"
                                                      IsChecked="{Binding IsSelected}"
                                                      MinimumHeightRequest="10"
                                                      MinimumWidthRequest="10"
                                                      UncheckedColor="#7a757f"/>
-                                <Label Grid.Column="1"
-                                       VerticalOptions="Center"
-                                       FontAutoScalingEnabled="False"
-                                       Text="{Binding DisplayedText}"
-                                       TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+                                <internal:LabelNative Grid.Column="1"
+                                                      VerticalOptions="Center"
+                                                      Text="{Binding DisplayedText}"
+                                                      TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
                             </Grid>
                         </internal:RawButton>
                     </DataTemplate>
@@ -75,10 +76,10 @@
                                 Margin="10,0"
                                 Padding="10"
                                 BackgroundColor="Transparent">
-                <Label x:Name="labelButtonDestruction"
-                       HorizontalTextAlignment="End"
-                       FontFamily="Roboto-Medium"
-                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                <internal:LabelNative x:Name="labelButtonDestruction"
+                                      HorizontalTextAlignment="End"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
             </internal:RawButton>
 
             <internal:RawButton x:Name="buttonCancel"
@@ -86,10 +87,10 @@
                                 Margin="10,0"
                                 Padding="10"
                                 BackgroundColor="Transparent">
-                <Label x:Name="labelButtonCancel"
-                       HorizontalTextAlignment="Center"
-                       FontFamily="Roboto-Medium"
-                       TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                <internal:LabelNative x:Name="labelButtonCancel"
+                                      HorizontalTextAlignment="Center"
+                                      StyleAttribute="AlertButton"
+                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
             </internal:RawButton>
         </StackLayout>
     </StackLayout>

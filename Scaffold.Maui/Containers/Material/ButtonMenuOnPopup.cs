@@ -1,4 +1,5 @@
-﻿using ScaffoldLib.Maui.Toolkit;
+﻿using ScaffoldLib.Maui.Internal;
+using ScaffoldLib.Maui.Toolkit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace ScaffoldLib.Maui.Containers.Material;
 internal class ButtonMenuOnPopup : StaticLibs.ButtonSam.Button
 {
     private readonly ImageTint _icon;
-    private readonly Label _label;
+    private readonly LabelNative _label;
 
     public ButtonMenuOnPopup()
     {
@@ -29,7 +30,7 @@ internal class ButtonMenuOnPopup : StaticLibs.ButtonSam.Button
         };
         stack.Children.Add(_icon);
 
-        _label = new Label
+        _label = new()
         {
             Margin = new Thickness(0, 0, 10, 0),
             VerticalTextAlignment = TextAlignment.Center,
@@ -98,6 +99,6 @@ internal class ButtonMenuOnPopup : StaticLibs.ButtonSam.Button
         else
             _icon.SetAppThemeColor(ImageTint.TintColorProperty, Color.FromRgba("#444"), Color.FromRgba("#CCC"));
 
-        _label.SetAppThemeColor(Label.TextColorProperty, Color.FromRgba("#111"), Color.FromRgba("#FFF"));
+        _label.SetAppThemeColor(LabelNative.TextColorProperty, Color.FromRgba("#111"), Color.FromRgba("#FFF"));
     }
 }

@@ -20,7 +20,8 @@
                    Margin="20,0,0,0"
                    VerticalTextAlignment="Center"
                    FontSize="18"
-                   Text="About app"/>
+                   Text="About app"
+                   TextColor="#FFF"/>
             <Button Grid.Column="2"
                     VerticalOptions="Center"
                     Command="{Binding CommandGoRepo}"
@@ -51,7 +52,7 @@
             </Label.GestureRecognizers>
         </Label>
 
-        <Button Text="Send feedback"
-                Command="{Binding CommandFeedback}"/>
+        <Button Command="{Binding CommandFeedback}"
+                Text="Send feedback"/>
     </StackLayout>
 </StackLayout>

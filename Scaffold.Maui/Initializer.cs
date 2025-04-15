@@ -1,4 +1,5 @@
 ﻿using ScaffoldLib.Maui.Args;
+using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.StaticLibs.ButtonSam;
 using ScaffoldLib.Maui.Toolkit;
 using System.Diagnostics;
@@ -41,10 +42,13 @@ public static class Initializer
 #if ANDROID
             h.AddHandler(typeof(ImageTint), typeof(Platforms.Android.ImageTintHandler));
             h.AddHandler(typeof(Toolkit.RadioButton), typeof(Platforms.Android.ToolkitRadioButtonHandler));
+            h.AddHandler(typeof(LabelNative), typeof(Platforms.Android.LabelNativeHandler));
 #elif IOS
             h.AddHandler(typeof(ImageTint), typeof(Platforms.iOS.ImageTintHandler));
+            h.AddHandler(typeof(LabelNative), typeof(Platforms.iOS.LabelNativeHandler));
 #elif WINDOWS
             h.AddHandler(typeof(ImageTint), typeof(Platforms.Windows.ImageTintHandler));
+            h.AddHandler(typeof(LabelNative), typeof(Platforms.Windows.LabelNativeHandler));
 #endif
         });
 

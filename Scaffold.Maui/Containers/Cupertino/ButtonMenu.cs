@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Animations;
+using ScaffoldLib.Maui.Internal;
 using ScaffoldLib.Maui.Toolkit;
 
 #if IOS
@@ -207,7 +208,7 @@ public class ButtonMenu : StaticLibs.ButtonSam.Button
             }
             else if (Text != null && _label == null)
             {
-                _label = new Label
+                _label = new LabelNative
                 {
                     TextColor = ForegroundColor,
                 };

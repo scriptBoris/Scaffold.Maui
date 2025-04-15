@@ -24,11 +24,12 @@
                            Source="scaffoldlib_arrow_left.png"/>
     </internal:Button>
 
-    <Label x:Name="labelTitle"
-           Grid.Column="1"
-           Margin="10,0,0,0"
-           VerticalTextAlignment="Center"
-           MaxLines="1"/>
+    <internal:LabelNative x:Name="labelTitle"
+                          Grid.Column="1"
+                          Margin="10,0,0,0"
+                          VerticalTextAlignment="Center"
+                          FontSize="16"
+                          StyleAttribute="NavigationTitle"/>
 
     <common:MenuItemsLayout x:Name="menuItems"
                             Grid.Column="2"
