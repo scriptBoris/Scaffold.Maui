@@ -9,6 +9,7 @@ namespace ScaffoldLib.Maui.Args;
 public class CreateDisplayActionSheet
 {
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public string? Cancel { get; set; }
     public string? Destruction { get; set; }
     public string? ItemDisplayBinding { get; set; }

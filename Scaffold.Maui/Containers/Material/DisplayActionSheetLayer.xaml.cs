@@ -50,7 +50,11 @@ public partial class DisplayActionSheetLayer : IDisplayActionSheet
 
         labelTitle.IsVisible = args.Title != null;
         labelTitle.Text = args.Title;
-        labelTitleUnderline.IsVisible = args.Title != null;
+        labelDescription.IsVisible = args.Description != null;
+        labelDescription.Text = args.Description;
+        bool isTopVisible = args.Title != null || args.Description != null;
+        topContainer.IsVisible = isTopVisible;
+        labelTitleUnderline.IsVisible = isTopVisible;
         if (labelTitleUnderline.IsVisible)
         {
             labelTitleUnderline.HeightRequest = 1 / DeviceDisplay.Current.MainDisplayInfo.Density;

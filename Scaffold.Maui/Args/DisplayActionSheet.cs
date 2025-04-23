@@ -3,6 +3,7 @@
 public class DisplayActionSheet
 {
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public string? Cancel { get; set; }
     public string? Destruction { get; set; }
     public string? ItemDisplayBinding { get; set; }

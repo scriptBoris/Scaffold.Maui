@@ -19,9 +19,12 @@ public partial class DisplayAlertLayer : IDisplayAlert
         buttonOk.TapCommand = new Command(() => Close(true));
         buttonCancel.TapCommand = new Command(() => Close(false));
 
+        labelTitle.IsVisible = args.Title != null;
         labelTitle.Text = args.Title;
-        labelDescription.Text = args.Description;
+        labelDescription.IsVisible = args.Description != null;
+        labelDescription.Text = args.Description ?? "";
         labelButtonOk.Text = args.Ok;
+        specialLayout.BodyLength = labelDescription.Text.Length;
 
         // single button
         if (args.Cancel == null)

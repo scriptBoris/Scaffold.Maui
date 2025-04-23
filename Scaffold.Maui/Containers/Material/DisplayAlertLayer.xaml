@@ -4,49 +4,63 @@
         xmlns:internal="clr-namespace:ScaffoldLib.Maui.Internal"
         x:Class="ScaffoldLib.Maui.Containers.Material.DisplayAlertLayer"
         x:Name="displayAlert"
-        WidthRequest="250"
         HorizontalOptions="Center"
         VerticalOptions="Center"
-        Padding="15"
         BackgroundColor="{AppThemeBinding Light=#ece6f0, Dark=#2b292f}"
         StrokeShape="RoundRectangle 10">
     <Border.GestureRecognizers>
         <TapGestureRecognizer/>
     </Border.GestureRecognizers>
 
-    <StackLayout Spacing="7">
-        <internal:LabelNative x:Name="labelTitle"
-                              FontSize="18"
-                              StyleAttribute="AlertTitle"
-                              TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+    <internal:SpecialAlertLayout x:Name="specialLayout"
+                                 TitleBodyMargin="0,15"
+                                 TitleBodySpacing="7">
+        <!--title-->
+        <internal:SpecialAlertLayout.TitleView>
+            <internal:LabelNative x:Name="labelTitle"
+                                  Margin="15,0"
+                                  FontSize="18"
+                                  StyleAttribute="AlertTitle"
+                                  TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+        </internal:SpecialAlertLayout.TitleView>
 
-        <internal:LabelNative x:Name="labelDescription"
-                              StyleAttribute="AlertDescription"
-                              TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
+        <!--body-->
+        <internal:SpecialAlertLayout.BodyView>
+            <ScrollView VerticalOptions="Center"
+                        Padding="15,0">
+                <internal:LabelNative x:Name="labelDescription"
+                                      StyleAttribute="AlertDescription"
+                                      TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
+            </ScrollView>
+        </internal:SpecialAlertLayout.BodyView>
 
-        <StackLayout HorizontalOptions="End"
-                     Orientation="Horizontal"
-                     Spacing="5">
-            <!--cancel-->
-            <internal:RawButton x:Name="buttonCancel"
-                                Padding="10"
-                                BackgroundColor="Transparent"
-                                MinimumWidthRequest="55">
-                <internal:LabelNative x:Name="labelButtonCancel"
-                                      StyleAttribute="AlertButton"
-                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
-            </internal:RawButton>
+        <!--footer (buttons)-->
+        <internal:SpecialAlertLayout.FooterView>
+            <StackLayout HorizontalOptions="End"
+                         Margin="15,0,15,15"
+                         Orientation="Horizontal"
+                         Spacing="5">
+                <!--cancel-->
+                <internal:RawButton x:Name="buttonCancel"
+                                    Padding="10"
+                                    BackgroundColor="Transparent"
+                                    MinimumWidthRequest="55">
+                    <internal:LabelNative x:Name="labelButtonCancel"
+                                          StyleAttribute="AlertButton"
+                                          TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                </internal:RawButton>
 
-            <!--ok-->
-            <internal:RawButton x:Name="buttonOk"
-                                Padding="10"
-                                BackgroundColor="Transparent"
-                                MinimumWidthRequest="55">
-                <internal:LabelNative x:Name="labelButtonOk"
-                                      HorizontalTextAlignment="Center"
-                                      StyleAttribute="AlertButton"
-                                      TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
-            </internal:RawButton>
-        </StackLayout>
-    </StackLayout>
+                <!--ok-->
+                <internal:RawButton x:Name="buttonOk"
+                                    Padding="10"
+                                    BackgroundColor="Transparent"
+                                    MinimumWidthRequest="55">
+                    <internal:LabelNative x:Name="labelButtonOk"
+                                          HorizontalTextAlignment="Center"
+                                          StyleAttribute="AlertButton"
+                                          TextColor="{AppThemeBinding Light=#65558F, Dark=#d0bcfe}"/>
+                </internal:RawButton>
+            </StackLayout>
+        </internal:SpecialAlertLayout.FooterView>
+    </internal:SpecialAlertLayout>
 </Border>

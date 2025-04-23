@@ -786,6 +786,7 @@ public class Scaffold : Layout, IScaffold, ILayoutManager, IDisposable, IBackBut
         var createArgs = new CreateDisplayActionSheet
         {
             Title = args.Title,
+            Description = args.Description,
             Items = args.Items,
             Cancel = args.Cancel,
             Destruction = args.Destruction,

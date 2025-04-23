@@ -25,6 +25,7 @@ public class InfoViewModel : BaseViewModel<InfoViewModelKey>
         View.GetContext()?.DisplayActionSheet(new ScaffoldLib.Maui.Args.DisplayActionSheet
         {
             Title = "Feedback",
+            Description = "Please select the desired item for feedback",
             Cancel = "Cancel",
             Items = 
             [

@@ -19,21 +19,24 @@
     <StackLayout x:Name="rootStackLayout"
                  Spacing="0">
 
-        <!--title-->
-        <internal:LabelNative x:Name="labelTitle"
-                              Margin="15,10"
-                              VerticalTextAlignment="Center"
-                              FontSize="20"
-                              StyleAttribute="AlertTitle"
-                              TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
+        <VerticalStackLayout x:Name="topContainer"
+                             Margin="15,10"
+                             Spacing="5">
+            <!--title-->
+            <internal:LabelNative x:Name="labelTitle"
+                                  FontSize="20"
+                                  StyleAttribute="AlertTitle"
+                                  TextColor="{AppThemeBinding Light=#1d1b20, Dark=#e6e0e9}"/>
 
-        <!--todo добавить поддержку description-->
-        <!--<Label Margin="15,0,15,5"
-               Text="Description"
-               TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>-->
+            <!--description-->
+            <internal:LabelNative x:Name="labelDescription"
+                                  StyleAttribute="AlertDescription"
+                                  Text="Description"
+                                  TextColor="{AppThemeBinding Light=#49454f, Dark=#cac4d0}"/>
+        </VerticalStackLayout>
 
         <BoxView x:Name="labelTitleUnderline"
-                 BackgroundColor="Gray"/>
+                 BackgroundColor="{AppThemeBinding Light=#CCC, Dark=Gray}"/>
 
         <ScrollView VerticalOptions="Center"
                     MaximumHeightRequest="200"

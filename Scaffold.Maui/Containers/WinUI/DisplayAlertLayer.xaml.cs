@@ -16,17 +16,20 @@ public partial class DisplayAlertLayer : IDisplayAlert
     {
         InitializeComponent();
         Opacity = 0;
-        GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = new Command(() => Close(false)),
-        });
+        //GestureRecognizers.Add(new TapGestureRecognizer
+        //{
+        //    Command = new Command(() => Close(false)),
+        //});
 
         buttonOk.TapCommand = new Command(() => Close(true));
         buttonCancel.TapCommand = new Command(() => Close(false));
 
+        labelTitle.IsVisible = args.Title != null;
         labelTitle.Text = args.Title;
-        labelDescription.Text = args.Description;
+        labelDescription.IsVisible = args.Description != null;
+        labelDescription.Text = args.Description ?? "";
         labelButtonOk.Text = args.Ok;
+        specialLayout.BodyLength = labelDescription.Text.Length;
 
         // single button
         if (args.Cancel == null)
@@ -94,5 +97,11 @@ public partial class DisplayAlertLayer : IDisplayAlert
     public void OnTapToOutside()
     {
         DeatachLayer?.Invoke();
+    }
+
+    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+    {
+        var size = base.MeasureOverride(widthConstraint, heightConstraint);
+        return size;
     }
 }

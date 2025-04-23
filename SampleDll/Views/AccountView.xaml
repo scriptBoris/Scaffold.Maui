@@ -12,9 +12,10 @@
              Spacing="15">
 
     <Scaffold.MenuItems>
-        <ScaffoldMenuItem ImageSource="account.png"
+        <ScaffoldMenuItem Command="{Binding CommandLongAlert}"
+                          ImageSource="account.png"
                           IsCollapsed="False"
-                          IsVisible="False"
+                          IsVisible="True"
                           Text="Account (1)"/>
 
         <ScaffoldMenuItem ImageSource="cart_outline.png"
