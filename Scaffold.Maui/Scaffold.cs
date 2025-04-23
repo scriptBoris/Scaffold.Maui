@@ -16,10 +16,10 @@ namespace ScaffoldLib.Maui;
 
 public interface IScaffold : IScaffoldProvider, IWindowsBehavior
 {
-    public const int MenuItemsIndexZ = 998;
     public const int AlertIndexZ = 999;
     public const int ToastIndexZ = 997;
     public const int PopupIndexZ = 800;
+    public const int MenuItemsIndexZ = 700;
 
     ReadOnlyObservableCollection<IBehavior> ExternalBevahiors { get; }
     ReadOnlyObservableCollection<View> NavigationStack { get; }
